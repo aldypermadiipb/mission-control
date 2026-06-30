@@ -145,7 +145,7 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text);}
 .kcard:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.3);}
 .kc-title{font-size:11.5px;font-weight:600;color:var(--text);margin-bottom:3px;}
 .kc-meta{font-size:9px;color:var(--text3);}
-.kc-actions{display:flex;gap:3px;margin-top:7px;flex-wrap:wrap;}
+.ka-actions{display:flex;gap:3px;margin-top:7px;flex-wrap:wrap;}
 .kc-btn{padding:2px 7px;border-radius:5px;font-size:9px;font-weight:600;cursor:pointer;border:none;transition:all .15s;}
 .kc-prev{background:rgba(255,255,255,.06);color:var(--text2);}
 .kc-next{background:rgba(139,92,246,.2);color:var(--purple);}
@@ -184,19 +184,19 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text);}
 
 <aside class="sidebar">
   <div class="sidebar-logo">
-    <div class="logo-icon">â¡</div>
+    <div class="logo-icon">⚡</div>
     <div class="logo-name">Mission Control</div>
     <div class="logo-sub">Personal Dashboard</div>
   </div>
   <div class="nav-label">Main</div>
-  <div class="nav-item active" onclick="switchTab('dashboard',this)"><span class="nav-icon">ð </span> Dashboard</div>
-  <div class="nav-item" onclick="switchTab('calendar',this)"><span class="nav-icon">ð</span> Calendar</div>
-  <div class="nav-item" onclick="switchTab('tracker',this)"><span class="nav-icon">â±ï¸</span> Time Tracker</div>
+  <div class="nav-item active" onclick="switchTab('dashboard',this)"><span class="nav-icon">🏠</span> Dashboard</div>
+  <div class="nav-item" onclick="switchTab('calendar',this)"><span class="nav-icon">📅</span> Calendar</div>
+  <div class="nav-item" onclick="switchTab('tracker',this)"><span class="nav-icon">⏱️</span> Time Tracker</div>
   <div class="nav-label">Life</div>
-  <div class="nav-item" onclick="switchTab('health',this)"><span class="nav-icon">ðª</span> Health</div>
-  <div class="nav-item" onclick="switchTab('finance',this)"><span class="nav-icon">ð°</span> Finance</div>
-  <div class="nav-item" onclick="switchTab('english',this)"><span class="nav-icon">ð</span> English</div>
-  <div class="nav-item" onclick="switchTab('investment',this)"><span class="nav-icon">ð</span> Investment</div>
+  <div class="nav-item" onclick="switchTab('health',this)"><span class="nav-icon">💪</span> Health</div>
+  <div class="nav-item" onclick="switchTab('finance',this)"><span class="nav-icon">💰</span> Finance</div>
+  <div class="nav-item" onclick="switchTab('english',this)"><span class="nav-icon">📖</span> English</div>
+  <div class="nav-item" onclick="switchTab('investment',this)"><span class="nav-icon">📈</span> Investment</div>
   <div class="nav-spacer"></div>
   <div class="sidebar-footer">
     <div class="avatar">AP</div>
@@ -213,7 +213,7 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text);}
     </div>
     <div class="topbar-right">
       <span id="last-updated"></span>
-      <button class="btn btn-ghost" onclick="loadAll()">â» Refresh</button>
+      <button class="btn btn-ghost" onclick="loadAll()">↻ Refresh</button>
       <div><div class="topbar-clock" id="clock">--:--</div><div class="topbar-date" id="topbar-date">--</div></div>
     </div>
   </div>
@@ -224,9 +224,9 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text);}
     <div id="tab-dashboard" class="section active">
       <div class="welcome-banner">
         <div class="welcome-text">
-          <h2>Selamat datang, Aldy ð</h2>
-          <p>Career pivot to DA/Marketing â stay on track!</p>
-          <div class="welcome-pivot">ð 5-month pivot journey active</div>
+          <h2>Selamat datang, Aldy 👋</h2>
+          <p>Career pivot to DA/Marketing — stay on track!</p>
+          <div class="welcome-pivot">🚀 5-month pivot journey active</div>
         </div>
         <div class="welcome-right">
           <div class="welcome-clock" id="welcome-clock">--:--</div>
@@ -235,16 +235,16 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text);}
       </div>
 
       <div class="stat-grid sg5">
-        <div class="stat-card sc-g1"><div class="sc-content"><span class="sc-icon">âµ</span><div class="sc-label">Active Tasks</div><div class="sc-value" id="d-tasks">â</div><div class="sc-sub">todo items</div></div></div>
-        <div class="stat-card sc-g2"><div class="sc-content"><span class="sc-icon">ð</span><div class="sc-label">Kalori</div><div class="sc-value" id="d-cal">â</div><div class="sc-sub">food logs</div></div></div>
-        <div class="stat-card sc-g3"><div class="sc-content"><span class="sc-icon">ð¸</span><div class="sc-label">Pengeluaran</div><div class="sc-value" id="d-exp">â</div><div class="sc-sub">total expense</div></div></div>
-        <div class="stat-card sc-g4"><div class="sc-content"><span class="sc-icon">ð</span><div class="sc-label">Vocab</div><div class="sc-value" id="d-vocab">â</div><div class="sc-sub">kata dipelajari</div></div></div>
-        <div class="stat-card sc-g5"><div class="sc-content"><span class="sc-icon">ð</span><div class="sc-label">Holdings</div><div class="sc-value" id="d-inv">â</div><div class="sc-sub">saham</div></div></div>
+        <div class="stat-card sc-g1"><div class="sc-content"><span class="sc-icon">✅</span><div class="sc-label">Active Tasks</div><div class="sc-value" id="d-tasks">—</div><div class="sc-sub">todo items</div></div></div>
+        <div class="stat-card sc-g2"><div class="sc-content"><span class="sc-icon">🔥</span><div class="sc-label">Kalori</div><div class="sc-value" id="d-cal">—</div><div class="sc-sub">food logs</div></div></div>
+        <div class="stat-card sc-g3"><div class="sc-content"><span class="sc-icon">💸</span><div class="sc-label">Pengeluaran</div><div class="sc-value" id="d-exp">—</div><div class="sc-sub">total expense</div></div></div>
+        <div class="stat-card sc-g4"><div class="sc-content"><span class="sc-icon">📖</span><div class="sc-label">Vocab</div><div class="sc-value" id="d-vocab">—</div><div class="sc-sub">kata dipelajari</div></div></div>
+        <div class="stat-card sc-g5"><div class="sc-content"><span class="sc-icon">📊</span><div class="sc-label">Holdings</div><div class="sc-value" id="d-inv">—</div><div class="sc-sub">saham</div></div></div>
       </div>
 
       <div class="grid-21">
         <div class="panel">
-          <div class="panel-header"><span class="panel-title">Tasks Overview</span><span class="panel-badge bpurple" id="d-task-badge">â</span></div>
+          <div class="panel-header"><span class="panel-title">Tasks Overview</span><span class="panel-badge bpurple" id="d-task-badge">—</span></div>
           <div class="chart-wrap chart-sm"><canvas id="chartTaskBar"></canvas></div>
         </div>
         <div class="panel">
@@ -265,7 +265,7 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text);}
       </div>
 
       <div class="panel">
-        <div class="panel-header"><span class="panel-title">ð Upcoming Events</span><span class="panel-badge bpurple" id="d-cal-badge">0 events</span></div>
+        <div class="panel-header"><span class="panel-title">📅 Upcoming Events</span><span class="panel-badge bpurple" id="d-cal-badge">0 events</span></div>
         <div id="dash-events"><div class="loading">Loading...</div></div>
       </div>
     </div>
@@ -275,9 +275,9 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text);}
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
         <div><h2 style="font-size:15px;font-weight:700;" id="cal-week-label">This Week</h2><p style="font-size:10px;color:var(--text2);margin-top:1px;">Events dari Eina-chan & manual</p></div>
         <div style="display:flex;gap:6px;">
-          <button class="btn btn-ghost" onclick="prevWeek()">â Prev</button>
+          <button class="btn btn-ghost" onclick="prevWeek()">← Prev</button>
           <button class="btn btn-ghost" onclick="todayWeek()">Today</button>
-          <button class="btn btn-ghost" onclick="nextWeek()">Next â</button>
+          <button class="btn btn-ghost" onclick="nextWeek()">Next →</button>
         </div>
       </div>
       <div class="cal-week" id="cal-week-grid"></div>
@@ -296,14 +296,14 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text);}
     <!-- TIME TRACKER -->
     <div id="tab-tracker" class="section">
       <div class="stat-grid sg4">
-        <div class="stat-card sc-dark"><div class="sc-content"><span class="sc-icon">ð</span><div class="sc-label">Total Tasks</div><div class="sc-value" id="tt-total">0</div><div class="sc-sub">semua kolom</div></div></div>
-        <div class="stat-card sc-g2"><div class="sc-content"><span class="sc-icon">â©</span><div class="sc-label">In Progress</div><div class="sc-value" id="tt-inp">0</div><div class="sc-sub">sedang berjalan</div></div></div>
-        <div class="stat-card sc-g4"><div class="sc-content"><span class="sc-icon">â¯ï¸</span><div class="sc-label">Editing</div><div class="sc-value" id="tt-edit">0</div><div class="sc-sub">dalam review</div></div></div>
-        <div class="stat-card sc-g5"><div class="sc-content"><span class="sc-icon">â</span><div class="sc-label">Done Today</div><div class="sc-value" id="tt-done">0</div><div class="sc-sub">selesai hari ini</div></div></div>
+        <div class="stat-card sc-dark"><div class="sc-content"><span class="sc-icon">📋</span><div class="sc-label">Total Tasks</div><div class="sc-value" id="tt-total">0</div><div class="sc-sub">semua kolom</div></div></div>
+        <div class="stat-card sc-g2"><div class="sc-content"><span class="sc-icon">⚡</span><div class="sc-label">In Progress</div><div class="sc-value" id="tt-inp">0</div><div class="sc-sub">sedang berjalan</div></div></div>
+        <div class="stat-card sc-g4"><div class="sc-content"><span class="sc-icon">✏️</span><div class="sc-label">Editing</div><div class="sc-value" id="tt-edit">0</div><div class="sc-sub">dalam review</div></div></div>
+        <div class="stat-card sc-g5"><div class="sc-content"><span class="sc-icon">✅</span><div class="sc-label">Done Today</div><div class="sc-value" id="tt-done">0</div><div class="sc-sub">selesai hari ini</div></div></div>
       </div>
 
       <div class="kanban-hdr">
-        <span style="font-size:13px;font-weight:700;">ðï¸ Kanban Board</span>
+        <span style="font-size:13px;font-weight:700;">🗂️ Kanban Board</span>
         <button class="btn btn-purple" onclick="addCard('draft')">+ Add Task</button>
       </div>
       <div class="kanban-board">
@@ -437,12 +437,12 @@ async function loadHealth(){
   const food=healthData.filter(r=>r.type==='food');
   const wkt=healthData.filter(r=>r.type==='workout');
   const cal=food.reduce((s,r)=>s+(parseFloat(r.calories)||0),0);
-  document.getElementById('health-stats').innerHTML=sc('sc-g2','ð½ï¸','Food Logs',food.length,'entri')+sc('sc-g1','ðª','Workout',wkt.length,'sesi')+sc('sc-g4','ð¥','Kalori',Math.round(cal).toLocaleString(),'total');
+  document.getElementById('health-stats').innerHTML=sc('sc-g2','🍽️','Food Logs',food.length,'entri')+sc('sc-g1','💪','Workout',wkt.length,'sesi')+sc('sc-g4','🔥','Kalori',Math.round(cal).toLocaleString(),'total');
   document.getElementById('d-cal').textContent=Math.round(cal).toLocaleString();
   const l10=healthData.slice(-10);
-  mkChart('chartHealth',{type:'bar',data:{labels:l10.map(r=>fmtDate(r.date||r.id)||'â'),datasets:[{label:'Kalori',data:l10.map(r=>parseFloat(r.calories)||0),backgroundColor:l10.map(r=>r.type==='food'?'rgba(139,92,246,.7)':'rgba(59,130,246,.7)'),borderColor:l10.map(r=>r.type==='food'?'#8b5cf6':'#3b82f6'),borderWidth:1,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#4a5568',font:{size:9}},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#4a5568'},grid:{color:'rgba(255,255,255,.04)'}}}}});
+  mkChart('chartHealth',{type:'bar',data:{labels:l10.map(r=>fmtDate(r.date||r.id)||'—'),datasets:[{label:'Kalori',data:l10.map(r=>parseFloat(r.calories)||0),backgroundColor:l10.map(r=>r.type==='food'?'rgba(139,92,246,.7)':'rgba(59,130,246,.7)'),borderColor:l10.map(r=>r.type==='food'?'#8b5cf6':'#3b82f6'),borderWidth:1,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#4a5568',font:{size:9}},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#4a5568'},grid:{color:'rgba(255,255,255,.04)'}}}}});
   mkChart('chartHealthDonut',{type:'doughnut',data:{labels:['Food','Workout'],datasets:[{data:[food.length,wkt.length],backgroundColor:['rgba(139,92,246,.8)','rgba(59,130,246,.8)'],borderColor:['#8b5cf6','#3b82f6'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'bottom',labels:{color:'#8892b0',font:{size:10}}}}}});
-  if(!healthData.length){document.getElementById('health-content').innerHTML='<div class="empty"><div class="emoji">ðª</div>Belum ada log kesehatan.</div>';return;}
+  if(!healthData.length){document.getElementById('health-content').innerHTML='<div class="empty"><div class="emoji">💪</div>Belum ada log kesehatan.</div>';return;}
   document.getElementById('health-content').innerHTML=`<table><thead><tr><th>Date</th><th>Type</th><th>Name</th><th>Calories</th><th>Duration</th></tr></thead><tbody>`+healthData.slice().reverse().slice(0,30).map(r=>`<tr><td>${fmtDate(r.date||r.id)}</td><td><span class="badge bpurple">${r.type||''}</span></td><td style="color:var(--text)">${r.food_name||r.exercise_type||''}</td><td>${r.calories||''}</td><td>${r.duration?r.duration+' min':''}</td></tr>`).join('')+`</tbody></table>`;
 }
 
@@ -452,27 +452,27 @@ async function loadFinance(){
   const inc=financeData.filter(r=>r.type==='income');
   const tExp=exp.reduce((s,r)=>s+(parseFloat(r.amount)||0),0);
   const tInc=inc.reduce((s,r)=>s+(parseFloat(r.amount)||0),0);
-  document.getElementById('finance-stats').innerHTML=sc('sc-g5','ðµ','Income',fmtRp(tInc),inc.length+' tx')+sc('sc-g3','ð¸','Expense',fmtRp(tExp),exp.length+' tx')+sc(tInc-tExp>=0?'sc-g2':'sc-g3','ð','Net',fmtRp(tInc-tExp),'saldo');
+  document.getElementById('finance-stats').innerHTML=sc('sc-g5','💵','Income',fmtRp(tInc),inc.length+' tx')+sc('sc-g3','💸','Expense',fmtRp(tExp),exp.length+' tx')+sc(tInc-tExp>=0?'sc-g2':'sc-g3','📊','Net',fmtRp(tInc-tExp),'saldo');
   document.getElementById('d-exp').textContent=(tExp/1e6).toFixed(1)+'M';
   const cats={};
   exp.forEach(r=>{const c=r.category||'Other';cats[c]=(cats[c]||0)+(parseFloat(r.amount)||0);});
-  mkChart('chartFinance',{type:'bar',data:{labels:['Income','Expense'],datasets:[{label:'Amount',data:[tInc,tExp],backgroundColor:['rgba(16,185,129,.7)','rgba(236,72,153,.7)'],borderColor:['#10b981','#ec4899'],borderWidth:1,borderRadius:10}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#4a5568'},grid:{display:false}},y:{ticks:{pcolor:'#4a5568'},grid:{pcolor:'rgba(255,255,255,.04)'}}}}}});
-  mkChart('chartFinance2',{type:'bar',data:{labels:Object.keys(cats),datasets:[{label:'Expense',data:Object.values(cats),backgroundColor:PA,borderColor:P,borderWidth:1,borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{pcolor:'#4a5568',font:{size:9}},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#4a5568'},grid:{color:'rgba(255,255,255,.04)'}}}}}});
+  mkChart('chartFinance',{type:'bar',data:{labels:['Income','Expense'],datasets:[{label:'Amount',data:[tInc,tExp],backgroundColor:['rgba(16,185,129,.7)','rgba(236,72,153,.7)'],borderColor:['#10b981','#ec4899'],borderWidth:1,borderRadius:10}]},options:{lresponsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#4a5568'},grid:{display:false}},y:{ticks:{color:'#4a5568'},grid:{color:'rgba(255,255,255,.04)'}}}}});
+  mkChart('chartFinance2',{type:'bar',data:{labels:Object.keys(cats),datasets:[{label:'Expense',data:Object.values(cats),backgroundColor:PA,borderColor:P,borderWidth:1,borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#4a5568',font:{size:9}},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#4a5568'},grid:{color:'rgba(255,255,255,.04)'}}}}});
   const sorted=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
   const maxV=sorted[0]?.[1]||1;
-  document.getElementById('finance-breakdown').innerHTML=sorted.slice(0,5).map(([cat,val],i)=>`<div class="progress-item"><div class="progress-label"><span>${cat}</span><span>${fmtRp(val)}</span></div><div class="progress-bar"><div class="progress-fill" style="width:${Math.round(val/maxV*100)}%;background:${P[i)PP.length]};"></div></div></div>`).join('');
-  if(!financeData.length){document.getElementById('finance-content').innerHTML='<div class="empty"><div class="emoji">ð°</div>Belum ada transaksi.</div>';return;}
-  document.getElementById('finance-content').innerHTML=`<table><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Category</th><th>Description</th></tr></thead><tbody>`+financeData.slice().reverse().slice(0,40).map(r=>`<tr><td>${fmtDate(r.date||r.id)}</td><td><span class="badge ${r.type==='expense'?'bink':'bgreen'}">${r.type||''}</span></td><td style="font-weight:600;color:${r.type==='expense'?'var(--pink)':'var(--green)'}">${fmtRp(r.amount)}</td><td>${r.category||''}</td><td style="color:var(--text3)">${r.description||'').slice(0,40)}</td></tr>`).join('')+`</tbody></table>`;
+  document.getElementById('finance-breakdown').innerHTML=sorted.slice(0,5).map(([cat,val],i)=>`<div class="progress-item"><div class="progress-label"><span>${cat}</span><span>${fmtRp(val)}</span></div><div class="progress-bar"><div class="progress-fill" style="width:${Math.round(val/maxV*100)}%;background:${P[i%P.length]};"></div></div></div>`).join('');
+  if(!financeData.length){document.getElementById('finance-content').innerHTML='<div class="empty"><div class="emoji">💰</div>Belum ada transaksi.</div>';return;}
+  document.getElementById('finance-content').innerHTML=`<table><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Category</th><th>Description</th></tr></thead><tbody>`+financeData.slice().reverse().slice(0,40).map(r=>`<tr><td>${fmtDate(r.date||r.id)}</td><td><span class="badge ${r.type==='expense'?'bpink':'bgreen'}">${r.type||''}</span></td><td style="font-weight:600;color:${r.type==='expense'?'var(--pink)':'var(--green)'}">${fmtRp(r.amount)}</td><td>${r.category||''}</td><td style="color:var(--text3)">$x(r.description||'').slice(0,40)}</td></tr>`).join('')+`</tbody></table>`;
 }
 
 async function loadEnglish(){
   englishData=await fetchSheet('English');
   const cats={};
   englishData.forEach(r=>{const c=r.category||'other';cats[c]=(cats[c]||0)+1;});
-  document.getElementById('english-stats').innerHTML=sc('sc-g1','ð','Total Vocab',englishData.length,'kata')+sc('sc-g2','ð±'.'Minggu Ini',englishData.filter(r=>{try{return new Date(r.date||r.id)>new Date(Date.now()-7*86400000)}catch{return false}}).length,'baru')+sc('sc-g4','ð·ï¸','Kategori',Object.keys(cats).length,'topik)';
+  document.getElementById('english-stats').innerHTML=sc('sc-g1','📖','Total Vocab',englishData.length,'kata')+sc('sc-g2','🌱','Minggu Ini',englishData.filter(r=>{try{return new Date(r.date||r.id)>new Date(Date.now()-7*86400000)}catch{return false}}).length,'baru')+sc('sc-g4','🏷️','Kategori',Object.keys(cats).length,'topik');
   document.getElementById('d-vocab').textContent=englishData.length;
-  mkChart('chartEnglish',{type:'bar',data:{labels:Object.keys(cats),datasets:[{label:'Words',data:Object.values(cats),backgroundColor:PA.slice(0,Object.keys(cats).length),borderColor:P,borderWidth:1,borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#4a5568'},grid:{display:false}},y:{ticks:{color:'#4a5568',stepSize:1},grid:{pcolor:'rgba(255,255,255,.04)'}}}}}});
-  if(!englishData.length){document.getElementById('english-content').innerHTML='<div class="empty"><div class="emoji">ð</div>Belum ada vocab. Coba: "belajar kata resilient"</div>';return;}
+  mkChart('chartEnglish',{type:'bar',data:{labels:Object.keys(cats),datasets:[{label:'Words',data:Object.values(cats),backgroundColor:PA.slice(0,Object.keys(cats).length),borderColor:P,borderWidth:1,borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#4a5568'},grid:{display:false}},y:{ticks:{color:'#4a5568',stepSize:1},grid:{color:'rgba(255,255,255,.04)'}}}}});
+  if(!englishData.length){document.getElementById('english-content').innerHTML='<div class="empty"><div class="emoji">📚</div>Belum ada vocab. Coba: "belajar kata resilient"</div>';return;}
   document.getElementById('english-content').innerHTML='<div class="vocab-grid">'+englishData.slice().reverse().slice(0,30).map(r=>`<div class="vocab-card"><div class="vocab-word">${r.word||''}</div><div class="vocab-trans">${r.translation||''}</div>${r.example?`<div class="vocab-ex">${r.example}</div>`:''}</div>`).join('')+'</div>';
 }
 
@@ -480,19 +480,17 @@ async function loadInvestment(){
   invData=await fetchSheet('Investment');
   const tLot=invData.reduce((s,r)=>s+(parseFloat(r.lot)||0),0);
   const tVal=invData.reduce((s,r)=>s+(parseFloat(r.total_value)||0),0);
-  document.getElementById('investment-stats').innerHTML=sc('sc-g5','ð$.'Holdings',invData.length,'saham')+sc('sc-g2','ð¦','Total Lot',tLot.toLocaleString('id-ID').'lot')+sc('sc-g1','ð°','Portfolio',fmtRp(tVal),'estimasi');
+  document.getElementById('investment-stats').innerHTML=sc('sc-g5','📈','Holdings',invData.length,'saham')+sc('sc-g2','📦','Total Lot',tLot.toLocaleString('id-ID'),'lot')+sc('sc-g1','💰','Portfolio',fmtRp(tVal),'estimasi');
   document.getElementById('d-inv').textContent=invData.length;
   if(invData.length){
-    mkChart('chartInv',{type:'doughnut',data:{labels:invData.map(r=>r.ticker||'?'),datasets:[{data:invData.map(r=>parseFloat(r.lot)||0),backgroundColor:P.slice(0.invData.length),borderColor:'var(--bg2)',borderWidth:-2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{position:
-right',labels:{color:'#8892b0',font:{size:10}}}}}});
-    document.getElementById('inv-top').innerHTML=invData.slice().sort((a,b)=>(parseFloat(b.lot)||0)-(parseFloat(a.lot)||0)).slice(0,5).map((r,i)=>`<div class="activity-item"><div class="adot" style="background:${P[i]};"></div><div><div class="atitle">${r.ticker||'â'} <span style="color:var(--text3);font-size:9px">${r.company||''}</span></div><div class="ameta">${r.lot||0} lot Â· avg ${fmtRp(r.avg_price)}</div></div></div>`).join('');
+    mkChart('chartInv',{type:'doughnut',data:{labels:invData.map(r=>r.ticker||'?'),datasets:[{data:invData.map(r=>parseFloat(r.lot)||0),backgroundColor:P.slice(0,invData.length),borderColor:'var(--bg2)',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{position:'right',labels:{color:'#8892b0',font:{size:10}}}}}});
+    document.getElementById('inv-top').innerHTML=invData.slice().sort((a,b)=>(parseFloat(b.lot)||0)-(parseFloat(a.lot)||0)).slice(0,5).map((r,i)=>`<div class="activity-item"><div class="adot" style="background:${P[i]};"></div><div><div class="atitle">${r.ticker||'—'} <span style="color:var(--text3);font-size:9px">${r.company||''}</span></div><div class="ameta">${r.lot||0} lot · avg ${fmtRp(r.avg_price)}</div></div></div>`).join('');
   }
-  if(!invData.length){document.getElementById('investment-content').innerHTML='<div class="empty"><div class="emoji">ð$/div>Belum ada holdings. Coba: "beli BBRI 10 lot 4200"</div>';return;}
-  document.getElementById('investment-content').innerHTML=`|table><thead><tr><th>Ticker</th><th>Company</th><th>Lot</th><th>Avg Price</th><th>Current</th><th>Total Value</th></tr></thead><tbody>`+invData.map(r=>`<tr><td style="font-weight:700;color:var(--purple)">${r.ticker||''}</td><td style="color:var(--text)">${r.company||''}</td><td>${r.lot||''}</td><td>${fmtRp(r.avg_price)}</td><td>${r.current_price?fmtRp(r.current_price):'â'}</td><td style="color:var(--green)">${r.total_value?fmtRp(r.total_value):'â'}</td></tr>`).join('')+`</tbody></table>`;
+  if(!invData.length){document.getElementById('investment-content').innerHTML='<div class="empty"><div class="emoji">📈</div>Belum ada holdings. Coba: "beli BBRI 10 lot 4200"</div>';return;}
+  document.getElementById('investment-content').innerHTML=`<table><thead><tr><th>Ticker</th><th>Company</th><th>Lot</th><th>Avg Price</th><th>Current</th><th>Total Value</th></tr></thead><tbody>`+invData.map(r=>`<tr><td style="font-weight:700;color:var(--purple)">${r.ticker||''}</td><td style="color:var(--text)">${r.company||''}</td><td>${r.lot||''}</td><td>${fmtRp(r.avg_price)}</td><td>${r.current_price?fmtRp(r.current_price):'—'}</td><td style="color:var(--green)">${r.total_value?fmtRp(r.total_value):'—'}</td></tr>`).join('')+`</tbody></table>`;
 }
 
-// ââ CALENDAR 
-ââ 
+// ── CALENDAR ──
 const EV_COLORS=['ev-purple','ev-blue','ev-pink','ev-yellow','ev-green'];
 let calOffset=0;
 
@@ -513,11 +511,11 @@ function renderCal(){
   const days=weekDates(calOffset);
   const today=new Date();
   const DN=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  document.getElementById('cal-week-label').textContent=`${days[0].toLocaleDateString('id-ID',{day:'numeric',month:'short'})} â ${days[6].toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})}`;
+  document.getElementById('cal-week-label').textContent=`${days[0].toLocaleDateString('id-ID',{day:'numeric',month:'short'})} – ${days[6].toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})}`;
   document.getElementById('cal-week-grid').innerHTML=days.map((d,i)=>{
     const isTd=d.toDateString()===today.toDateString();
     const evs=calData.filter(e=>{try{return new Date(e.date).toDateString()===d.toDateString()}catch{return false}});
-    return`<div class="cal-day${isTd?' today':''}"><div class="cal-dl">${DN[i]}</div><div class="cal-dn">${d.getDate()}</div>${evs.map((e,j)=>`<div class="cal-ev ${EVICOLORS[j%EV_COLORS.length]}">${e.time?e.time+' ':''}${e.title||'Event'}</div>`).join('')}</div>`;
+    return`<div class="cal-day${isTd?' today':''}"><div class="cal-dl">${DN[i]}</div><div class="cal-dn">${d.getDate()}</div>${evs.map((e,j)=>`<div class="cal-ev ${EV_COLORS[j%EV_COLORS.length]}">${e.time?e.time+' ':''}${e.title||'Event'}</div>`).join('')}</div>`;
   }).join('');
 }
 
@@ -525,24 +523,24 @@ function renderUpcoming(){
   const now=new Date();
   const up=calData.filter(e=>{try{return new Date(e.date)>=new Date(now.toDateString())}catch{return false}}).sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(0,10);
   document.getElementById('cal-event-count').textContent=up.length;
-  if(!up.length){document.getElementById('cal-upcoming').innerHTML='<div class="empty"><div class="emoji">ð</div>Belum ada upcoming events.<br/<small>Coba: "Eina, meeting jam 10 tanggal 5 Juli"</small></div>';return;}
+  if(!up.length){document.getElementById('cal-upcoming').innerHTML='<div class="empty"><div class="emoji">📅</div>Belum ada upcoming events.<br><small>Coba: "Eina, meeting jam 10 tanggal 5 Juli"</small></div>';return;}
   document.getElementById('cal-upcoming').innerHTML=up.map(e=>{
     const d=new Date(e.date);
-    return`<div class="upcoming-event"><div class="ev-date-box"><div class="ev-day">${d.getDate()}</div><div class="ev-month">${d.toLocaleDateString('en',{month:'short'})}</div></div><div style="flex:1"><div class="ev-title">${e.title||'Event'}</div>${e.time?`<div class="ev-time">ð ${e.time}</div>`:''} ${e.location?`<div class="ev-loc">ð ${e.location}</div>`:''}</div></div>`;
+    return`<div class="upcoming-event"><div class="ev-date-box"><div class="ev-day">${d.getDate()}</div><div class="ev-month">${d.toLocaleDateString('en',{month:'short'})}</div></div><div style="flex:1"><div class="ev-title">${e.title||'Event'}</div>${e.time?`<div class="ev-time">🕐 ${e.time}</div>`:''} ${e.location?`<div class="ev-loc">📍 ${e.location}</div>`:''}</div></div>`;
   }).join('');
 }
 
 function renderCalChart(){
   const m={};
   calData.forEach(e=>{try{const mn=new Date(e.date).toLocaleDateString('en',{month:'short'});m[mn]=(m[mn]||0)+1}catch{}});
-  mkChart('chartCalEventp',{type:'bar',data:{labels:Object.keys(m),datasets:[{label:'Events',data:Object.values(m),backgroundColor:PA,borderColor:P,borderWidth:1,borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#4a5568'},grid:{display:false}},y:{ticks:{color:'#4a5568',stepSize:1},grid:{color:'rgba(255,255,255,.04)'}}}}});
+  mkChart('chartCalEvents',{type:'bar',data:{labels:Object.keys(m),datasets:[{label:'Events',data:Object.values(m),backgroundColor:PA,borderColor:P,borderWidth:1,borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#4a5568'},grid:{display:false}},y:{ticks:{color:'#4a5568',stepSize:1},grid:{color:'rgba(255,255,255,.04)'}}}}});
 }
 
 function renderDashEvents(){
   const now=new Date();
   const up=calData.filter(e=>{try{return new Date(e.date)>=new Date(now.toDateString())}catch{return false}}).sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(0,3);
   document.getElementById('d-cal-badge').textContent=up.length+' upcoming';
-  if(!up.length){document.getElementById('dash-events').innerHTML='<div class="empty"><div class="emoji">ð</div>Belum ada events. Coba kirim ke Eina-chan!</div>';return;}
+  if(!up.length){document.getElementById('dash-events').innerHTML='<div class="empty"><div class="emoji">📅</div>Belum ada events. Coba kirim ke Eina-chan!</div>';return;}
   document.getElementById('dash-events').innerHTML=`<div style="display:grid;grid-template-columns:repeat(${Math.min(up.length,3)},1fr);gap:10px;">${up.map(e=>{const d=new Date(e.date);return`<div class="upcoming-event"><div class="ev-date-box"><div class="ev-day">${d.getDate()}</div><div class="ev-month">${d.toLocaleDateString('en',{month:'short'})}</div></div><div><div class="ev-title" style="font-size:11px">${e.title||'Event'}</div>${e.time?`<div class="ev-time">${e.time}</div>`:''}</div></div>`;}).join('')}</div>`;
 }
 
@@ -550,7 +548,7 @@ function prevWeek(){calOffset--;renderCal();}
 function nextWeek(){calOffset++;renderCal();}
 function todayWeek(){calOffset=0;renderCal();}
 
-// ââ KANBAN ââ
+// ── KANBAN ──
 const COL_NEXT={draft:'inp',inp:'edit',edit:'done',done:null};
 const COL_PREV={draft:null,inp:'draft',edit:'inp',done:'edit'};
 const COL_LBL={draft:'Draft',inp:'In Progress',edit:'Editing',done:'Done'};
@@ -575,9 +573,9 @@ function renderKanban(){
         <div class="kc-title">${t.title}</div>
         ${ts?`<div class="kc-timer ${t.startedAt?'active':''}"><div class="tdot ${t.startedAt?'active':''}"></div>${ts}</div>`:''}
         <div class="kc-actions">
-          ${prv?`<button class="kc-btn kc-prev" onclick="mvCard('${t.id}','${prv}')">â ${COL_LBL[prv]}</button>`:''}
-          ${nxt?`<button class="kc-btn kc-next" onclick="mvCard('${t.id}','${nxt}')">${COL_LBL[nxt]} â</button>`:''}
-          <button class="kc-btn kc-del" onclick="delCard('${t.id}')">â</button>
+          ${prv?`<button class="kc-btn kc-prev" onclick="mvCard('${t.id}','${prv}')">← ${COL_LBL[prv]}</button>`:''}
+          ${nxt?`<button class="kc-btn kc-next" onclick="mvCard('${t.id}','${nxt}')">${COL_LBL[nxt]} →</button>`:''}
+          <button class="kc-btn kc-del" onclick="delCard('${t.id}')">✕</button>
         </div>
       </div>`;
     }).join('');
@@ -621,16 +619,16 @@ function renderKtChart(){
 
 function buildDashActivity(){
   const items=[];
-  tasksData.slice().reverse().slice(0,3).forEach(r=>items.push({dot:'#8b5cf6',t:r.title||'Task',m:'Task Â· '+(r.status||'')+' Â· '+fmtDate(r.created_at||r.id)}));
-  healthData.slice().reverse().slice(0,2).forEach(r=>items.push({dot:r.type==='food'?'#10b981':'#3b82f6',t:(r.food_name||r.exercise_type||r.type||'Health'),m:(r.type||'health')+' Â· '+fmtDate(r.date||r.id)}));
-  financeData.slice().reverse().slice(0,2).forEach(r=>items.push({dot:r.type==='income'?'#10b981':'#ec4899',t:(r.description||r.category||'Transaksi'),m:r.type+' Â· '+fmtRp(r.amount)+' Â· '+fmtDate(r.date||r.id)}));
-  if(!items.length){document.getElementById('dash-activity').innerHTML='<div class="empty"><div class="emoji">ð¡</div>Belum ada aktivitas.</div>';return;}
+  tasksData.slice().reverse().slice(0,3).forEach(r=>items.push({dot:'#8b5cf6',t:r.title||'Task',m:'Task · '+(r.status||'')+' · '+fmtDate(r.created_at||r.id)}));
+  healthData.slice().reverse().slice(0,2).forEach(r=>items.push({dot:r.type==='food'?'#10b981':'#3b82f6',t:(r.food_name||r.exercise_type||r.type||'Health'),m:(r.type||'health')+' · '+fmtDate(r.date||r.id)}));
+  financeData.slice().reverse().slice(0,2).forEach(r=>items.push({dot:r.type==='income'?'#10b981':'#ec4899',t:(r.description||r.category||'Transaksi'),m:r.type+' · '+fmtRp(r.amount)+' · '+fmtDate(r.date||r.id)}));
+  if(!items.length){document.getElementById('dash-activity').innerHTML='<div class="empty"><div class="emoji">📡</div>Belum ada aktivitas.</div>';return;}
   document.getElementById('dash-activity').innerHTML=items.slice(0,7).map(i=>`<div class="activity-item"><div class="adot" style="background:${i.dot};box-shadow:0 0 6px ${i.dot}55;"></div><div><div class="atitle">${i.t}</div><div class="ameta">${i.m}</div></div></div>`).join('');
 }
 
 const pageMeta={
   dashboard:['Dashboard','Ringkasan semua aktivitas kamu hari ini'],
-  calendar:['Calendar','Events & jadwal â dari Eina-chan dan manual'],
+  calendar:['Calendar','Events & jadwal — dari Eina-chan dan manual'],
   tracker:['Time Tracker','Kanban board & time management'],
   health:['Health','Log makanan & olahraga'],
   finance:['Finance','Income & expense tracker'],
