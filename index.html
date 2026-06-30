@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission Control — Aldy</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f0f; color: #e0e0e0; min-height: 100vh; }
+  header { padding: 20px 24px; border-bottom: 1px solid #1e1e1e; display: flex; align-items: center; justify-content: space-between; }
+  header h1 { font-size: 16px; font-weight: 600; color: #fff; letter-spacing: 0.5px; }
+  header span { font-size: 12px; color: #555; }
+  nav { display: flex; gap: 4px; padding: 16px 24px 0; border-bottom: 1px solid #1e1e1e; overflow-x: auto; }
+  nav button { background: none; border: none; padding: 8px 16px; font-size: 13px; color: #666; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.15s; }
+  nav button:hover { color: #ccc; }
+  nav button.active { color: #fff; border-bottom-color: #4f8ef7; }
+  main { padding: 24px; max-width: 1100px; }
+  .section { display: none; }
+  .section.active { display: block; }
+  h2 { font-size: 14px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 8px 12px; color: #555; font-weight: 500; border-bottom: 1px solid #1e1e1e; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+  td { padding: 10px 12px; border-bottom: 1px solid #161616; color: #ccc; vertical-align: top; }
+  tr:hover td { background: #141414; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; }
+  .badge-todo { background: #1e2a1e; color: #4caf50; }
+  .badge-done { background: #1a1a2e; color: #4f8ef7; }
+  .badge-food { background: #2a1e1e; color: #ff7043; }
+  .badge-workout { background: #1e2a2a; color: #26c6da; }
+  .badge-expense { background: #2a1e1e; color: #ef5350; }
+  .badge-income { background: #1e2a1e; color: #66bb6a; }
+  .badge-buy { background: #1e2a1e; color: #66bb6a; }
+  .badge-sell { background: #2a1e1e; color: #ef5350; }
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .stat { background: #141414; border: 1px solid #1e1e1e; border-radius: 8px; padding: 16px; }
+  .stat-label { font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .stat-value { font-size: 24px; font-weight: 600; color: #fff; }
+  .stat-sub { font-size: 11px; color: #555; margin-top: 4px; }
+  .loading { color: #444; font-size: 13px; padding: 40px 0; text-align: center; }
+  .error { color: #ef5350; font-size: 13px; padding: 20px 0; }
+  .refresh-btn { background: #1e1e1e; border: 1px solid #2a2a2a; color: #888; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; }
+  .refresh-btn:hover { color: #ccc; border-color: #444; }
+  .word-card { background: #141414; border: 1px solid #1e1e1e; border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; }
+  .word-en { font-size: 16px; font-weight: 600; color: #fff; }
+  .word-id { font-size: 13px; color: #4f8ef7; margin-top: 2px; }
+  .word-def { font-size: 12px; color: #666; margin-top: 6px; }
+  .word-ex { font-size: 12px; color: #888; font-style: italic; margin-top: 4px; border-left: 2px solid #2a2a2a; padding-left: 8px; }
+  .word-cat { display: inline-block; margin-top: 6px; padding: 1px 6px; background: #1e1e2e; color: #7e8ef7; border-radius: 3px; font-size: 10px; }
+  .empty { color: #333; font-size: 13px; padding: 40px 0; text-align: center; }
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: #0f0f0f; }
+  ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚡ Mission Control</h1>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <span id="last-updated">Loading...</span>
+    <button class="refresh-btn" onclick="loadAll()">↻ Refresh</button>
+  </div>
+</header>
+
+<nav>
+  <button class="active" onclick="switchTab('tasks',this)">Tasks</button>
+  <button onclick="switchTab('health',this)">Health</button>
+  <button onclick="switchTab('finance',this)">Finance</button>
+  <button onclick="switchTab('english',this)">English</button>
+  <button onclick="switchTab('investment',this)">Investment</button>
+</nav>
+
+<main>
+  <!-- TASKS -->
+  <div id="tab-tasks" class="section active">
+    <div class="stat-grid" id="tasks-stats"></div>
+    <h2>Active Tasks</h2>
+    <div id="tasks-content"><div class="loading">Loading...</div></div>
+  </div>
+
+  <!-- HEALTH -->
+  <div id="tab-health" class="section">
+    <div class="stat-grid" id="health-stats"></div>
+    <h2>Recent Logs</h2>
+    <div id="health-content"><div class="loading">Loading...</div></div>
+  </div>
+
+  <!-- FINANCE -->
+  <div id="tab-finance" class="section">
+    <div class="stat-grid" id="finance-stats"></div>
+    <h2>Transactions</h2>
+    <div id="finance-content"><div class="loading">Loading...</div></div>
+  </div>
+
+  <!-- ENGLISH -->
+  <div id="tab-english" class="section">
+    <div class="stat-grid" id="english-stats"></div>
+    <h2>Vocab Bank</h2>
+    <div id="english-content"><div class="loading">Loading...</div></div>
+  </div>
+
+  <!-- INVESTMENT -->
+  <div id="tab-investment" class="section">
+    <div class="stat-grid" id="investment-stats"></div>
+    <h2>Portfolio</h2>
+    <div id="investment-content"><div class="loading">Loading...</div></div>
+  </div>
+</main>
+
+<script>
+const SHEET_ID = '14v4tgA0bEZbtcDd-WUBC9kZIOCq03lHiHb602uwSi9g';
+const BASE = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=`;
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+async function fetchSheet(sheet) {
+  const url = BASE + encodeURIComponent(sheet);
+  const res = await fetch(url);
+  const text = await res.text();
+  // Google wraps response in /*O_o*/ google.visualization.Query.setResponse({...});
+  const json = JSON.parse(text.slice(47, -2));
+  if (!json.table) return [];
+  const cols = json.table.cols.map(c => c.label);
+  return (json.table.rows || []).map(row => {
+    const obj = {};
+    cols.forEach((col, i) => {
+      obj[col] = row.c[i] ? (row.c[i].f || row.c[i].v) : '';
+    });
+    return obj;
+  });
+}
+
+function fmtDate(d) {
+  if (!d) return '';
+  try {
+    return new Date(d).toLocaleDateString('id-ID', {day:'numeric',month:'short'});
+  } catch { return d; }
+}
+
+function truncate(s, n=40) {
+  if (!s) return '';
+  return s.length > n ? s.slice(0, n) + '…' : s;
+}
+
+function stat(label, value, sub='') {
+  return `<div class="stat"><div class="stat-label">${label}</div><div class="stat-value">${value}</div>${sub ? `<div class="stat-sub">${sub}</div>` : ''}</div>`;
+}
+
+// TASKS
+async function loadTasks() {
+  try {
+    const rows = await fetchSheet('Tasks');
+    const todo = rows.filter(r => r.status === 'todo');
+    const done = rows.filter(r => r.status === 'done');
+    document.getElementById('tasks-stats').innerHTML =
+      stat('Total', rows.length) +
+      stat('Todo', todo.length, 'active') +
+      stat('Done', done.length, 'completed');
+
+    if (!rows.length) { document.getElementById('tasks-content').innerHTML = '<div class="empty">No tasks yet. Send a task to Eina-chan!</div>'; return; }
+
+    const html = `<table><thead><tr><th>Title</th><th>Category</th><th>Status</th><th>Created</th></tr></thead><tbody>` +
+      rows.slice().reverse().map(r => `<tr>
+        <td>${r.title || ''}</td>
+        <td>${r.category || ''}</td>
+        <td><span class="badge ${r.status === 'todo' ? 'badge-todo' : 'badge-done'}">${r.status || ''}</span></td>
+        <td>${fmtDate(r.created_at)}</td>
+      </tr>`).join('') + `</tbody></table>`;
+    document.getElementById('tasks-content').innerHTML = html;
+  } catch(e) {
+    document.getElementById('tasks-content').innerHTML = `<div class="error">Error loading. Make sure the sheet is shared publicly. ${e.message}</div>`;
+  }
+}
+
+// HEALTH
+async function loadHealth() {
+  try {
+    const rows = await fetchSheet('Health');
+    const food = rows.filter(r => r.type === 'food');
+    const workout = rows.filter(r => r.type === 'workout');
+    const totalCal = food.reduce((s, r) => s + (parseFloat(r.calories) || 0), 0);
+    document.getElementById('health-stats').innerHTML =
+      stat('Food Logs', food.length, 'entries') +
+      stat('Workout Logs', workout.length, 'entries') +
+      stat('Total Calories', Math.round(totalCal).toLocaleString(), 'from food logs');
+
+    if (!rows.length) { document.getElementById('health-content').innerHTML = '<div class="empty">No health logs yet.</div>'; return; }
+
+    const html = `<table><thead><tr><th>Date</th><th>Type</th><th>Name</th><th>Calories</th><th>Duration</th></tr></thead><tbody>` +
+      rows.slice().reverse().slice(0, 50).map(r => `<tr>
+        <td>${fmtDate(r.date || r.id)}</td>
+        <td><span class="badge ${r.type === 'food' ? 'badge-food' : 'badge-workout'}">${r.type || ''}</span></td>
+        <td>${r.food_name || r.exercise_type || ''}</td>
+        <td>${r.calories || ''}</td>
+        <td>${r.duration ? r.duration + ' min' : ''}</td>
+      </tr>`).join('') + `</tbody></table>`;
+    document.getElementById('health-content').innerHTML = html;
+  } catch(e) {
+    document.getElementById('health-content').innerHTML = `<div class="error">Error loading. ${e.message}</div>`;
+  }
+}
+
+// FINANCE
+async function loadFinance() {
+  try {
+    const rows = await fetchSheet('Finance');
+    const expense = rows.filter(r => r.type === 'expense');
+    const income = rows.filter(r => r.type === 'income');
+    const totalExp = expense.reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
+    const totalInc = income.reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
+    document.getElementById('finance-stats').innerHTML =
+      stat('Income', 'Rp' + Math.round(totalInc).toLocaleString('id-ID'), income.length + ' entries') +
+      stat('Expense', 'Rp' + Math.round(totalExp).toLocaleString('id-ID'), expense.length + ' entries') +
+      stat('Net', 'Rp' + Math.round(totalInc - totalExp).toLocaleString('id-ID'), 'balance');
+
+    if (!rows.length) { document.getElementById('finance-content').innerHTML = '<div class="empty">No transactions yet.</div>'; return; }
+
+    const html = `<table><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Category</th><th>Description</th></tr></thead><tbody>` +
+      rows.slice().reverse().slice(0, 50).map(r => `<tr>
+        <td>${fmtDate(r.date || r.id)}</td>
+        <td><span class="badge ${r.type === 'expense' ? 'badge-expense' : 'badge-income'}">${r.type || ''}</span></td>
+        <td>Rp${parseFloat(r.amount || 0).toLocaleString('id-ID')}</td>
+        <td>${r.category || ''}</td>
+        <td>${truncate(r.description, 50)}</td>
+      </tr>`).join('') + `</tbody></table>`;
+    document.getElementById('finance-content').innerHTML = html;
+  } catch(e) {
+    document.getElementById('finance-content').innerHTML = `<div class="error">Error loading. ${e.message}</div>`;
+  }
+}
+
+// ENGLISH
+async function loadEnglish() {
+  try {
+    const rows = await fetchSheet('English');
+    document.getElementById('english-stats').innerHTML =
+      stat('Words Logged', rows.length, 'via Eina-chan') +
+      stat('This Week', rows.filter(r => {
+        try { return new Date(r.date || r.id) > new Date(Date.now() - 7*86400000); } catch { return false; }
+      }).length, 'new words') +
+      stat('Categories', [...new Set(rows.map(r => r.category).filter(Boolean))].length, 'topics');
+
+    if (!rows.length) { document.getElementById('english-content').innerHTML = '<div class="empty">No vocab yet. Try: "belajar kata resilient artinya tangguh"</div>'; return; }
+
+    const html = rows.slice().reverse().slice(0, 30).map(r => `
+      <div class="word-card">
+        <div class="word-en">${r.word || ''}</div>
+        <div class="word-id">${r.translation || ''}</div>
+        ${r.definition ? `<div class="word-def">${r.definition}</div>` : ''}
+        ${r.example ? `<div class="word-ex">${r.example}</div>` : ''}
+        ${r.category ? `<span class="word-cat">${r.category}</span>` : ''}
+      </div>`).join('');
+    document.getElementById('english-content').innerHTML = html;
+  } catch(e) {
+    document.getElementById('english-content').innerHTML = `<div class="error">Error loading. ${e.message}</div>`;
+  }
+}
+
+// INVESTMENT
+async function loadInvestment() {
+  try {
+    const rows = await fetchSheet('Investment');
+    const totalLot = rows.reduce((s, r) => s + (parseFloat(r.lot) || 0), 0);
+    document.getElementById('investment-stats').innerHTML =
+      stat('Holdings', rows.length, 'stocks') +
+      stat('Total Lot', totalLot.toLocaleString('id-ID'), 'lots held') +
+      stat('Last Update', rows.length ? fmtDate(rows[rows.length-1].last_updated) : '-', '');
+
+    if (!rows.length) { document.getElementById('investment-content').innerHTML = '<div class="empty">No holdings yet. Try: "beli BBRI 10 lot harga 4200"</div>'; return; }
+
+    const html = `<table><thead><tr><th>Ticker</th><th>Company</th><th>Lot</th><th>Avg Price</th><th>Current</th><th>Total Value</th><th>Updated</th></tr></thead><tbody>` +
+      rows.map(r => `<tr>
+        <td style="font-weight:600;color:#fff">${r.ticker || ''}</td>
+        <td>${r.company || ''}</td>
+        <td>${r.lot || ''}</td>
+        <td>Rp${parseFloat(r.avg_price || 0).toLocaleString('id-ID')}</td>
+        <td>${r.current_price ? 'Rp' + parseFloat(r.current_price).toLocaleString('id-ID') : '-'}</td>
+        <td>${r.total_value ? 'Rp' + parseFloat(r.total_value).toLocaleString('id-ID') : '-'}</td>
+        <td>${fmtDate(r.last_updated)}</td>
+      </tr>`).join('') + `</tbody></table>`;
+    document.getElementById('investment-content').innerHTML = html;
+  } catch(e) {
+    document.getElementById('investment-content').innerHTML = `<div class="error">Error loading. ${e.message}</div>`;
+  }
+}
+
+async function loadAll() {
+  document.getElementById('last-updated').textContent = 'Refreshing...';
+  await Promise.all([loadTasks(), loadHealth(), loadFinance(), loadEnglish(), loadInvestment()]);
+  document.getElementById('last-updated').textContent = 'Updated ' + new Date().toLocaleTimeString('id-ID');
+}
+
+loadAll();
+</script>
+</body>
+</html>
