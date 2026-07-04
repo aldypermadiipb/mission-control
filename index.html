@@ -257,6 +257,65 @@ tr:hover td{background:#f9fafb;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
 .add-col-btn{display:flex;align-items:center;gap:5px;padding:7px;border-radius:7px;border:1px dashed var(--border);color:var(--text3);cursor:pointer;font-size:10px;font-weight:500;transition:all .15s;margin-top:7px;background:transparent;width:100%;}
 .add-col-btn:hover{border-color:var(--indigo);color:var(--indigo);}
+
+/* ── TIME TRACKER TAB ── */
+.tt-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+.tt-title-wrap{flex:1;}
+.tt-title{font-size:22px;font-weight:700;color:var(--text);}
+.tt-subtitle{font-size:13px;color:var(--text2);margin-top:2px;}
+.tt-controls{display:flex;align-items:center;gap:8px;}
+.tt-date-pick{padding:7px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);background:#fff;cursor:pointer;}
+.tt-filter-btn{padding:7px 14px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-weight:500;color:var(--text2);background:#fff;cursor:pointer;}
+.tt-add-btn{padding:8px 16px;border:none;border-radius:8px;font-size:13px;font-weight:600;color:#fff;background:var(--indigo);cursor:pointer;}
+.tt-add-btn:hover{background:var(--indigo2);}
+.tt-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px;}
+.tt-stat{background:#fff;border-radius:14px;padding:16px;box-shadow:var(--shadow);}
+.tts-label{font-size:11px;color:var(--text2);font-weight:500;margin-bottom:6px;}
+.tts-val{font-size:26px;font-weight:800;color:var(--text);line-height:1;}
+.tts-sub{font-size:10px;color:var(--text3);margin-top:4px;}
+.tt-kanban-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.kcol.drag-over{background:#f0fdf4;border-color:#10b981;}
+.kcard.dragging{opacity:.4;}
+.kc-deadline{font-size:9px;color:var(--text3);margin-top:3px;}
+.kc-deadline.overdue{color:#ef4444;}
+.kc-est{font-size:9px;color:var(--text3);margin-top:2px;}
+.pri-high{display:inline-flex;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:700;background:#fef2f2;color:#ef4444;flex-shrink:0;}
+.pri-medium{display:inline-flex;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:700;background:#eff6ff;color:#3b82f6;flex-shrink:0;}
+.pri-low{display:inline-flex;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:700;background:#f3f4f6;color:#6b7280;flex-shrink:0;}
+.cat-badge{display:inline-flex;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:600;background:#f5f3ff;color:#8b5cf6;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;}
+.modal-overlay.hidden{display:none;}
+.modal-box{background:#fff;border-radius:20px;padding:28px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:20px;}
+.form-group{margin-bottom:14px;}
+.form-label{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;display:block;}
+.form-input{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:9px;font-size:13px;color:var(--text);outline:none;transition:border-color .15s;background:#fff;}
+.form-input:focus{border-color:var(--indigo);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;}
+.btn-cancel{padding:9px 20px;border:1px solid var(--border);border-radius:9px;font-size:13px;font-weight:600;color:var(--text2);background:#fff;cursor:pointer;}
+.btn-save{padding:9px 24px;border:none;border-radius:9px;font-size:13px;font-weight:600;color:#fff;background:var(--indigo);cursor:pointer;}
+.btn-save:hover{background:var(--indigo2);}
+.btn-save:disabled{opacity:.5;cursor:not-allowed;}
+.prod-score-card{background:linear-gradient(135deg,#f5f3ff 0%,#ede9fe 100%);border:1px solid #ddd6fe;border-radius:16px;padding:24px;display:flex;align-items:center;gap:24px;margin-bottom:14px;flex-wrap:wrap;}
+.prod-ring-wrap{flex-shrink:0;text-align:center;position:relative;}
+.prod-ring-val{font-size:24px;font-weight:800;color:var(--indigo);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);white-space:nowrap;}
+.prod-ring-label{font-size:11px;color:var(--text2);margin-top:6px;}
+.prod-insight{flex:1;min-width:200px;}
+.prod-label{font-size:12px;font-weight:600;color:var(--indigo);margin-bottom:6px;}
+.prod-text{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.prod-sub{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:10px;}
+.prod-bars{display:flex;flex-direction:column;gap:6px;}
+.prod-bar-item{display:grid;grid-template-columns:110px 1fr 35px;align-items:center;gap:8px;}
+.prod-bar-label{font-size:10px;color:var(--text2);}
+.prod-bar-bg{height:5px;background:#e5e7eb;border-radius:3px;overflow:hidden;}
+.prod-bar-fill{height:100%;border-radius:3px;background:var(--indigo);transition:width 1s ease;}
+.prod-bar-pct{font-size:10px;color:var(--text2);text-align:right;}
+.analytics-grid{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px;}
+.top-act-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f3f4f6;}
+.top-act-item:last-child{border-bottom:none;}
+.top-act-rank{width:22px;height:22px;border-radius:50%;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--text2);flex-shrink:0;}
+
 .cal-week{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:12px;}
 .cal-day{background:#f9fafb;border:1px solid var(--border);border-radius:9px;padding:7px;min-height:75px;}
 .cal-day.today{border-color:var(--indigo);background:#eef2ff;}
@@ -548,40 +607,116 @@ tr:hover td{background:#f9fafb;}
 
     <!-- ── TIME TRACKER ── -->
     <div id="tab-tracker" class="section">
-      <div class="stat-grid sg4" style="margin-bottom:14px;">
-        <div class="stat-card-col sc-g1"><div class="sc-content"><span class="sc-icon">📋</span><div class="sc-label-t">Total Tasks</div><div class="sc-value-t" id="tt-total">0</div><div class="sc-sub-t">semua kolom</div></div></div>
-        <div class="stat-card-col sc-g2"><div class="sc-content"><span class="sc-icon">⚡</span><div class="sc-label-t">In Progress</div><div class="sc-value-t" id="tt-inp">0</div><div class="sc-sub-t">sedang berjalan</div></div></div>
-        <div class="stat-card-col sc-g4"><div class="sc-content"><span class="sc-icon">✏️</span><div class="sc-label-t">Editing</div><div class="sc-value-t" id="tt-edit">0</div><div class="sc-sub-t">dalam review</div></div></div>
-        <div class="stat-card-col sc-g5"><div class="sc-content"><span class="sc-icon">✅</span><div class="sc-label-t">Done Today</div><div class="sc-value-t" id="tt-done">0</div><div class="sc-sub-t">selesai hari ini</div></div></div>
+
+      <!-- Header -->
+      <div class="tt-header">
+        <div class="tt-title-wrap">
+          <div class="tt-title">Time Tracker</div>
+          <div class="tt-subtitle">Kelola waktu dan tingkatkan produktivitas</div>
+        </div>
+        <div class="tt-controls">
+          <input type="date" class="tt-date-pick" id="tt-date-filter" onchange="renderTracker()">
+          <button class="tt-filter-btn" onclick="clearTrackerFilter()">Clear Filter</button>
+          <button class="tt-add-btn" onclick="openTaskModal(null,'draft')">+ Add Task</button>
+        </div>
       </div>
-      <div class="kanban-hdr">
-        <span style="font-size:13px;font-weight:700;">🗂️ Kanban Board</span>
-        <button class="btn btn-purple" onclick="addCard('draft')">+ Add Task</button>
+
+      <!-- Summary stat cards -->
+      <div class="tt-stats">
+        <div class="tt-stat"><div class="tts-label">Total Tasks</div><div class="tts-val" id="tts-total">—</div><div class="tts-sub">semua kolom</div></div>
+        <div class="tt-stat"><div class="tts-label">In Progress</div><div class="tts-val" id="tts-inp" style="color:#3b82f6;">—</div><div class="tts-sub">sedang dikerjakan</div></div>
+        <div class="tt-stat"><div class="tts-label">Review</div><div class="tts-val" id="tts-rev" style="color:#f59e0b;">—</div><div class="tts-sub">menunggu review</div></div>
+        <div class="tt-stat"><div class="tts-label">Done Today</div><div class="tts-val" id="tts-done" style="color:#10b981;">—</div><div class="tts-sub">selesai hari ini</div></div>
+        <div class="tt-stat"><div class="tts-label">Estimasi Total</div><div class="tts-val" id="tts-time">—</div><div class="tts-sub">menit (estimasi)</div></div>
+      </div>
+
+      <!-- Kanban Board -->
+      <div class="tt-kanban-hdr">
+        <span style="font-size:14px;font-weight:700;color:var(--text);">🗂️ Kanban Board</span>
+        <span style="font-size:12px;color:var(--text3);">Drag &amp; drop untuk pindah status</span>
       </div>
       <div class="kanban-board">
-        <div class="kcol col-draft">
+        <div class="kcol col-draft" id="kcol-draft"
+          ondragover="event.preventDefault();dragOverCol(this)"
+          ondrop="dropCard(event,'draft')"
+          ondragleave="dragLeaveCol(this)">
           <div class="kcol-hdr"><span class="kcol-title">Draft</span><span class="kcol-cnt" id="cnt-draft">0</span></div>
           <div class="kcards" id="cards-draft"></div>
-          <button class="add-col-btn" onclick="addCard('draft')">+ Add card</button>
+          <button class="add-col-btn" onclick="openTaskModal(null,'draft')">+ Add card</button>
         </div>
-        <div class="kcol col-inp">
-          <div class="kcol-hdr"><span class="kcol-title">In Progress</span><span class="kcol-cnt" id="cnt-inp">0</span></div>
-          <div class="kcards" id="cards-inp"></div>
-          <button class="add-col-btn" onclick="addCard('inp')">+ Add card</button>
+        <div class="kcol col-inp" id="kcol-in_progress"
+          ondragover="event.preventDefault();dragOverCol(this)"
+          ondrop="dropCard(event,'in_progress')"
+          ondragleave="dragLeaveCol(this)">
+          <div class="kcol-hdr"><span class="kcol-title">In Progress</span><span class="kcol-cnt" id="cnt-in_progress">0</span></div>
+          <div class="kcards" id="cards-in_progress"></div>
+          <button class="add-col-btn" onclick="openTaskModal(null,'in_progress')">+ Add card</button>
         </div>
-        <div class="kcol col-edit">
-          <div class="kcol-hdr"><span class="kcol-title">Editing</span><span class="kcol-cnt" id="cnt-edit">0</span></div>
-          <div class="kcards" id="cards-edit"></div>
-          <button class="add-col-btn" onclick="addCard('edit')">+ Add card</button>
+        <div class="kcol col-edit" id="kcol-review"
+          ondragover="event.preventDefault();dragOverCol(this)"
+          ondrop="dropCard(event,'review')"
+          ondragleave="dragLeaveCol(this)">
+          <div class="kcol-hdr"><span class="kcol-title">Review</span><span class="kcol-cnt" id="cnt-review">0</span></div>
+          <div class="kcards" id="cards-review"></div>
+          <button class="add-col-btn" onclick="openTaskModal(null,'review')">+ Add card</button>
         </div>
-        <div class="kcol col-done">
+        <div class="kcol col-done" id="kcol-done"
+          ondragover="event.preventDefault();dragOverCol(this)"
+          ondrop="dropCard(event,'done')"
+          ondragleave="dragLeaveCol(this)">
           <div class="kcol-hdr"><span class="kcol-title">Done</span><span class="kcol-cnt" id="cnt-done">0</span></div>
           <div class="kcards" id="cards-done"></div>
         </div>
       </div>
-      <div class="panel" style="margin-top:14px;">
-        <div class="panel-header"><span class="panel-title">Weekly Activity</span><span class="panel-badge bblue">This Week</span></div>
-        <div class="chart-wrap chart-md"><canvas id="chartTracker"></canvas></div>
+
+      <!-- Analytics -->
+      <div style="margin-top:20px;">
+        <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:12px;">📊 Productivity Analytics</div>
+
+        <!-- Productivity Score Card -->
+        <div class="prod-score-card">
+          <div class="prod-ring-wrap">
+            <svg style="transform:rotate(-90deg);display:block;" width="90" height="90" viewBox="0 0 90 90">
+              <circle cx="45" cy="45" r="36" fill="none" stroke="#ddd6fe" stroke-width="8"/>
+              <circle id="prod-ring-circle" cx="45" cy="45" r="36" fill="none" stroke="#6366f1" stroke-width="8"
+                stroke-dasharray="226.2" stroke-dashoffset="226.2" stroke-linecap="round"/>
+            </svg>
+            <div class="prod-ring-val" id="prod-score-val">0</div>
+            <div class="prod-ring-label">Score</div>
+          </div>
+          <div class="prod-insight">
+            <div class="prod-label">✨ AI Insight (rule-based)</div>
+            <div class="prod-text" id="prod-insight-title">Memuat data...</div>
+            <div class="prod-sub" id="prod-insight-sub"></div>
+            <div class="prod-bars" id="prod-bars"></div>
+          </div>
+        </div>
+
+        <!-- Charts row -->
+        <div class="analytics-grid">
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">Weekly Activity</span><span class="panel-badge bblue">7 Hari</span></div>
+            <div class="chart-wrap chart-md"><canvas id="chartTrackerWeekly"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">Estimasi by Category</span></div>
+            <div style="display:flex;align-items:center;justify-content:center;height:210px;">
+              <canvas id="chartTrackerDonut" style="max-height:200px;max-width:200px;"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Activities -->
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">Top Activities (by Estimasi)</span></div>
+          <div id="top-activities"><div class="loading">Loading...</div></div>
+        </div>
+      </div>
+
+      <!-- Footer tip -->
+      <div class="tips-bar" style="margin-top:16px;">
+        <div class="tips-left">💡 <span id="tracker-tip">Selesaikan task dengan priority tinggi lebih dulu untuk meningkatkan skor.</span></div>
+        <div class="tips-right">Rule-based analytics <span title="Layer 1 — no LLM">ℹ️</span></div>
       </div>
     </div>
 
@@ -624,6 +759,54 @@ tr:hover td{background:#f9fafb;}
 
   </div><!-- /content -->
 </div><!-- /main -->
+
+<!-- TASK MODAL -->
+<div class="modal-overlay hidden" id="task-modal" onclick="if(event.target===this)closeTaskModal()">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title">+ Tambah Task</div>
+    <div class="form-group">
+      <label class="form-label">Judul Task *</label>
+      <input type="text" class="form-input" id="modal-task-title" placeholder="Contoh: Buat laporan mingguan" maxlength="200">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Priority</label>
+        <select class="form-input" id="modal-task-priority">
+          <option value="high">🔴 High</option>
+          <option value="medium" selected>🔵 Medium</option>
+          <option value="low">⚫ Low</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-input" id="modal-task-status">
+          <option value="draft">Draft</option>
+          <option value="in_progress">In Progress</option>
+          <option value="review">Review</option>
+          <option value="done">Done</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <input type="text" class="form-input" id="modal-task-category" placeholder="General" maxlength="50">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Estimasi (menit)</label>
+        <input type="number" class="form-input" id="modal-task-est" placeholder="60" min="0" max="1440">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Deadline</label>
+      <input type="date" class="form-input" id="modal-task-deadline">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeTaskModal()">Batal</button>
+      <button class="btn-save" id="modal-save-btn" onclick="saveTaskModal()">Simpan</button>
+    </div>
+  </div>
+</div>
 
 <script>
 const API_BASE='https://api.aldypermadi.com';
@@ -808,67 +991,285 @@ function prevWeek(){calOffset--;renderCal();}
 function nextWeek(){calOffset++;renderCal();}
 function todayWeek(){calOffset=0;renderCal();}
 
-// ── KANBAN ──
-const COL_NEXT={draft:'inp',inp:'edit',edit:'done',done:null};
-const COL_PREV={draft:null,inp:'draft',edit:'inp',done:'edit'};
-const COL_LBL={draft:'Draft',inp:'In Progress',edit:'Editing',done:'Done'};
-const KC=['#8b5cf6','#3b82f6','#ec4899','#f59e0b','#10b981','#06b6d4','#f97316'];
-let ktasks=JSON.parse(localStorage.getItem('mc_kt')||'[]');
-function saveKt(){localStorage.setItem('mc_kt',JSON.stringify(ktasks));}
+// ── TIME TRACKER (API-based) ──
+const WRITE_KEY='hsINdSfRQaobPEtnVeuck2gM97ZYHqGL';
+let draggedTaskId=null;
 
-function renderKanban(){
-  const today=new Date().toDateString();let doneToday=0;
-  ['draft','inp','edit','done'].forEach(col=>{
-    const ct=ktasks.filter(t=>t.col===col);
-    document.getElementById('cnt-'+col).textContent=ct.length;
-    const container=document.getElementById('cards-'+col);if(!container)return;
+async function apiWrite(method,path,body){
+  try{
+    const r=await fetch(API_BASE+path,{
+      method,
+      headers:{'Content-Type':'application/json','X-Write-Key':WRITE_KEY},
+      body:body?JSON.stringify(body):undefined
+    });
+    if(!r.ok){const e=await r.json().catch(()=>({}));alert('Error: '+(e.detail||r.status));return null;}
+    if(r.status===204)return true;
+    return await r.json();
+  }catch(e){alert('Network error: '+e.message);return null;}
+}
+
+async function createTask(data){
+  const result=await apiWrite('POST','/tasks',data);
+  if(result){tasksData.unshift(result);renderTracker();buildDashboard();}
+}
+
+async function patchTask(id,data){
+  const result=await apiWrite('PATCH',`/tasks/${id}`,data);
+  if(result){
+    const idx=tasksData.findIndex(t=>t.id===id);
+    if(idx>=0)tasksData[idx]=result;
+    renderTracker();buildDashboard();
+  }
+}
+
+async function deleteTask(id){
+  if(!confirm('Hapus task ini?'))return;
+  const ok=await apiWrite('DELETE',`/tasks/${id}`);
+  if(ok){tasksData=tasksData.filter(t=>t.id!==id);renderTracker();buildDashboard();}
+}
+
+// Modal
+let modalEditId=null;
+function openTaskModal(taskId,defaultStatus){
+  modalEditId=taskId;
+  const task=taskId?tasksData.find(t=>t.id===taskId):null;
+  document.getElementById('modal-title').textContent=taskId?'✏️ Edit Task':'+ Tambah Task';
+  document.getElementById('modal-task-title').value=task?.title||'';
+  document.getElementById('modal-task-priority').value=task?.priority||'medium';
+  document.getElementById('modal-task-status').value=task?.status||defaultStatus||'draft';
+  document.getElementById('modal-task-category').value=task?.category||'';
+  document.getElementById('modal-task-est').value=task?.estimated_minutes||'';
+  document.getElementById('modal-task-deadline').value=task?.deadline?(task.deadline.split('T')[0]||task.deadline.split(' ')[0]):'';
+  document.getElementById('task-modal').classList.remove('hidden');
+  document.getElementById('modal-task-title').focus();
+}
+function closeTaskModal(){
+  document.getElementById('task-modal').classList.add('hidden');
+  modalEditId=null;
+}
+async function saveTaskModal(){
+  const title=document.getElementById('modal-task-title').value.trim();
+  if(!title){alert('Judul task wajib diisi.');return;}
+  const data={
+    title,
+    priority:document.getElementById('modal-task-priority').value,
+    status:document.getElementById('modal-task-status').value,
+    category:document.getElementById('modal-task-category').value.trim()||'General',
+    estimated_minutes:parseInt(document.getElementById('modal-task-est').value)||null,
+    deadline:document.getElementById('modal-task-deadline').value||null
+  };
+  const btn=document.getElementById('modal-save-btn');btn.disabled=true;
+  if(modalEditId)await patchTask(modalEditId,data);
+  else await createTask(data);
+  btn.disabled=false;
+  closeTaskModal();
+}
+
+// Drag and drop
+function dragOverCol(col){col.classList.add('drag-over');}
+function dragLeaveCol(col){col.classList.remove('drag-over');}
+async function dropCard(event,newStatus){
+  event.preventDefault();
+  document.querySelectorAll('.kcol').forEach(c=>c.classList.remove('drag-over'));
+  if(!draggedTaskId)return;
+  const task=tasksData.find(t=>t.id===draggedTaskId);
+  if(!task||task.status===newStatus){draggedTaskId=null;return;}
+  await patchTask(draggedTaskId,{status:newStatus});
+  draggedTaskId=null;
+}
+
+// Priority badge
+function priBadge(p){
+  if(p==='high')return'<span class="pri-high">HIGH</span>';
+  if(p==='low')return'<span class="pri-low">LOW</span>';
+  return'<span class="pri-medium">MED</span>';
+}
+
+function fmtDeadline(dl){
+  if(!dl)return'';
+  try{
+    const d=new Date(dl);const tod=new Date();tod.setHours(0,0,0,0);d.setHours(0,0,0,0);
+    const isOverdue=d<tod;
+    const label=d.toLocaleDateString('id-ID',{day:'numeric',month:'short'});
+    return`<div class="kc-deadline${isOverdue?' overdue':''}">📅 ${label}${isOverdue?' (terlambat)':''}</div>`;
+  }catch{return'';}
+}
+
+function renderTracker(){
+  const today=todayStr();
+  const dateFilter=document.getElementById('tt-date-filter')?.value;
+  let tasks=tasksData;
+  if(dateFilter)tasks=tasks.filter(t=>(t.created_at||'').startsWith(dateFilter));
+
+  // Summary stats
+  const doneToday=tasksData.filter(t=>t.status==='done'&&(t.updated_at||'').startsWith(today));
+  const totalEst=tasksData.reduce((s,t)=>s+(parseInt(t.estimated_minutes)||0),0);
+  const $=id=>document.getElementById(id);
+  $('tts-total').textContent=tasksData.length;
+  $('tts-inp').textContent=tasksData.filter(t=>t.status==='in_progress').length;
+  $('tts-rev').textContent=tasksData.filter(t=>t.status==='review').length;
+  $('tts-done').textContent=doneToday.length;
+  $('tts-time').textContent=totalEst>0?(totalEst>=60?Math.floor(totalEst/60)+'j '+(totalEst%60)+'m':totalEst+' m'):'0 m';
+
+  // Kanban columns
+  ['draft','in_progress','review','done'].forEach(status=>{
+    const ct=tasks.filter(t=>t.status===status);
+    const cntEl=$('cnt-'+status);if(cntEl)cntEl.textContent=ct.length;
+    const container=$('cards-'+status);if(!container)return;
     container.innerHTML=ct.map(t=>{
-      const elapsed=t.startedAt?Math.floor((Date.now()-t.startedAt)/60000):(t.minutes||0);
-      const ts=elapsed>0?(elapsed>=60?Math.floor(elapsed/60)+'h '+(elapsed%60)+'m':elapsed+'m'):'';
-      if(col==='done'&&t.doneAt===today)doneToday++;
-      const nxt=COL_NEXT[col];const prv=COL_PREV[col];
-      return`<div class="kcard" style="border-left-color:${t.color||'#8b5cf6'}">
-        <div class="kc-title">${t.title}</div>
-        ${ts?`<div class="kc-timer ${t.startedAt?'active':''}"><div class="tdot ${t.startedAt?'active':''}"></div>${ts}</div>`:''}
-        <div class="kc-actions">
-          ${prv?`<button class="kc-btn kc-prev" onclick="mvCard('${t.id}','${prv}')">← ${COL_LBL[prv]}</button>`:''}
-          ${nxt?`<button class="kc-btn kc-next" onclick="mvCard('${t.id}','${nxt}')">${COL_LBL[nxt]} →</button>`:''}
-          <button class="kc-btn kc-del" onclick="delCard('${t.id}')">✕</button>
+      const est=t.estimated_minutes?`<div class="kc-est">⏱ ${t.estimated_minutes} mnt</div>`:'';
+      const cat=t.category?`<span class="cat-badge">${t.category}</span>`:'';
+      const dl=fmtDeadline(t.deadline);
+      const borderCol=t.priority==='high'?'#ef4444':t.priority==='low'?'#9ca3af':'#3b82f6';
+      return`<div class="kcard" style="border-left-color:${borderCol}"
+          draggable="true"
+          ondragstart="draggedTaskId=${t.id};this.classList.add('dragging')"
+          ondragend="this.classList.remove('dragging')">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:4px;margin-bottom:4px;">
+          <div class="kc-title" style="flex:1;">${t.title||'—'}</div>
+          ${priBadge(t.priority)}
+        </div>
+        ${cat?`<div style="margin-bottom:3px;">${cat}</div>`:''}
+        ${est}${dl}
+        <div class="kc-actions" style="margin-top:6px;">
+          <button class="kc-btn kc-next" onclick="openTaskModal(${t.id},null)" style="background:#eef2ff;color:#6366f1;">✏️ Edit</button>
+          <button class="kc-btn kc-del" onclick="deleteTask(${t.id})">✕ Del</button>
         </div>
       </div>`;
     }).join('');
   });
-  document.getElementById('tt-total').textContent=ktasks.length;
-  document.getElementById('tt-inp').textContent=ktasks.filter(t=>t.col==='inp').length;
-  document.getElementById('tt-edit').textContent=ktasks.filter(t=>t.col==='edit').length;
-  document.getElementById('tt-done').textContent=doneToday;
-  renderKtChart();
+
+  buildTrackerAnalytics();
 }
 
-function mvCard(id,to){
-  const t=ktasks.find(t=>t.id===id);if(!t)return;
-  if(to==='inp'&&!t.startedAt)t.startedAt=Date.now();
-  if(t.col==='inp'&&to!=='inp'&&t.startedAt){t.minutes=(t.minutes||0)+Math.floor((Date.now()-t.startedAt)/60000);t.startedAt=null;}
-  if(to==='done')t.doneAt=new Date().toDateString();
-  t.col=to;saveKt();renderKanban();
-}
-function delCard(id){ktasks=ktasks.filter(t=>t.id!==id);saveKt();renderKanban();}
-function addCard(col){
-  const title=prompt('Task name:');if(!title||!title.trim())return;
-  ktasks.push({id:Date.now().toString(),title:title.trim(),col,color:KC[Math.floor(Math.random()*KC.length)],minutes:0,startedAt:null,doneAt:null,created:new Date().toDateString()});
-  saveKt();renderKanban();
+function clearTrackerFilter(){
+  const el=document.getElementById('tt-date-filter');if(el)el.value='';
+  renderTracker();
 }
 
-function renderKtChart(){
-  const days=[],done=[],inp=[],draft=[];
-  for(let i=6;i>=0;i--){
-    const d=new Date();d.setDate(d.getDate()-i);const ds=d.toDateString();
-    days.push(d.toLocaleDateString('en',{weekday:'short'}));
-    done.push(ktasks.filter(t=>t.doneAt===ds).length);
-    inp.push(ktasks.filter(t=>t.created===ds&&t.col==='inp').length);
-    draft.push(ktasks.filter(t=>t.created===ds&&t.col==='draft').length);
+/*
+ * Productivity Score — rule-based Layer 1 (no LLM).
+ * Adjust weights by editing the numbers here:
+ *
+ * completion_rate : 40 pts — done / total tasks
+ * time_vs_target  : 20 pts — done estimated_minutes / 480 (8h daily target)
+ * deadlines_met   : 15 pts — tasks done before deadline / tasks with deadline
+ * consistency     : 15 pts — days this week with ≥1 done task / 5 working days
+ * focus_bonus     : 10 pts — ≤1 active category in in_progress = full; 2 = half; >2 = 0
+ * overdue_penalty : -5 pts per overdue task, capped at -20 pts total
+ */
+function calcProductivityScore(tasks){
+  if(!tasks.length)return{score:0,breakdown:[],overdueTasks:0,doneCount:0,total:0};
+  const today=todayStr();
+  const done=tasks.filter(t=>t.status==='done');
+  const total=tasks.length;
+
+  const completionPts=Math.round((total?done.length/total:0)*40);
+
+  const doneMins=done.reduce((s,t)=>s+(parseInt(t.estimated_minutes)||0),0);
+  const timePts=Math.round(Math.min(1,doneMins/480)*20);
+
+  const withDl=tasks.filter(t=>t.deadline);
+  const metDl=done.filter(t=>{
+    if(!t.deadline)return false;
+    try{const dl=new Date(t.deadline);dl.setHours(23,59,59);const ua=t.updated_at?new Date(t.updated_at):new Date();return ua<=dl;}catch{return false;}
+  });
+  const deadlinePts=withDl.length?Math.round((metDl.length/withDl.length)*15):15;
+
+  const ws=weekStart();
+  const daysWithDone=new Set(done.filter(t=>(t.updated_at||'').slice(0,10)>=ws).map(t=>(t.updated_at||'').slice(0,10))).size;
+  const consistencyPts=Math.round(Math.min(1,daysWithDone/5)*15);
+
+  const activeCats=[...new Set(tasks.filter(t=>t.status==='in_progress').map(t=>t.category||'General'))];
+  const focusPts=activeCats.length<=1?10:activeCats.length===2?5:0;
+
+  const overdueTasks=tasks.filter(t=>{
+    if(t.status==='done'||!t.deadline)return false;
+    try{return new Date(t.deadline)<new Date(today);}catch{return false;}
+  });
+  const overduePenalty=Math.min(20,overdueTasks.length*5);
+
+  const score=Math.max(0,Math.min(100,completionPts+timePts+deadlinePts+consistencyPts+focusPts-overduePenalty));
+  return{
+    score,
+    breakdown:[
+      {label:'Completion Rate',pts:completionPts,max:40},
+      {label:'Time vs Target',pts:timePts,max:20},
+      {label:'Deadlines Met',pts:deadlinePts,max:15},
+      {label:'Consistency',pts:consistencyPts,max:15},
+      {label:'Focus Bonus',pts:focusPts,max:10},
+    ],
+    overdueTasks:overdueTasks.length,
+    doneCount:done.length,
+    total
+  };
+}
+
+function buildTrackerAnalytics(){
+  const {score,breakdown,overdueTasks,doneCount,total}=calcProductivityScore(tasksData);
+  const CIRC36=2*Math.PI*36;
+  const $=id=>document.getElementById(id);
+
+  const ringEl=$('prod-ring-circle');
+  if(ringEl){
+    ringEl.setAttribute('stroke-dasharray',CIRC36.toFixed(1));
+    ringEl.setAttribute('stroke-dashoffset',(CIRC36*(1-score/100)).toFixed(1));
+    ringEl.setAttribute('stroke',score>=70?'#10b981':score>=40?'#f59e0b':'#ef4444');
   }
-  mkChart('chartTracker',{type:'bar',data:{labels:days,datasets:[{label:'Done',data:done,backgroundColor:'rgba(16,185,129,.7)',borderColor:'#10b981',borderWidth:1,borderRadius:4},{label:'In Progress',data:inp,backgroundColor:'rgba(59,130,246,.7)',borderColor:'#3b82f6',borderWidth:1,borderRadius:4},{label:'Draft',data:draft,backgroundColor:'rgba(139,92,246,.7)',borderColor:'#8b5cf6',borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{color:'#6b7280',font:{size:10},boxWidth:10}}},scales:{x:{ticks:{color:'#9ca3af'},grid:{display:false}},y:{ticks:{color:'#9ca3af',stepSize:1},grid:{color:'#f3f4f6'}}}}});
+  const scoreEl=$('prod-score-val');
+  if(scoreEl){scoreEl.textContent=score;scoreEl.style.color=score>=70?'#10b981':score>=40?'#f59e0b':'#ef4444';}
+
+  let insTitle,insSub;
+  if(score>=80){insTitle='🚀 Produktivitas Sangat Tinggi!';insSub=`${doneCount} dari ${total} task selesai. Konsistensi luar biasa — pertahankan!`;}
+  else if(score>=60){insTitle='💪 Produktivitas Baik';insSub=`${doneCount} dari ${total} task selesai.${overdueTasks>0?` Ada ${overdueTasks} task terlambat — prioritaskan sekarang.`:' Tidak ada task terlambat.'}`;}
+  else if(score>=40){insTitle='📈 Ada Ruang untuk Berkembang';insSub=`${doneCount} dari ${total} task selesai.${overdueTasks>0?` ${overdueTasks} task melewati deadline.`:''} Selesaikan satu task besar hari ini.`;}
+  else{insTitle='⚠️ Butuh Perhatian';insSub=`${doneCount} dari ${total} task selesai.${overdueTasks>0?` ${overdueTasks} task terlambat — tangani segera.`:' Mulai dengan task terkecil untuk membangun momentum.'}`;}
+  if($('prod-insight-title'))$('prod-insight-title').textContent=insTitle;
+  if($('prod-insight-sub'))$('prod-insight-sub').textContent=insSub;
+
+  const barsEl=$('prod-bars');
+  if(barsEl)barsEl.innerHTML=breakdown.map(b=>`<div class="prod-bar-item"><div class="prod-bar-label">${b.label}</div><div class="prod-bar-bg"><div class="prod-bar-fill" style="width:${b.max?Math.round(b.pts/b.max*100):0}%"></div></div><div class="prod-bar-pct">${b.pts}/${b.max}</div></div>`).join('');
+
+  // Weekly activity chart
+  const l7=last7();
+  mkChart('chartTrackerWeekly',{type:'bar',
+    data:{labels:l7.map(d=>new Date(d).toLocaleDateString('en',{weekday:'short'})),
+      datasets:[
+        {label:'Done',data:l7.map(d=>tasksData.filter(t=>t.status==='done'&&(t.updated_at||'').startsWith(d)).length),backgroundColor:'rgba(16,185,129,.7)',borderColor:'#10b981',borderWidth:1,borderRadius:4},
+        {label:'In Progress',data:l7.map(d=>tasksData.filter(t=>t.status==='in_progress'&&(t.updated_at||'').startsWith(d)).length),backgroundColor:'rgba(59,130,246,.7)',borderColor:'#3b82f6',borderWidth:1,borderRadius:4},
+        {label:'Draft',data:l7.map(d=>tasksData.filter(t=>t.status==='draft'&&(t.created_at||'').startsWith(d)).length),backgroundColor:'rgba(139,92,246,.7)',borderColor:'#8b5cf6',borderWidth:1,borderRadius:4},
+      ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top',labels:{color:'#6b7280',font:{size:10},boxWidth:10}}},
+      scales:{x:{stacked:true,ticks:{color:'#9ca3af'},grid:{display:false}},y:{stacked:true,ticks:{color:'#9ca3af',stepSize:1},grid:{color:'#f3f4f6'}}}}});
+
+  // Donut by category (estimated_minutes)
+  const catEst={};
+  tasksData.forEach(t=>{const c=t.category||'General';catEst[c]=(catEst[c]||0)+(parseInt(t.estimated_minutes)||0);});
+  const catEntries=Object.entries(catEst).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+  if(catEntries.length){
+    mkChart('chartTrackerDonut',{type:'doughnut',
+      data:{labels:catEntries.map(([c])=>c),datasets:[{data:catEntries.map(([,v])=>v),backgroundColor:P.slice(0,catEntries.length),borderColor:'#fff',borderWidth:2}]},
+      options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{color:'#6b7280',font:{size:10}}}}}});
+  }else{
+    const dc=document.getElementById('chartTrackerDonut');
+    if(dc)dc.parentElement.innerHTML='<div class="empty"><div class="emoji">📊</div>Belum ada estimasi.</div>';
+  }
+
+  // Top activities
+  const topTasks=tasksData.filter(t=>t.estimated_minutes).sort((a,b)=>b.estimated_minutes-a.estimated_minutes).slice(0,5);
+  const topEl=$('top-activities');
+  if(topEl)topEl.innerHTML=topTasks.length
+    ?topTasks.map((t,i)=>`<div class="top-act-item"><div class="top-act-rank">${i+1}</div><div style="flex:1;"><div style="font-size:12px;font-weight:600;color:var(--text);">${t.title||'—'}</div><div style="display:flex;gap:4px;margin-top:2px;">${priBadge(t.priority)}<span class="cat-badge">${t.category||'General'}</span></div></div><div style="font-size:11px;color:var(--text2);flex-shrink:0;">${t.estimated_minutes} mnt</div></div>`).join('')
+    :'<div class="empty">Belum ada task dengan estimasi waktu.</div>';
+
+  // Tip bar
+  const tipEl=$('tracker-tip');
+  if(tipEl){
+    if(overdueTasks>0)tipEl.textContent=`⚠️ Ada ${overdueTasks} task melewati deadline — selesaikan segera untuk meningkatkan skor.`;
+    else if(doneCount===0)tipEl.textContent='Mulai dengan menyelesaikan task paling mudah untuk membangun momentum.';
+    else tipEl.textContent=`Productivity score kamu ${score}/100. ${score<70?'Tingkatkan konsistensi dan kurangi task overdue.':'Performa bagus — pertahankan!'}`;
+  }
 }
 
 // ── BUILD DASHBOARD ──
@@ -956,6 +1357,7 @@ function buildDashboard(){
   if(calLeft>0)ins.push({i:'🔥',t:`Kalori tersisa ${calLeft.toLocaleString('id-ID')} kkal untuk mencapai target`});
   if(expChg!==0)ins.push({i:'📈',t:`Pengeluaran minggu ini ${expChg>0?'naik':'turun'} ${Math.abs(expChg)}% vs minggu lalu`});
   if(wkVocab>0)ins.push({i:'📖',t:`Review ${wkVocab} vocabulary untuk tingkatkan retention`});
+  if(tasksData.length>0){const{score:ps,doneCount:dc,total:tt,overdueTasks:ov}=calcProductivityScore(tasksData);const pIcon=ps>=70?'🚀':ps>=40?'📈':'⚠️';ins.push({i:pIcon,t:`Productivity score ${ps}/100 — ${dc}/${tt} task selesai${ov>0?`, ${ov} terlambat`:''}`});}
   document.getElementById('aib-insights').innerHTML=ins.length
     ?ins.map(x=>`<div class="aib-insight"><span class="aib-insight-icon">${x.i}</span><span>${x.t}</span></div>`).join('')
     :'<div style="color:var(--text3);font-size:13px;">Belum ada data hari ini.</div>';
@@ -1078,10 +1480,9 @@ function switchTab(name,btn){
 async function loadAll(){
   await Promise.all([loadTasks(),loadHealth(),loadFinance(),loadEnglish(),loadInvestment(),loadCalendar()]);
   buildDashboard();
-  renderKanban();
+  renderTracker();
 }
 
-setInterval(()=>{if(ktasks.some(t=>t.startedAt))renderKanban();},60000);
 loadAll();
 </script>
 </body>
