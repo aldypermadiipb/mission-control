@@ -55,7 +55,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* CONTENT */
 .content{flex:1;overflow-y:auto;padding:20px 24px;}
-.section{display:none;}
+.section{display:none;max-width:1600px;margin:0 auto;}
 .section.active{display:block;}
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:2px;}
@@ -142,7 +142,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .mini-chg-up{font-size:12px;font-weight:600;color:#ef4444;}
 .mini-chg-dn{font-size:12px;font-weight:600;color:#10b981;}
 .mini-chg-sub{font-size:11px;color:var(--text3);}
-.sparkline-wrap{height:42px;margin-top:8px;}
+.sparkline-wrap{height:62px;margin-top:8px;}
 
 /* Vocab ring */
 .vocab-ring-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;float:right;margin-left:8px;}
@@ -163,7 +163,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .rw-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:600;margin-left:6px;vertical-align:middle;}
 .rw-badge-green{background:#f0fdf4;color:#10b981;}
 .rw-badge-red{background:#fef2f2;color:#ef4444;}
-.rw-spark{height:50px;margin-top:10px;}
+.rw-spark{height:68px;margin-top:10px;}
 
 /* Tips bar */
 .tips-bar{background:#fff;border-radius:14px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);margin-top:16px;}
@@ -836,6 +836,11 @@ function mkSparkline(id,data,color,fill){
   const c=document.getElementById(id); if(!c)return;
   charts[id]=new Chart(c,{type:'line',data:{labels:data.map((_,i)=>i),datasets:[{data,borderColor:color,backgroundColor:fill||'transparent',fill:!!fill,tension:.4,pointRadius:0,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{x:{display:false},y:{display:false}}}});
 }
+function mkSparklineLabeled(id,labels,data,color,fill){
+  if(charts[id])charts[id].destroy();
+  const c=document.getElementById(id); if(!c)return;
+  charts[id]=new Chart(c,{type:'line',data:{labels,datasets:[{data,borderColor:color,backgroundColor:fill||'transparent',fill:!!fill,tension:.4,pointRadius:0,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{x:{display:true,ticks:{color:'#9ca3af',font:{size:9},maxRotation:0,padding:2},grid:{display:false},border:{display:false}},y:{display:false}}}});
+}
 
 // ── FETCH ──
 async function fetchSheet(sheet){
@@ -1447,11 +1452,12 @@ function buildDashboard(){
 
   // Sparklines (slight delay so canvases are rendered)
   setTimeout(()=>{
-    mkSparkline('spark-cal',dCal,'#10b981','rgba(16,185,129,.1)');
-    mkSparkline('spark-exp',dExp,'#ec4899','rgba(236,72,153,.1)');
-    mkSparkline('spark-tasks',dTasks,'#6366f1','rgba(99,102,241,.1)');
-    mkSparkline('spark-vocab',dVocab,'#3b82f6','rgba(59,130,246,.1)');
-    mkSparkline('spark-mini-exp',dExp,'#ec4899','rgba(236,72,153,.1)');
+    const dayLabels=l7.map(d=>new Date(d+'T00:00:00').toLocaleDateString('en',{weekday:'short'}));
+    mkSparklineLabeled('spark-cal',dayLabels,dCal,'#10b981','rgba(16,185,129,.1)');
+    mkSparklineLabeled('spark-exp',dayLabels,dExp,'#ec4899','rgba(236,72,153,.1)');
+    mkSparklineLabeled('spark-tasks',dayLabels,dTasks,'#6366f1','rgba(99,102,241,.1)');
+    mkSparklineLabeled('spark-vocab',dayLabels,dVocab,'#3b82f6','rgba(59,130,246,.1)');
+    mkSparklineLabeled('spark-mini-exp',dayLabels,dExp,'#ec4899','rgba(236,72,153,.1)');
     // Vocab ring2
     const rc=2*Math.PI*22;
     const el=$('ring2-circle');
