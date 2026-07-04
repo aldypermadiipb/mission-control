@@ -375,8 +375,7 @@ tr:hover td{background:rgba(255,255,255,.02);color:var(--text);}
 </div>
 
 <script>
-const SHEET_ID='14v4tgA0bEZbtcDd-WUBC9kZIOCq03lHiHb602uwSi9g';
-const BASE=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=`;
+const API_BASE='https://api.aldypermadi.com';
 const P=['#8b5cf6','#3b82f6','#ec4899','#f59e0b','#10b981','#06b6d4','#f97316'];
 const PA=['rgba(139,92,246,.7)','rgba(59,130,246,.7)','rgba(236,72,153,.7)','rgba(245,158,11,.7)','rgba(16,185,129,.7)','rgba(6,182,212,.7)'];
 
@@ -401,16 +400,9 @@ function mkChart(id,cfg){
 
 async function fetchSheet(sheet){
   try{
-    const r=await fetch(BASE+encodeURIComponent(sheet));
-    const txt=await r.text();
-    const j=JSON.parse(txt.slice(47,-2));
-    if(!j.table)return[];
-    const cols=j.table.cols.map(c=>c.label);
-    return(j.table.rows||[]).map(row=>{
-      const o={};
-      cols.forEach((col,i)=>{o[col]=row.c[i]?(row.c[i].f||row.c[i].v):''});
-      return o;
-    });
+    const r=await fetch(API_BASE+'/'+sheet.toLowerCase());
+    if(!r.ok)return[];
+    return await r.json();
   }catch{return[];}
 }
 
@@ -462,7 +454,7 @@ async function loadFinance(){
   const maxV=sorted[0]?.[1]||1;
   document.getElementById('finance-breakdown').innerHTML=sorted.slice(0,5).map(([cat,val],i)=>`<div class="progress-item"><div class="progress-label"><span>${cat}</span><span>${fmtRp(val)}</span></div><div class="progress-bar"><div class="progress-fill" style="width:${Math.round(val/maxV*100)}%;background:${P[i%P.length]};"></div></div></div>`).join('');
   if(!financeData.length){document.getElementById('finance-content').innerHTML='<div class="empty"><div class="emoji">💰</div>Belum ada transaksi.</div>';return;}
-  document.getElementById('finance-content').innerHTML=`<table><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Category</th><th>Description</th></tr></thead><tbody>`+financeData.slice().reverse().slice(0,40).map(r=>`<tr><td>${fmtDate(r.date||r.id)}</td><td><span class="badge ${r.type==='expense'?'bpink':'bgreen'}">${r.type||''}</span></td><td style="font-weight:600;color:${r.type==='expense'?'var(--pink)':'var(--green)'}">${fmtRp(r.amount)}</td><td>${r.category||''}</td><td style="color:var(--text3)">$x(r.description||'').slice(0,40)}</td></tr>`).join('')+`</tbody></table>`;
+  document.getElementById('finance-content').innerHTML=`<table><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Category</th><th>Description</th></tr></thead><tbody>`+financeData.slice().reverse().slice(0,40).map(r=>`<tr><td>${fmtDate(r.date||r.id)}</td><td><span class="badge ${r.type==='expense'?'bpink':'bgreen'}">${r.type||''}</span></td><td style="font-weight:600;color:${r.type==='expense'?'var(--pink)':'var(--green)'}">${fmtRp(r.amount)}</td><td>${r.category||''}</td><td style="color:var(--text3)">${(r.description||'').slice(0,40)}</td></tr>`).join('')+`</tbody></table>`;
 }
 
 async function loadEnglish(){
@@ -659,3 +651,4 @@ loadAll();
 </script>
 </body>
 </html>
+
