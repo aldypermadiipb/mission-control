@@ -470,7 +470,7 @@ tr:hover td{background:#f9fafb;}
           </div>
           <div class="card-sub">Prioritas hari ini</div>
           <div id="focus-list"><div class="loading">Loading...</div></div>
-          <button class="btn-add">＋ Add Task</button>
+          <button class="btn-add" onclick="openTaskModal(null,'draft')">＋ Add Task</button>
         </div>
 
         <!-- JADWAL -->
@@ -1395,7 +1395,7 @@ function buildDashboard(){
   // Today's Focus
   $('focus-list').innerHTML=active.length
     ?active.slice(0,5).map((r,i)=>`<div class="focus-task">
-        <div class="task-cb"></div>
+        <div class="task-cb" onclick="(async()=>{await patchTask(${r.id},{status:'done'});buildDashboard();})()" style="cursor:pointer;" title="Mark as done"></div>
         <span class="task-title">${r.title||'—'}</span>
         <span class="task-badge ${getBadgeCls(r.category)}">${r.category||'General'}</span>
         ${i===0?'<span class="task-star">★</span>':''}
