@@ -316,26 +316,46 @@ tr:hover td{background:#f9fafb;}
 .top-act-item:last-child{border-bottom:none;}
 .top-act-rank{width:22px;height:22px;border-radius:50%;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--text2);flex-shrink:0;}
 
-.cal-week{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:12px;}
-.cal-day{background:#f9fafb;border:1px solid var(--border);border-radius:9px;padding:7px;min-height:75px;}
-.cal-day.today{border-color:var(--indigo);background:#eef2ff;}
-.cal-dl{font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;}
-.cal-dn{font-size:13px;font-weight:700;color:var(--text2);margin:1px 0 4px;}
-.cal-day.today .cal-dn{color:var(--indigo);}
-.cal-ev{font-size:8px;border-radius:3px;padding:2px 4px;margin-bottom:2px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.ev-purple{background:#f5f3ff;color:#8b5cf6;}
-.ev-blue{background:#eff6ff;color:#3b82f6;}
-.ev-pink{background:#fdf2f8;color:#ec4899;}
-.ev-yellow{background:#fffbeb;color:#f59e0b;}
-.ev-green{background:#f0fdf4;color:#10b981;}
-.upcoming-event{display:flex;align-items:flex-start;gap:10px;padding:9px;background:#f9fafb;border:1px solid var(--border);border-radius:9px;margin-bottom:7px;transition:border-color .15s;}
-.upcoming-event:hover{border-color:var(--indigo);}
-.ev-date-box{background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:7px;padding:5px 9px;text-align:center;min-width:40px;flex-shrink:0;}
-.ev-day{font-size:14px;font-weight:800;color:#fff;line-height:1;}
-.ev-month{font-size:8px;color:rgba(255,255,255,.8);text-transform:uppercase;}
-.ev-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;}
-.ev-time{font-size:10px;color:var(--indigo);font-weight:600;}
-.ev-loc{font-size:9px;color:var(--text3);}
+/* ── CALENDAR (week view redesign) ── */
+#tab-calendar{background:#fff;margin:-20px -24px;padding:0;}
+.cv-header{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:80px 112px 20px;border-bottom:1px solid #e5e7eb;}
+.cv-title{font-size:20px;font-weight:600;color:#111827;}
+.cv-subtitle{font-size:12px;color:#9ca3af;margin-top:2px;}
+.cv-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.cv-btn-today{padding:8px 14px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;color:#374151;font-size:13px;font-weight:500;cursor:pointer;}
+.cv-btn-today:hover{background:#f9fafb;}
+.cv-nav-group{display:flex;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;}
+.cv-nav-btn{padding:8px 12px;border:none;background:#fff;color:#374151;font-size:14px;line-height:1;cursor:pointer;border-right:1px solid #e5e7eb;}
+.cv-nav-btn:last-child{border-right:none;}
+.cv-nav-btn:hover{background:#f9fafb;}
+.cv-view-select{padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;color:#374151;font-size:13px;cursor:pointer;}
+.cv-add-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border:none;border-radius:8px;background:#6c63ff;color:#fff;font-size:13px;font-weight:600;cursor:pointer;}
+.cv-add-btn:hover{background:#5b52e8;}
+.cv-add-icon{color:#fff;font-weight:700;}
+.cv-week-label{padding:16px 112px 0;font-size:14px;font-weight:700;color:#111827;}
+.cv-grid-wrap{padding:16px 112px 40px;overflow-x:auto;}
+.cv-grid{display:grid;grid-template-columns:56px repeat(7,1fr);min-width:800px;}
+.cv-gutter-head{height:64px;border-bottom:1px solid #e5e7eb;}
+.cv-hour-labels{position:relative;height:660px;}
+.cv-hour-label{position:absolute;right:8px;left:0;font-size:11px;color:#9ca3af;text-align:right;transform:translateY(-10px);white-space:nowrap;}
+.cv-day-col{position:relative;border-right:1px solid #f3f4f6;overflow:hidden;}
+.cv-day-col:last-child{border-right:none;}
+.cv-day-head{height:64px;border-bottom:1px solid #e5e7eb;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;}
+.cv-day-name{font-size:11px;color:#9ca3af;}
+.cv-day-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;color:#374151;}
+.cv-day-num.today{background:#6c63ff;color:#fff;}
+.cv-day-count{font-size:10px;color:#9ca3af;}
+.cv-day-body{position:relative;height:660px;background-image:repeating-linear-gradient(180deg,#f3f4f6 0,#f3f4f6 1px,transparent 1px,transparent 60px);}
+.cv-event{position:absolute;left:4px;right:4px;border-radius:6px;padding:4px 8px;font-size:12px;overflow:hidden;}
+.cv-event-title{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cv-event-sub{opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cv-ev-green{background:#d1fae5;border-left:4px solid #10b981;color:#064e3b;}
+.cv-ev-purple{background:#ede9fe;border-left:4px solid #8b5cf6;color:#4c1d95;}
+.cv-ev-orange{background:#fef3c7;border-left:4px solid #f59e0b;color:#78350f;}
+.cv-ev-blue{background:#dbeafe;border-left:4px solid #3b82f6;color:#1e3a8a;}
+.cv-ev-teal{background:#ccfbf1;border-left:4px solid #14b8a6;color:#134e4a;}
+.cv-now-line{position:absolute;left:0;right:0;height:1px;background:#ef4444;z-index:5;}
+.cv-now-dot{position:absolute;left:-4px;top:-4px;width:8px;height:8px;border-radius:50%;background:#ef4444;}
 .btn{padding:5px 12px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:none;transition:all .15s;}
 .btn-ghost{background:#fff;color:var(--text2);border:1px solid var(--border);}
 .btn-ghost:hover{color:var(--text);}
@@ -584,24 +604,28 @@ tr:hover td{background:#f9fafb;}
 
     <!-- ── CALENDAR ── -->
     <div id="tab-calendar" class="section">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-        <div><h2 style="font-size:15px;font-weight:700;" id="cal-week-label">This Week</h2><p style="font-size:11px;color:var(--text2);margin-top:1px;">Events dari Eina-chan &amp; manual</p></div>
-        <div style="display:flex;gap:6px;">
-          <button class="btn btn-ghost" onclick="prevWeek()">← Prev</button>
-          <button class="btn btn-ghost" onclick="todayWeek()">Today</button>
-          <button class="btn btn-ghost" onclick="nextWeek()">Next →</button>
+      <div class="cv-header">
+        <div>
+          <div class="cv-title">Calendar</div>
+          <div class="cv-subtitle">Events &amp; personal tasks</div>
+        </div>
+        <div class="cv-controls">
+          <button class="cv-btn-today" onclick="todayWeek()">Today</button>
+          <div class="cv-nav-group">
+            <button class="cv-nav-btn" onclick="prevWeek()">&#8249;</button>
+            <button class="cv-nav-btn" onclick="nextWeek()">&#8250;</button>
+          </div>
+          <select class="cv-view-select" id="cv-view-select" onchange="calViewChange(this.value)">
+            <option value="week">Week</option>
+            <option value="month">Month</option>
+            <option value="day">Day</option>
+          </select>
+          <button class="cv-add-btn" onclick="openEventModal()"><span class="cv-add-icon">+</span> Add Event</button>
         </div>
       </div>
-      <div class="cal-week" id="cal-week-grid"></div>
-      <div class="grid-2">
-        <div class="panel">
-          <div class="panel-header"><span class="panel-title">Upcoming Events</span><span class="panel-badge bpurple" id="cal-event-count">0</span></div>
-          <div id="cal-upcoming"><div class="loading">Loading...</div></div>
-        </div>
-        <div class="panel">
-          <div class="panel-header"><span class="panel-title">Events per Month</span></div>
-          <div class="chart-wrap chart-md"><canvas id="chartCalEvents"></canvas></div>
-        </div>
+      <div class="cv-week-label" id="cv-week-label"></div>
+      <div class="cv-grid-wrap">
+        <div class="cv-grid" id="cv-grid"></div>
       </div>
     </div>
 
@@ -808,6 +832,39 @@ tr:hover td{background:#f9fafb;}
   </div>
 </div>
 
+<!-- ADD EVENT MODAL -->
+<div class="modal-overlay hidden" id="event-modal" onclick="if(event.target===this)closeEventModal()">
+  <div class="modal-box">
+    <div class="modal-title">+ Add Event</div>
+    <div class="form-group">
+      <label class="form-label">Title *</label>
+      <input type="text" class="form-input" id="modal-event-title" placeholder="e.g. Team sync" maxlength="200">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Date *</label>
+        <input type="date" class="form-input" id="modal-event-date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Time</label>
+        <input type="time" class="form-input" id="modal-event-time">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Duration (minutes)</label>
+      <input type="number" class="form-input" id="modal-event-duration" placeholder="60" min="15" step="15" value="60">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Location / notes</label>
+      <input type="text" class="form-input" id="modal-event-location" placeholder="Optional" maxlength="200">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeEventModal()">Cancel</button>
+      <button class="btn-save" id="modal-event-save-btn" onclick="saveEventModal()">Save</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const API_BASE='https://api.aldypermadi.com';
 const P=['#8b5cf6','#3b82f6','#ec4899','#f59e0b','#10b981','#06b6d4','#f97316'];
@@ -948,10 +1005,11 @@ async function loadInvestment(){
   document.getElementById('investment-content').innerHTML=`<table><thead><tr><th>Ticker</th><th>Lot</th><th>Avg Price</th><th>Current</th><th>Total Value</th></tr></thead><tbody>`+invData.map(r=>`<tr><td style="font-weight:700;color:var(--indigo)">${r.ticker||''}</td><td>${r.lot||''}</td><td>${fmtRp(r.avg_price)}</td><td style="color:var(--text3)">${r.current_price?fmtRp(r.current_price):'—'}</td><td style="color:var(--green)">${r.total_value?fmtRp(r.total_value):'—'}</td></tr>`).join('')+`</tbody></table>`;
 }
 
-// ── CALENDAR ──
-const EV_COLORS=['ev-purple','ev-blue','ev-pink','ev-yellow','ev-green'];
+// ── CALENDAR (week view redesign) ──
 const JADWAL_COLORS=['#6366f1','#3b82f6','#10b981','#f59e0b','#ec4899','#f97316'];
+const CV_HOURS=Array.from({length:11},(_,i)=>7+i); // 07:00..17:00
 let calOffset=0;
+let calView='week';
 
 function weekDates(off=0){
   const n=new Date();const day=n.getDay();
@@ -959,42 +1017,90 @@ function weekDates(off=0){
   return Array.from({length:7},(_,i)=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d;});
 }
 
-function renderCal(){
-  const days=weekDates(calOffset);const today=new Date();
-  const DN=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  document.getElementById('cal-week-label').textContent=`${days[0].toLocaleDateString('id-ID',{day:'numeric',month:'short'})} – ${days[6].toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})}`;
-  document.getElementById('cal-week-grid').innerHTML=days.map((d,i)=>{
-    const isTd=d.toDateString()===today.toDateString();
-    const evs=calData.filter(e=>{try{return new Date(e.date).toDateString()===d.toDateString()}catch{return false}});
-    return`<div class="cal-day${isTd?' today':''}"><div class="cal-dl">${DN[i]}</div><div class="cal-dn">${d.getDate()}</div>${evs.map((e,j)=>`<div class="cal-ev ${EV_COLORS[j%EV_COLORS.length]}">${e.time?e.time+' ':''}${e.title||'Event'}</div>`).join('')}</div>`;
-  }).join('');
+function cvEscape(str){
+  return String(str==null?'':str).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-function renderUpcoming(){
-  const now=new Date();
-  const up=calData.filter(e=>{try{return new Date(e.date)>=new Date(now.toDateString())}catch{return false}}).sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(0,10);
-  document.getElementById('cal-event-count').textContent=up.length;
-  if(!up.length){document.getElementById('cal-upcoming').innerHTML='<div class="empty"><div class="emoji">📅</div>Belum ada upcoming events.</div>';return;}
-  document.getElementById('cal-upcoming').innerHTML=up.map(e=>{
-    const d=new Date(e.date);
-    return`<div class="upcoming-event"><div class="ev-date-box"><div class="ev-day">${d.getDate()}</div><div class="ev-month">${d.toLocaleDateString('en',{month:'short'})}</div></div><div style="flex:1"><div class="ev-title">${e.title||'Event'}</div>${e.time?`<div class="ev-time">🕐 ${e.time}</div>`:''} ${e.location?`<div class="ev-loc">📍 ${e.location}</div>`:''}</div></div>`;
-  }).join('');
+// Deterministic category color: keyword match first, else hash-rotate purple/teal
+function cvEventColorClass(title){
+  const t=(title||'').toLowerCase();
+  if(t.includes('meeting')||t.includes('rapat')||t.includes('sync'))return'cv-ev-blue';
+  if(t.includes('workout')||t.includes('gym')||t.includes('olahraga')||t.includes('health')||t.includes('sehat'))return'cv-ev-green';
+  if(t.includes('deadline')||t.includes('laporan')||t.includes('report')||t.includes('closing')||t.includes('shipment')||t.includes('kerja'))return'cv-ev-orange';
+  let h=0;for(let i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))>>>0;
+  return h%2===0?'cv-ev-purple':'cv-ev-teal';
 }
 
-function renderCalChart(){
-  const m={};
-  calData.forEach(e=>{try{const mn=new Date(e.date).toLocaleDateString('en',{month:'short'});m[mn]=(m[mn]||0)+1}catch{}});
-  mkChart('chartCalEvents',{type:'bar',data:{labels:Object.keys(m),datasets:[{label:'Events',data:Object.values(m),backgroundColor:PA,borderColor:P,borderWidth:1,borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#9ca3af'},grid:{display:false}},y:{ticks:{color:'#9ca3af',stepSize:1},grid:{color:'#f3f4f6'}}}}});
+// e.time is "HH:MM:SS" or null from Postgres; returns decimal hour (e.g. 14:30 -> 14.5)
+function cvParseStartHour(timeStr){
+  if(!timeStr)return 9; // default slot when no time recorded
+  const parts=timeStr.split(':').map(Number);
+  return parts[0]+(parts[1]||0)/60;
+}
+
+function renderCalendarView(){
+  const days=weekDates(calOffset);
+  const today=new Date();
+  document.getElementById('cv-week-label').textContent=
+    `${days[0].toLocaleDateString('en-GB',{day:'numeric',month:'short'})} – ${days[6].toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`;
+
+  const gutterHtml=`<div>
+    <div class="cv-gutter-head"></div>
+    <div class="cv-hour-labels">${CV_HOURS.map((h,i)=>`<div class="cv-hour-label" style="top:${i*60}px;">${String(h).padStart(2,'0')}:00</div>`).join('')}</div>
+  </div>`;
+
+  const daysHtml=days.map(d=>{
+    const isToday=d.toDateString()===today.toDateString();
+    const evs=calData.filter(e=>{try{return new Date(e.date+'T00:00:00').toDateString()===d.toDateString();}catch{return false;}});
+    const dayName=d.toLocaleDateString('en-US',{weekday:'short'});
+
+    let bodyHtml=evs.map(e=>{
+      const startHour=cvParseStartHour(e.time);
+      const durationH=1; // calendar table has no end-time/duration column
+      const top=(startHour-7)*60+2;
+      const height=durationH*60-4;
+      const cls=cvEventColorClass(e.title);
+      const subtitle=e.location||e.notes||'';
+      return`<div class="cv-event ${cls}" style="top:${top}px;height:${height}px;" title="${cvEscape(e.title||'Event')}">
+        <div class="cv-event-title">${cvEscape(e.title||'Event')}</div>
+        ${subtitle?`<div class="cv-event-sub">${cvEscape(subtitle)}</div>`:''}
+      </div>`;
+    }).join('');
+
+    if(isToday){
+      const now=new Date();
+      const curHour=now.getHours()+now.getMinutes()/60;
+      if(curHour>=7&&curHour<=17){
+        bodyHtml+=`<div class="cv-now-line" style="top:${(curHour-7)*60}px;"><div class="cv-now-dot"></div></div>`;
+      }
+    }
+
+    return`<div class="cv-day-col">
+      <div class="cv-day-head">
+        <div class="cv-day-name">${dayName}</div>
+        <div class="cv-day-num${isToday?' today':''}">${d.getDate()}</div>
+        ${evs.length?`<div class="cv-day-count">${evs.length} events</div>`:''}
+      </div>
+      <div class="cv-day-body">${bodyHtml}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('cv-grid').innerHTML=gutterHtml+daysHtml;
 }
 
 async function loadCalendar(){
   calData=await fetchSheet('Calendar');
-  renderCal();renderUpcoming();renderCalChart();
+  renderCalendarView();
 }
 
-function prevWeek(){calOffset--;renderCal();}
-function nextWeek(){calOffset++;renderCal();}
-function todayWeek(){calOffset=0;renderCal();}
+function prevWeek(){calOffset--;renderCalendarView();}
+function nextWeek(){calOffset++;renderCalendarView();}
+function todayWeek(){calOffset=0;renderCalendarView();}
+function calViewChange(v){
+  calView=v;
+  if(v!=='week'){alert('Month/Day view belum tersedia — hanya Week view yang aktif saat ini.');document.getElementById('cv-view-select').value='week';return;}
+  renderCalendarView();
+}
 
 // ── TIME TRACKER (API-based) ──
 const WRITE_KEY='hsINdSfRQaobPEtnVeuck2gM97ZYHqGL';
@@ -1068,6 +1174,42 @@ async function saveTaskModal(){
   else await createTask(data);
   btn.disabled=false;
   closeTaskModal();
+}
+
+// Add Event modal (Calendar)
+function openEventModal(){
+  document.getElementById('modal-event-title').value='';
+  const n=new Date();
+  const localDate=`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
+  document.getElementById('modal-event-date').value=localDate;
+  document.getElementById('modal-event-time').value='';
+  document.getElementById('modal-event-duration').value=60;
+  document.getElementById('modal-event-location').value='';
+  document.getElementById('event-modal').classList.remove('hidden');
+  document.getElementById('modal-event-title').focus();
+}
+function closeEventModal(){
+  document.getElementById('event-modal').classList.add('hidden');
+}
+async function saveEventModal(){
+  const title=document.getElementById('modal-event-title').value.trim();
+  const date=document.getElementById('modal-event-date').value;
+  if(!title||!date){alert('Title dan Date wajib diisi.');return;}
+  const data={
+    title,
+    date,
+    time:document.getElementById('modal-event-time').value||null,
+    location:document.getElementById('modal-event-location').value.trim()||null
+    // duration is UI-only for now — the calendar table has no duration/end-time column yet
+  };
+  const btn=document.getElementById('modal-event-save-btn');btn.disabled=true;
+  const result=await apiWrite('POST','/calendar',data);
+  btn.disabled=false;
+  if(result){
+    calData.push(result);
+    renderCalendarView();
+    closeEventModal();
+  }
 }
 
 // Drag and drop
