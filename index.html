@@ -334,7 +334,8 @@ tr:hover td{background:#f9fafb;}
 .cv-add-icon{color:#fff;font-weight:700;}
 .cv-week-label{padding:16px 112px 0;font-size:14px;font-weight:700;color:#111827;}
 .cv-grid-wrap{padding:16px 112px 40px;overflow-x:auto;}
-.cv-grid{display:grid;grid-template-columns:56px repeat(7,1fr);min-width:800px;}
+.cv-grid{display:grid;grid-template-columns:56px repeat(7,minmax(120px,1fr));min-width:896px;}
+.cv-gutter{position:sticky;left:0;z-index:3;background:#fff;box-shadow:1px 0 0 #e5e7eb;}
 .cv-gutter-head{height:64px;border-bottom:1px solid #e5e7eb;}
 .cv-hour-labels{position:relative;height:660px;}
 .cv-hour-label{position:absolute;right:8px;left:0;font-size:11px;color:#9ca3af;text-align:right;transform:translateY(-10px);white-space:nowrap;}
@@ -356,12 +357,35 @@ tr:hover td{background:#f9fafb;}
 .cv-ev-teal{background:#ccfbf1;border-left:4px solid #14b8a6;color:#134e4a;}
 .cv-now-line{position:absolute;left:0;right:0;height:1px;background:#ef4444;z-index:5;}
 .cv-now-dot{position:absolute;left:-4px;top:-4px;width:8px;height:8px;border-radius:50%;background:#ef4444;}
+
+@media (max-width:860px){
+  .cv-header{padding:20px 16px;gap:12px;}
+  .cv-controls{width:100%;justify-content:flex-start;}
+  .cv-week-label{padding:12px 16px 0;}
+  .cv-grid-wrap{padding:12px 16px 32px;}
+}
 .btn{padding:5px 12px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:none;transition:all .15s;}
 .btn-ghost{background:#fff;color:var(--text2);border:1px solid var(--border);}
 .btn-ghost:hover{color:var(--text);}
 .btn-purple{background:var(--indigo);color:#fff;}
 .btn-purple:hover{background:var(--indigo2);}
 #last-updated{font-size:10px;color:var(--text3);}
+
+/* ── SHARED: mobile off-canvas sidebar (applies to every tab/page) ── */
+.tb-left{display:flex;align-items:center;gap:10px;min-width:0;}
+.hamburger-btn{display:none;background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0;color:var(--text);border-radius:8px;}
+.hamburger-btn:hover{background:#f3f4f6;}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(17,24,39,.45);z-index:199;}
+.sidebar-overlay.open{display:block;}
+
+@media (max-width:860px){
+  .hamburger-btn{display:flex;align-items:center;justify-content:center;}
+  .sidebar{position:fixed;left:0;top:0;height:100vh;z-index:200;transform:translateX(-100%);transition:transform .25s ease;box-shadow:0 0 30px rgba(0,0,0,.15);}
+  .sidebar.open{transform:translateX(0);}
+  .topbar{padding:12px 16px;flex-wrap:wrap;row-gap:8px;}
+  .topbar-right{flex-wrap:wrap;justify-content:flex-end;gap:8px;}
+  .tb-weather{display:none;}
+}
 </style>
 </head>
 <body>
@@ -389,12 +413,18 @@ tr:hover td{background:#f9fafb;}
     <div><div class="footer-name">Aldy Permadi</div><div class="footer-role">S&D Section Head</div></div>
   </div>
 </aside>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 
 <div class="main">
   <div class="topbar">
-    <div>
-      <div class="tb-title" id="tb-title">Dashboard</div>
-      <div class="tb-date" id="tb-date"></div>
+    <div class="tb-left">
+      <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle menu">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2.5 5h15M2.5 10h15M2.5 15h15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+      <div>
+        <div class="tb-title" id="tb-title">Dashboard</div>
+        <div class="tb-date" id="tb-date"></div>
+      </div>
     </div>
     <div class="topbar-right">
       <button class="btn-ai-outline">✨ AI Assistant</button>
@@ -1044,7 +1074,7 @@ function renderCalendarView(){
   document.getElementById('cv-week-label').textContent=
     `${days[0].toLocaleDateString('en-GB',{day:'numeric',month:'short'})} – ${days[6].toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`;
 
-  const gutterHtml=`<div>
+  const gutterHtml=`<div class="cv-gutter">
     <div class="cv-gutter-head"></div>
     <div class="cv-hour-labels">${CV_HOURS.map((h,i)=>`<div class="cv-hour-label" style="top:${i*60}px;">${String(h).padStart(2,'0')}:00</div>`).join('')}</div>
   </div>`;
@@ -1622,6 +1652,17 @@ function switchTab(name,btn){
   document.getElementById('tab-'+name).classList.add('active');
   if(btn)btn.classList.add('active');
   document.getElementById('tb-title').textContent=pageMeta[name]||name;
+  closeSidebar();
+}
+
+// ── SHARED: mobile off-canvas sidebar (used by every tab) ──
+function toggleSidebar(){
+  document.querySelector('.sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('open');
+}
+function closeSidebar(){
+  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
 }
 
 // ── LOAD ALL ──
