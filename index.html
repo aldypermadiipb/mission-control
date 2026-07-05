@@ -1442,7 +1442,10 @@ function renderHpScore(){
   const avgWater=waterDays.length?waterDays.reduce((s,d)=>s+byDateWater[d],0)/waterDays.length:0;
   const waterScore=hpPct(avgWater,hpTarget('water',3));
 
-  const stressScore=75; // belum ada intent/tracking stress — placeholder tetap sampai ada sumber data asli
+  const stressRows=healthData.filter(r=>r.type==='stress'&&last7Days.includes(r.date));
+  const hasStressData=stressRows.length>0;
+  const avgStressLevel=hasStressData?stressRows.reduce((s,r)=>s+(parseFloat(r.value)||0),0)/stressRows.length:null;
+  const stressScore=hasStressData?Math.max(0,Math.min(100,Math.round((10-avgStressLevel)*10))):null;
 
   const breakdown=[
     {label:'Makan',val:makanScore,color:'#8b5cf6'},
@@ -1451,10 +1454,11 @@ function renderHpScore(){
     {label:'Air',val:waterScore,color:'#06b6d4'},
     {label:'Stress',val:stressScore,color:'#f59e0b'}
   ];
-  const overall=Math.round(breakdown.reduce((s,b)=>s+b.val,0)/breakdown.length);
+  const scored=breakdown.filter(b=>b.val!=null);
+  const overall=scored.length?Math.round(scored.reduce((s,b)=>s+b.val,0)/scored.length):0;
   document.getElementById('hp-score-val').textContent=overall;
   document.getElementById('hp-score-breakdown').innerHTML=breakdown.map(b=>
-    `<div class="hp-score-row"><div class="hp-score-row-label"><span style="width:8px;height:8px;border-radius:50%;background:${b.color};display:inline-block;"></span>${b.label}</div><div class="hp-score-row-val">${b.val}</div></div>`
+    `<div class="hp-score-row"><div class="hp-score-row-label"><span style="width:8px;height:8px;border-radius:50%;background:${b.color};display:inline-block;"></span>${b.label}</div><div class="hp-score-row-val">${b.val==null?'—':b.val}</div></div>`
   ).join('');
   mkChart('chartHealthScore',{type:'doughnut',data:{datasets:[{data:[overall,100-overall],backgroundColor:['#6366f1','#f3f4f6'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'78%',plugins:{legend:{display:false},tooltip:{enabled:false}}}});
 }
@@ -1463,10 +1467,10 @@ function renderHpTimeline(){
   const today=hpTodayJakarta();
   const todays=healthData.filter(r=>r.date===today).sort((a,b)=>(a.time||'99:99').localeCompare(b.time||'99:99'));
   if(!todays.length){document.getElementById('hp-timeline').innerHTML='<div class="empty"><div class="emoji">📋</div>Belum ada aktivitas hari ini.</div>';return;}
-  const emojiMap={food:'🍽️',workout:'🏋️',sleep:'🌙',water:'💧',protein:'🍗',weight:'⚖️'};
+  const emojiMap={food:'🍽️',workout:'🏋️',sleep:'🌙',water:'💧',protein:'🍗',weight:'⚖️',stress:'🧠'};
   const items=todays.map(r=>{
     const emoji=emojiMap[r.type]||'📋';
-    const name=r.description||r.food_name||r.exercise_type||(r.type==='sleep'?`Tidur ${r.value||''} jam`:r.type==='water'?`Minum air ${r.value||''} L`:r.type==='protein'?`Protein ${r.value||''} g`:r.type==='weight'?`Berat ${r.weight_kg||''} kg`:r.type);
+    const name=r.description||r.food_name||r.exercise_type||(r.type==='sleep'?`Tidur ${r.value||''} jam`:r.type==='water'?`Minum air ${r.value||''} L`:r.type==='protein'?`Protein ${r.value||''} g`:r.type==='weight'?`Berat ${r.weight_kg||''} kg`:r.type==='stress'?`Level stress ${r.value||''}/10`:r.type);
     const kcal=r.calories?`${Math.round(r.calories)} kcal`:'';
     const time=r.time?r.time.slice(0,5).replace(':','.'):'--:--';
     return `<div class="hp-timeline-item"><span class="hp-timeline-time">${time}</span><span class="hp-timeline-dot"></span><span class="hp-timeline-emoji">${emoji}</span><span class="hp-timeline-name">${name}</span>${kcal?`<span class="hp-timeline-kcal">${kcal}</span>`:''}</div>`;
@@ -1480,10 +1484,10 @@ function renderHpRecentLogs(){
   if(!healthData.length){document.getElementById('health-content').innerHTML='<div class="empty"><div class="emoji">💪</div>Belum ada log kesehatan.</div>';document.getElementById('hp-view-all-btn').style.display='none';return;}
   document.getElementById('hp-view-all-btn').style.display='';
   const rows=hpLogsExpanded?healthData:healthData.slice(0,8);
-  const emojiMap={food:'🍽️',workout:'🏋️',sleep:'🌙',water:'💧',protein:'🍗',weight:'⚖️'};
+  const emojiMap={food:'🍽️',workout:'🏋️',sleep:'🌙',water:'💧',protein:'🍗',weight:'⚖️',stress:'🧠'};
   document.getElementById('health-content').innerHTML=`<table><thead><tr><th>Tanggal</th><th>Tipe</th><th>Detail</th><th>Kalori</th></tr></thead><tbody>`+
     rows.map(r=>{
-      const detail=r.description||r.food_name||r.exercise_type||(r.type==='sleep'?`${r.value||''} jam`:r.type==='water'?`${r.value||''} L`:r.type==='protein'?`${r.value||''} g`:r.type==='weight'?`${r.weight_kg||''} kg`:'—');
+      const detail=r.description||r.food_name||r.exercise_type||(r.type==='sleep'?`${r.value||''} jam`:r.type==='water'?`${r.value||''} L`:r.type==='protein'?`${r.value||''} g`:r.type==='weight'?`${r.weight_kg||''} kg`:r.type==='stress'?`${r.value||''}/10`:'—');
       return `<tr><td>${fmtDate(r.date)}</td><td>${emojiMap[r.type]||''} ${r.type}</td><td>${detail}</td><td>${r.calories?Math.round(r.calories):'—'}</td></tr>`;
     }).join('')+`</tbody></table>`;
   document.getElementById('hp-view-all-btn').textContent=hpLogsExpanded?'Sembunyikan':'Lihat Semua';
