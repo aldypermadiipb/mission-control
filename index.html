@@ -1268,10 +1268,9 @@ async function fetchSheet(sheet){
 // ── GLOBAL PERIOD TOGGLE (Today/Week/Month/Year) — shared state across Dashboard/Time Tracker/Health/Finance/Investment ──
 let globalPeriod=localStorage.getItem('mc_period')||'week';
 const PERIOD_LABELS={today:'Today',week:'Week',month:'Month',year:'Year'};
-function jakartaToday(){
-  const now=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Jakarta'}));
-  return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-}
+function jakartaNow(){return new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Jakarta'}));}
+function ymd(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function jakartaToday(){return ymd(jakartaNow());}
 function periodRange(period){
   const now=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Jakarta'}));
   const pad=n=>String(n).padStart(2,'0');
@@ -1286,7 +1285,7 @@ function periodRange(period){
 }
 function dateRangeToList(range){
   const out=[];const cur=new Date(range.start+'T00:00:00');const end=new Date(range.end+'T00:00:00');
-  while(cur<=end){ out.push(cur.toISOString().split('T')[0]); cur.setDate(cur.getDate()+1); }
+  while(cur<=end){ out.push(ymd(cur)); cur.setDate(cur.getDate()+1); }
   return out;
 }
 function renderPeriodToggle(elId){
@@ -1307,14 +1306,14 @@ function setGlobalPeriod(p){
 // ── HELPERS ──
 function fmtDate(d){if(!d)return'';try{return new Date(d).toLocaleDateString('id-ID',{day:'numeric',month:'short'})}catch{return d}}
 function fmtRp(n){return'Rp'+(parseFloat(n)||0).toLocaleString('id-ID')}
-function todayStr(){return new Date().toISOString().split('T')[0];}
-function dayStr(offsetDays){const d=new Date();d.setDate(d.getDate()+offsetDays);return d.toISOString().split('T')[0];}
+function todayStr(){return jakartaToday();}
+function dayStr(offsetDays){const d=jakartaNow();d.setDate(d.getDate()+offsetDays);return ymd(d);}
 function last7(){return Array.from({length:7},(_,i)=>dayStr(i-6));}
 function last8(){return Array.from({length:8},(_,i)=>dayStr(i-7));}
 function weekStart(offsetWeeks=0){
-  const d=new Date();const day=d.getDay();
+  const d=jakartaNow();const day=d.getDay();
   d.setDate(d.getDate()-(day===0?6:day-1)+offsetWeeks*7);
-  return d.toISOString().split('T')[0];
+  return ymd(d);
 }
 function getBadgeCls(cat){
   const c=(cat||'').toLowerCase();
