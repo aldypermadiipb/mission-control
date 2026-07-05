@@ -386,6 +386,123 @@ tr:hover td{background:#f9fafb;}
   .topbar-right{flex-wrap:wrap;justify-content:flex-end;gap:8px;}
   .tb-weather{display:none;}
 }
+
+/* ── HEALTH DASHBOARD REDESIGN ── */
+.hp-card{background:#fff;border-radius:20px;padding:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;margin-bottom:20px;}
+.hp-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap;}
+.hp-card-title{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;}
+.hp-edit-goal-btn{padding:6px 14px;border:1.5px solid var(--indigo);color:var(--indigo);background:#fff;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;}
+.hp-edit-goal-btn:hover{background:var(--indigo-light);}
+.hp-link{font-size:12px;color:var(--indigo);font-weight:600;cursor:pointer;background:none;border:none;flex-shrink:0;}
+.hp-link:hover{text-decoration:underline;}
+
+/* Row 1: Today's Progress */
+.hp-total-progress{display:flex;align-items:baseline;gap:6px;flex-shrink:0;}
+.hp-total-pct{font-size:18px;font-weight:800;color:var(--indigo);}
+.hp-total-label{font-size:11px;color:var(--text2);}
+.hp-metrics-row{display:grid;grid-template-columns:repeat(5,1fr);gap:24px;}
+.hp-metric{display:flex;flex-direction:column;gap:8px;min-width:0;}
+.hp-metric-top{display:flex;align-items:center;gap:10px;min-width:0;}
+.hp-metric-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.hp-metric-info{flex:1;min-width:0;}
+.hp-metric-label{font-size:12px;color:var(--text2);font-weight:600;}
+.hp-metric-value{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hp-metric-pct{font-size:11px;color:var(--text2);text-align:right;flex-shrink:0;}
+.hp-bar-row{display:flex;align-items:center;gap:8px;}
+.hp-bar-bg{flex:1;height:7px;background:#f3f4f6;border-radius:4px;overflow:hidden;}
+.hp-bar-fill{height:100%;border-radius:4px;transition:width .6s ease;}
+
+/* Row 2 */
+.hp-row2{display:grid;grid-template-columns:4fr 3fr 3fr;gap:20px;align-items:stretch;}
+.hp-row2 .hp-card{margin-bottom:0;}
+
+.hp-weight-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:12px;}
+.hp-weight-current-label{font-size:11px;color:var(--text3);margin-bottom:2px;}
+.hp-weight-current{font-size:30px;font-weight:800;color:var(--text);}
+.hp-weight-unit{font-size:13px;color:var(--text2);font-weight:600;}
+.hp-weight-delta{font-size:12px;font-weight:600;margin-top:4px;}
+.hp-weight-delta.down{color:var(--green);}
+.hp-weight-delta.up{color:var(--red);}
+.hp-weight-target-wrap{text-align:right;flex-shrink:0;}
+.hp-weight-target-label{font-size:11px;color:var(--text3);}
+.hp-weight-target{font-size:19px;font-weight:700;color:var(--text2);}
+.hp-weight-progress-wrap{margin:10px 0 14px;}
+.hp-weight-progress-label{display:flex;justify-content:flex-end;font-size:11px;color:var(--text2);margin-bottom:4px;}
+.hp-weight-chart-wrap{flex:1;min-height:160px;position:relative;}
+
+.hp-goals-list{display:flex;flex-direction:column;gap:16px;flex:1;}
+.hp-goal-item{display:flex;flex-direction:column;gap:6px;}
+.hp-goal-top{display:flex;align-items:center;gap:10px;min-width:0;}
+.hp-goal-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.hp-goal-info{flex:1;min-width:0;}
+.hp-goal-label{font-size:12px;font-weight:600;color:var(--text);}
+.hp-goal-target{font-size:10px;color:var(--text3);}
+.hp-goal-value{font-size:11px;color:var(--text2);font-weight:600;white-space:nowrap;flex-shrink:0;}
+
+.hp-insight-card{background:linear-gradient(135deg,#f5f3ff 0%,#ede9fe 100%);border:1px solid #ddd6fe;}
+.hp-insight-date{font-size:11px;color:var(--text2);flex-shrink:0;}
+.hp-insight-body{display:flex;gap:14px;flex:1;}
+.hp-insight-text{flex:1;font-size:12.5px;color:var(--text);line-height:1.6;min-width:0;}
+.hp-insight-text b{color:var(--indigo);}
+.hp-insight-robot{font-size:48px;flex-shrink:0;line-height:1;}
+.hp-insight-cause-label{font-size:12px;font-weight:700;color:var(--text);margin-top:10px;margin-bottom:4px;}
+.hp-insight-cause-list{font-size:12px;color:var(--text2);padding-left:16px;margin:0 0 10px;}
+.hp-insight-saran-label{font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.hp-insight-saran{font-size:12px;color:var(--text2);line-height:1.5;}
+.hp-insight-btn{margin-top:14px;padding:9px 16px;border:none;border-radius:9px;background:var(--indigo);color:#fff;font-size:12px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+.hp-insight-btn:hover{background:var(--indigo2);}
+
+/* Row 3 */
+.hp-row3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.hp-row3 .hp-card{margin-bottom:0;}
+.hp-chart-wrap-md{position:relative;height:210px;}
+
+/* Heatmap */
+.hp-heatmap-wrap{overflow-x:auto;padding-bottom:4px;}
+.hp-heatmap-inner{display:inline-flex;gap:6px;}
+.hp-heatmap-labels{display:flex;flex-direction:column;gap:3px;justify-content:space-between;padding-top:2px;}
+.hp-heatmap-daylabel{font-size:9px;color:var(--text3);height:13px;line-height:13px;}
+.hp-heatmap-weeks{display:flex;gap:3px;}
+.hp-heatmap-week{display:flex;flex-direction:column;gap:3px;}
+.hp-heatmap-cell{width:13px;height:13px;border-radius:3px;background:#f3f4f6;}
+.hp-heatmap-legend{display:flex;align-items:center;gap:6px;margin-top:12px;font-size:10px;color:var(--text3);flex-wrap:wrap;}
+.hp-heatmap-legend-cell{width:11px;height:11px;border-radius:3px;flex-shrink:0;}
+
+/* Health Score */
+.hp-score-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;flex:1;}
+.hp-score-ring{position:relative;width:130px;height:130px;flex-shrink:0;}
+.hp-score-num{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+.hp-score-val{font-size:30px;font-weight:800;color:var(--text);}
+.hp-score-max{font-size:11px;color:var(--text3);}
+.hp-score-breakdown{width:100%;display:flex;flex-direction:column;gap:10px;}
+.hp-score-row{display:flex;align-items:center;justify-content:space-between;font-size:12px;gap:8px;}
+.hp-score-row-label{display:flex;align-items:center;gap:8px;color:var(--text2);min-width:0;}
+.hp-score-row-val{font-weight:700;color:var(--text);flex-shrink:0;}
+
+/* Row 4: Timeline */
+.hp-timeline-cols{display:grid;grid-template-columns:1fr 1fr;gap:32px;}
+.hp-timeline-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f3f4f6;}
+.hp-timeline-item:last-child{border-bottom:none;}
+.hp-timeline-time{font-size:12px;color:var(--text3);width:40px;flex-shrink:0;font-variant-numeric:tabular-nums;}
+.hp-timeline-dot{width:8px;height:8px;border-radius:50%;background:var(--indigo);flex-shrink:0;}
+.hp-timeline-emoji{font-size:17px;flex-shrink:0;}
+.hp-timeline-name{flex:1;font-size:13px;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.hp-timeline-kcal{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:var(--indigo-light);color:var(--indigo);flex-shrink:0;white-space:nowrap;}
+
+@media (max-width:1100px){
+  .hp-row2{grid-template-columns:1fr;}
+  .hp-row3{grid-template-columns:1fr;}
+}
+@media (max-width:900px){
+  .hp-metrics-row{grid-template-columns:repeat(2,1fr);row-gap:20px;}
+}
+@media (max-width:640px){
+  .hp-metrics-row{grid-template-columns:1fr;}
+  .hp-timeline-cols{grid-template-columns:1fr;gap:0;}
+  .hp-card-header{flex-direction:row;}
+  .hp-insight-body{flex-direction:column-reverse;}
+  .hp-insight-robot{align-self:center;}
+}
 </style>
 </head>
 <body>
@@ -776,12 +893,123 @@ tr:hover td{background:#f9fafb;}
 
     <!-- ── HEALTH ── -->
     <div id="tab-health" class="section">
-      <div class="stat-grid sg3" id="health-stats"></div>
-      <div class="grid-2">
-        <div class="panel"><div class="panel-header"><span class="panel-title">Kalori per Log</span></div><div class="chart-wrap chart-md"><canvas id="chartHealth"></canvas></div></div>
-        <div class="panel"><div class="panel-header"><span class="panel-title">Food vs Workout</span></div><div style="display:flex;align-items:center;justify-content:center;height:210px;"><canvas id="chartHealthDonut" style="max-height:200px;max-width:200px;"></canvas></div></div>
+
+      <!-- Row 1: Today's Progress -->
+      <div class="hp-card">
+        <div class="hp-card-header">
+          <span class="hp-card-title">Today's Progress</span>
+          <div class="hp-total-progress"><span class="hp-total-pct" id="hp-total-pct">—</span><span class="hp-total-label">Total Progress</span></div>
+        </div>
+        <div class="hp-metrics-row" id="hp-metrics-row"></div>
       </div>
-      <div class="panel"><div class="panel-header"><span class="panel-title">Log Terbaru</span></div><div id="health-content"><div class="loading">Loading...</div></div></div>
+
+      <!-- Row 2: Weight Tracker | Monthly Goals | Hermes Insight -->
+      <div class="hp-row2">
+        <div class="hp-card">
+          <div class="hp-card-header">
+            <span class="hp-card-title">Berat Badan</span>
+            <button class="hp-edit-goal-btn" onclick="openGoalsModal()">Edit Goal</button>
+          </div>
+          <div class="hp-weight-top">
+            <div>
+              <div class="hp-weight-current-label">Sekarang</div>
+              <div class="hp-weight-current" id="hp-weight-current">—</div>
+              <div class="hp-weight-delta" id="hp-weight-delta"></div>
+            </div>
+            <div class="hp-weight-target-wrap">
+              <div class="hp-weight-target-label">Target</div>
+              <div class="hp-weight-target" id="hp-weight-target">—</div>
+            </div>
+          </div>
+          <div class="hp-weight-progress-wrap">
+            <div class="hp-weight-progress-label"><span id="hp-weight-progress-pct">—</span></div>
+            <div class="hp-bar-bg"><div class="hp-bar-fill" id="hp-weight-progress-bar" style="background:var(--indigo);width:0%;"></div></div>
+          </div>
+          <div class="hp-weight-chart-wrap"><canvas id="chartWeight"></canvas></div>
+        </div>
+
+        <div class="hp-card">
+          <div class="hp-card-header">
+            <span class="hp-card-title" id="hp-goals-month-title">Target Bulan Ini</span>
+          </div>
+          <div class="hp-goals-list" id="hp-goals-list"></div>
+        </div>
+
+        <div class="hp-card hp-insight-card">
+          <div class="hp-card-header">
+            <span class="hp-card-title">Hermes Insight</span>
+            <span class="hp-insight-date" id="hp-insight-date"></span>
+          </div>
+          <div class="hp-insight-body">
+            <div class="hp-insight-text" id="hp-insight-text">Menganalisis data...</div>
+            <div class="hp-insight-robot">🤖</div>
+          </div>
+          <button class="hp-insight-btn" onclick="switchTab('health',document.querySelector(&quot;[onclick*=health]&quot;))">Lihat Analisis Lengkap →</button>
+        </div>
+      </div>
+
+      <!-- Row 3: Kalori In vs Out | Workout Consistency | Health Score -->
+      <div class="hp-row3">
+        <div class="hp-card">
+          <div class="hp-card-header"><span class="hp-card-title">Kalori In vs Out</span></div>
+          <div class="hp-chart-wrap-md"><canvas id="chartCalInOut"></canvas></div>
+        </div>
+
+        <div class="hp-card">
+          <div class="hp-card-header"><span class="hp-card-title">Workout Consistency</span></div>
+          <div class="hp-heatmap-wrap"><div class="hp-heatmap-inner" id="hp-heatmap"></div></div>
+          <div class="hp-heatmap-legend">
+            <span class="hp-heatmap-legend-cell" style="background:#f3f4f6;"></span><span>Tidak ada</span>
+            <span class="hp-heatmap-legend-cell" style="background:#c7f0d8;"></span><span>Ringan</span>
+            <span class="hp-heatmap-legend-cell" style="background:#6ee7a8;"></span><span>Sedang</span>
+            <span class="hp-heatmap-legend-cell" style="background:#10b981;"></span><span>Berat</span>
+          </div>
+        </div>
+
+        <div class="hp-card">
+          <div class="hp-card-header"><span class="hp-card-title">Health Score</span></div>
+          <div class="hp-score-wrap">
+            <div class="hp-score-ring"><canvas id="chartHealthScore"></canvas><div class="hp-score-num"><div class="hp-score-val" id="hp-score-val">—</div><div class="hp-score-max">/100</div></div></div>
+            <div class="hp-score-breakdown" id="hp-score-breakdown"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 4: Aktivitas Hari Ini -->
+      <div class="hp-card">
+        <div class="hp-card-header"><span class="hp-card-title">Aktivitas Hari Ini</span></div>
+        <div class="hp-timeline-cols" id="hp-timeline"><div class="loading">Loading...</div></div>
+      </div>
+
+      <!-- Row 5: Recent Logs -->
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Recent Logs</span><span class="hp-link" onclick="hpShowAllLogs()" id="hp-view-all-btn">Lihat Semua</span></div>
+        <div id="health-content"><div class="loading">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- GOALS MODAL -->
+    <div class="modal-overlay hidden" id="goals-modal" onclick="if(event.target===this)closeGoalsModal()">
+      <div class="modal-box">
+        <div class="modal-title">Edit Goals</div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Target Berat (kg)</label><input type="number" step="0.1" class="form-input" id="goal-weight"></div>
+          <div class="form-group"><label class="form-label">Turun Berat Bulan Ini (kg)</label><input type="number" step="0.1" class="form-input" id="goal-weight-loss-month"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Kalori Harian (kcal)</label><input type="number" class="form-input" id="goal-calorie"></div>
+          <div class="form-group"><label class="form-label">Protein Harian (g)</label><input type="number" class="form-input" id="goal-protein"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Air Harian (liter)</label><input type="number" step="0.1" class="form-input" id="goal-water"></div>
+          <div class="form-group"><label class="form-label">Tidur Harian (jam)</label><input type="number" step="0.1" class="form-input" id="goal-sleep"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Target Workout (sesi/bulan)</label><input type="number" class="form-input" id="goal-workout-sessions"></div>
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="closeGoalsModal()">Batal</button>
+          <button class="btn-save" id="goals-save-btn" onclick="saveGoalsModal()">Simpan</button>
+        </div>
+      </div>
     </div>
 
     <!-- ── FINANCE ── -->
@@ -969,20 +1197,328 @@ async function loadTasks(){
   tasksData=await fetchSheet('Tasks');
 }
 
+let targetsData=[];
+
+function hpTodayJakarta(){
+  const now=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Jakarta'}));
+  return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+}
+function hpTarget(metric,fallback){
+  const t=targetsData.find(x=>x.domain==='health'&&x.metric===metric);
+  return t?parseFloat(t.target_value):fallback;
+}
+function hpPct(val,target){ if(!target)return 0; return Math.max(0,Math.min(100,Math.round(val/target*100))); }
+function hpFmtNum(n){
+  n=parseFloat(n)||0;
+  return n%1===0?n.toLocaleString('id-ID'):n.toLocaleString('id-ID',{maximumFractionDigits:1});
+}
+
 async function loadHealth(){
-  healthData=await fetchSheet('Health');
-  const food=healthData.filter(r=>r.type==='food');
-  const wkt=healthData.filter(r=>r.type==='workout');
-  const cal=food.reduce((s,r)=>s+(parseFloat(r.calories)||0),0);
-  document.getElementById('health-stats').innerHTML=
-    sc('sc-g2','🍽️','Food Logs',food.length,'entri')+
-    sc('sc-g1','💪','Workout',wkt.length,'sesi')+
-    sc('sc-g4','🔥','Kalori',Math.round(cal).toLocaleString(),'total');
-  const l10=healthData.slice(-10);
-  mkChart('chartHealth',{type:'bar',data:{labels:l10.map(r=>fmtDate(r.date||r.id)||'—'),datasets:[{label:'Kalori',data:l10.map(r=>parseFloat(r.calories)||0),backgroundColor:l10.map(r=>r.type==='food'?'rgba(139,92,246,.7)':'rgba(59,130,246,.7)'),borderColor:l10.map(r=>r.type==='food'?'#8b5cf6':'#3b82f6'),borderWidth:1,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#9ca3af',font:{size:9}},grid:{display:false}},y:{ticks:{color:'#9ca3af'},grid:{color:'#f3f4f6'}}}}});
-  mkChart('chartHealthDonut',{type:'doughnut',data:{labels:['Food','Workout'],datasets:[{data:[food.length,wkt.length],backgroundColor:['rgba(139,92,246,.7)','rgba(59,130,246,.7)'],borderColor:['#8b5cf6','#3b82f6'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'bottom',labels:{color:'#6b7280',font:{size:10}}}}}});
-  if(!healthData.length){document.getElementById('health-content').innerHTML='<div class="empty"><div class="emoji">💪</div>Belum ada log kesehatan.</div>';return;}
-  document.getElementById('health-content').innerHTML=`<table><thead><tr><th>Date</th><th>Type</th><th>Name</th><th>Calories</th><th>Duration</th></tr></thead><tbody>`+healthData.slice().reverse().slice(0,30).map(r=>`<tr><td>${fmtDate(r.date||r.id)}</td><td><span class="badge bpurple">${r.type||''}</span></td><td style="color:var(--text)">${r.food_name||r.exercise_type||r.description||''}</td><td>${r.calories||''}</td><td>${r.duration?r.duration+' min':''}</td></tr>`).join('')+`</tbody></table>`;
+  [healthData,targetsData]=await Promise.all([fetchSheet('Health'),fetchSheet('Targets')]);
+  renderHpToday();
+  renderHpWeight();
+  renderHpGoals();
+  renderHpInsight();
+  renderHpCalInOut();
+  renderHpHeatmap();
+  renderHpScore();
+  renderHpTimeline();
+  renderHpRecentLogs();
+}
+
+function renderHpToday(){
+  const today=hpTodayJakarta();
+  const todays=healthData.filter(r=>r.date===today);
+  const kalori=todays.filter(r=>r.type==='food').reduce((s,r)=>s+(parseFloat(r.calories)||0),0);
+  const workout=todays.filter(r=>r.type==='workout').reduce((s,r)=>s+(parseFloat(r.calories)||0),0);
+  const air=todays.filter(r=>r.type==='water').reduce((s,r)=>s+(parseFloat(r.value)||0),0);
+  const tidur=todays.filter(r=>r.type==='sleep').reduce((s,r)=>s+(parseFloat(r.value)||0),0);
+  const protein=todays.filter(r=>r.type==='protein').reduce((s,r)=>s+(parseFloat(r.value)||0),0);
+
+  const metrics=[
+    {icon:'🔥',label:'Kalori',val:kalori,target:hpTarget('calorie',2200),unit:'kcal',color:'#8b5cf6',bg:'#f5f3ff'},
+    {icon:'🏋️',label:'Workout',val:workout,target:hpTarget('workout_calorie',600),unit:'kcal',color:'#3b82f6',bg:'#eff6ff'},
+    {icon:'💧',label:'Air',val:air,target:hpTarget('water',3),unit:'Liter',color:'#06b6d4',bg:'#ecfeff'},
+    {icon:'🌙',label:'Tidur',val:tidur,target:hpTarget('sleep',8),unit:'Jam',color:'#6366f1',bg:'#eef2ff'},
+    {icon:'🍗',label:'Protein',val:protein,target:hpTarget('protein',160),unit:'gram',color:'#f59e0b',bg:'#fffbeb'}
+  ];
+
+  document.getElementById('hp-metrics-row').innerHTML=metrics.map(m=>{
+    const pct=hpPct(m.val,m.target);
+    return `<div class="hp-metric">
+      <div class="hp-metric-top">
+        <div class="hp-metric-icon" style="background:${m.bg};">${m.icon}</div>
+        <div class="hp-metric-info"><div class="hp-metric-label">${m.label}</div><div class="hp-metric-value">${hpFmtNum(m.val)} / ${hpFmtNum(m.target)} ${m.unit}</div></div>
+        <div class="hp-metric-pct">${pct}%</div>
+      </div>
+      <div class="hp-bar-bg"><div class="hp-bar-fill" style="width:${pct}%;background:${m.color};"></div></div>
+    </div>`;
+  }).join('');
+
+  const totalPct=Math.round(metrics.reduce((s,m)=>s+hpPct(m.val,m.target),0)/metrics.length);
+  document.getElementById('hp-total-pct').textContent=totalPct+'%';
+}
+
+function renderHpWeight(){
+  const weights=healthData.filter(r=>r.type==='weight'&&r.weight_kg!=null).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const target=hpTarget('weight',70);
+  document.getElementById('hp-weight-target').textContent=hpFmtNum(target)+' kg';
+  if(!weights.length){
+    document.getElementById('hp-weight-current').textContent='—';
+    document.getElementById('hp-weight-progress-pct').textContent='Belum ada data berat';
+    document.getElementById('hp-weight-progress-bar').style.width='0%';
+    mkChart('chartWeight',{type:'line',data:{labels:[],datasets:[]},options:{responsive:true,maintainAspectRatio:false}});
+    return;
+  }
+  const current=parseFloat(weights[weights.length-1].weight_kg);
+  document.getElementById('hp-weight-current').innerHTML=`${hpFmtNum(current)}<span class="hp-weight-unit"> kg</span>`;
+
+  const cutoff=new Date(); cutoff.setDate(cutoff.getDate()-30);
+  const within30=weights.filter(w=>new Date(w.date)>=cutoff);
+  const baseline30=within30.length?parseFloat(within30[0].weight_kg):parseFloat(weights[0].weight_kg);
+  const delta30=current-baseline30;
+  const deltaEl=document.getElementById('hp-weight-delta');
+  deltaEl.textContent=`${delta30<=0?'↓':'↑'} ${Math.abs(delta30).toFixed(1)} kg dari 30 hari lalu`;
+  deltaEl.className='hp-weight-delta '+(delta30<=0?'down':'up');
+
+  const startWeight=parseFloat(weights[0].weight_kg);
+  let progressPct=0;
+  if(startWeight!==target){
+    progressPct=Math.max(0,Math.min(100,Math.round((startWeight-current)/(startWeight-target)*100)));
+  }
+  document.getElementById('hp-weight-progress-pct').textContent=progressPct+'%';
+  document.getElementById('hp-weight-progress-bar').style.width=progressPct+'%';
+
+  mkChart('chartWeight',{type:'line',data:{
+    labels:weights.map(w=>fmtDate(w.date)),
+    datasets:[
+      {label:'Berat',data:weights.map(w=>parseFloat(w.weight_kg)),borderColor:'#6366f1',backgroundColor:'rgba(99,102,241,.08)',fill:true,tension:.35,pointRadius:3,pointBackgroundColor:'#6366f1',borderWidth:2},
+      {label:'Target',data:weights.map(()=>target),borderColor:'#10b981',borderDash:[6,4],pointRadius:0,borderWidth:1.5,fill:false}
+    ]
+  },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#9ca3af',font:{size:9}},grid:{display:false}},y:{ticks:{color:'#9ca3af'},grid:{color:'#f3f4f6'}}}}});
+}
+
+function renderHpGoals(){
+  const now=new Date();
+  document.getElementById('hp-goals-month-title').textContent='Target Bulan '+now.toLocaleDateString('id-ID',{month:'long'});
+  const monthStr=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const thisMonthRows=healthData.filter(r=>(r.date||'').startsWith(monthStr));
+
+  const weights=healthData.filter(r=>r.type==='weight'&&r.weight_kg!=null).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const monthWeights=weights.filter(w=>(w.date||'').startsWith(monthStr));
+  const startW=monthWeights.length?parseFloat(monthWeights[0].weight_kg):(weights.length?parseFloat(weights[weights.length-1].weight_kg):0);
+  const curW=weights.length?parseFloat(weights[weights.length-1].weight_kg):0;
+  const weightLoss=Math.max(0,startW-curW);
+
+  const workoutCount=thisMonthRows.filter(r=>r.type==='workout').length;
+
+  const foodByDate={};
+  thisMonthRows.filter(r=>r.type==='food').forEach(r=>{foodByDate[r.date]=(foodByDate[r.date]||0)+(parseFloat(r.calories)||0);});
+  const calDays=Object.keys(foodByDate);
+  const avgCal=calDays.length?calDays.reduce((s,d)=>s+foodByDate[d],0)/calDays.length:0;
+
+  const totalWater=thisMonthRows.filter(r=>r.type==='water').reduce((s,r)=>s+(parseFloat(r.value)||0),0);
+  const waterMonthTarget=hpTarget('water',3)*now.getDate();
+
+  const goals=[
+    {icon:'⚖️',label:'Turun berat badan',current:Math.round(weightLoss*10)/10,target:hpTarget('weight_loss_month',2),unit:'kg',color:'#8b5cf6',bg:'#f5f3ff'},
+    {icon:'🏋️',label:'Workout',current:workoutCount,target:hpTarget('workout_sessions',20),unit:'sesi',color:'#10b981',bg:'#ecfdf5'},
+    {icon:'🔥',label:'Kalori harian rata-rata',current:Math.round(avgCal),target:hpTarget('calorie',2200),unit:'kcal',color:'#f59e0b',bg:'#fffbeb'},
+    {icon:'💧',label:'Minum air',current:Math.round(totalWater*10)/10,target:Math.round(waterMonthTarget*10)/10,unit:'Liter',color:'#3b82f6',bg:'#eff6ff'}
+  ];
+
+  document.getElementById('hp-goals-list').innerHTML=goals.map(g=>{
+    const pct=hpPct(g.current,g.target);
+    return `<div class="hp-goal-item">
+      <div class="hp-goal-top">
+        <div class="hp-goal-icon" style="background:${g.bg};">${g.icon}</div>
+        <div class="hp-goal-info"><div class="hp-goal-label">${g.label}</div><div class="hp-goal-target">Target ${hpFmtNum(g.target)} ${g.unit}</div></div>
+        <div class="hp-goal-value">${hpFmtNum(g.current)} / ${hpFmtNum(g.target)} ${g.unit}</div>
+      </div>
+      <div class="hp-bar-bg"><div class="hp-bar-fill" style="width:${pct}%;background:${g.color};"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function renderHpInsight(){
+  document.getElementById('hp-insight-date').textContent=new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  const thisWeekStart=new Date(weekStart(0));
+  const lastWeekStart=new Date(weekStart(-1));
+  const foodRows=healthData.filter(r=>r.type==='food');
+  const sumCalInRange=(rows,start,end)=>rows.filter(r=>{const d=new Date(r.date);return d>=start&&d<end;}).reduce((s,r)=>s+(parseFloat(r.calories)||0),0);
+  const thisWeekCal=sumCalInRange(foodRows,thisWeekStart,new Date(thisWeekStart.getTime()+7*86400000));
+  const lastWeekCal=sumCalInRange(foodRows,lastWeekStart,thisWeekStart);
+  const delta=thisWeekCal-lastWeekCal;
+
+  const thisWeekFood=foodRows.filter(r=>new Date(r.date)>=thisWeekStart);
+  const byDesc={};
+  thisWeekFood.forEach(r=>{const k=r.description||r.food_name||'?';byDesc[k]=(byDesc[k]||0)+(parseFloat(r.calories)||0);});
+  const topItems=Object.entries(byDesc).sort((a,b)=>b[1]-a[1]).slice(0,2);
+
+  let text,causeHtml='',saran;
+  if(!lastWeekCal&&!thisWeekCal){
+    text='Belum cukup data buat analisis mingguan. Terus log makanan &amp; workout kamu ya.';
+    saran='Konsisten log tiap hari biar Hermes bisa kasih insight yang lebih akurat.';
+  }else if(delta>0){
+    text=`Minggu ini kamu makan <b>+${hpFmtNum(Math.round(delta))} kcal</b> lebih banyak dibanding minggu lalu.`;
+    if(topItems.length)causeHtml=`<div class="hp-insight-cause-label">Penyebab terbesar:</div><ul class="hp-insight-cause-list">${topItems.map(([k,v])=>`<li>${k} (${Math.round(v)} kcal)</li>`).join('')}</ul>`;
+    saran=topItems.length?`Kurangi porsi ${topItems[0][0]} minggu depan untuk membantu mencapai target kalori harianmu.`:'Coba kurangi porsi makan minggu depan untuk kembali ke target kalori harian.';
+  }else{
+    text=`Minggu ini kamu makan <b>${hpFmtNum(Math.round(Math.abs(delta)))} kcal</b> lebih sedikit dibanding minggu lalu. Kerja bagus!`;
+    saran='Pertahankan pola makan minggu ini dan jangan lupa tetap workout rutin.';
+  }
+  document.getElementById('hp-insight-text').innerHTML=`${text}${causeHtml}<div class="hp-insight-saran-label">Saran:</div><div class="hp-insight-saran">${saran}</div>`;
+}
+
+function renderHpCalInOut(){
+  const days=last7();
+  const inData=days.map(d=>healthData.filter(r=>r.type==='food'&&r.date===d).reduce((s,r)=>s+(parseFloat(r.calories)||0),0));
+  const outData=days.map(d=>healthData.filter(r=>r.type==='workout'&&r.date===d).reduce((s,r)=>s+(parseFloat(r.calories)||0),0));
+  mkChart('chartCalInOut',{type:'bar',data:{labels:days.map(fmtDate),datasets:[
+    {label:'Kalori Masuk',data:inData,backgroundColor:'rgba(139,92,246,.75)',borderRadius:6},
+    {label:'Kalori Keluar',data:outData,backgroundColor:'rgba(59,130,246,.75)',borderRadius:6}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#6b7280',font:{size:10},boxWidth:10}}},scales:{x:{ticks:{color:'#9ca3af',font:{size:9}},grid:{display:false}},y:{ticks:{color:'#9ca3af'},grid:{color:'#f3f4f6'}}}}});
+}
+
+function renderHpHeatmap(){
+  const totalDays=91;
+  const today=new Date(hpTodayJakarta()+'T00:00:00');
+  const rangeStart=new Date(today.getTime()-totalDays*86400000);
+  const startCandidate=new Date(today); startCandidate.setDate(startCandidate.getDate()-(totalDays-1));
+  const startDow=(startCandidate.getDay()+6)%7;
+  startCandidate.setDate(startCandidate.getDate()-startDow);
+
+  const byDate={};
+  healthData.filter(r=>r.type==='workout').forEach(r=>{byDate[r.date]=(byDate[r.date]||0)+(parseFloat(r.calories)||0);});
+  function bucket(cal){ if(!cal)return'#f3f4f6'; if(cal<300)return'#c7f0d8'; if(cal<600)return'#6ee7a8'; return'#10b981'; }
+
+  const weeks=[];
+  let cursor=new Date(startCandidate);
+  while(cursor<=today){
+    const week=[];
+    for(let i=0;i<7;i++){
+      const dstr=`${cursor.getFullYear()}-${String(cursor.getMonth()+1).padStart(2,'0')}-${String(cursor.getDate()).padStart(2,'0')}`;
+      week.push(dstr);
+      cursor.setDate(cursor.getDate()+1);
+    }
+    weeks.push(week);
+  }
+
+  const labelsHtml=['Sen','Sel','Rab','Kam','Jum','Sab','Min'].map(d=>`<div class="hp-heatmap-daylabel">${d}</div>`).join('');
+  const weeksHtml=weeks.map(week=>`<div class="hp-heatmap-week">${week.map(dstr=>{
+    const d=new Date(dstr+'T00:00:00');
+    if(d>today||d<rangeStart)return `<div class="hp-heatmap-cell" style="background:transparent;"></div>`;
+    const cal=byDate[dstr]||0;
+    const title=`${dstr}: ${cal?Math.round(cal)+' kcal':'Tidak ada workout'}`;
+    return `<div class="hp-heatmap-cell" style="background:${bucket(cal)};" title="${title}"></div>`;
+  }).join('')}</div>`).join('');
+
+  document.getElementById('hp-heatmap').innerHTML=`<div class="hp-heatmap-labels">${labelsHtml}</div><div class="hp-heatmap-weeks">${weeksHtml}</div>`;
+}
+
+function renderHpScore(){
+  const last7Days=last7();
+  const foodRows=healthData.filter(r=>r.type==='food'&&last7Days.includes(r.date));
+  const byDateCal={};
+  foodRows.forEach(r=>{byDateCal[r.date]=(byDateCal[r.date]||0)+(parseFloat(r.calories)||0);});
+  const calDays=Object.keys(byDateCal);
+  const avgCal=calDays.length?calDays.reduce((s,d)=>s+byDateCal[d],0)/calDays.length:0;
+  const calTarget=hpTarget('calorie',2200);
+  const makanScore=calTarget?Math.max(0,100-Math.round(Math.abs(avgCal-calTarget)/calTarget*100)):0;
+
+  const now=new Date();
+  const monthStr=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const workoutCount=healthData.filter(r=>r.type==='workout'&&(r.date||'').startsWith(monthStr)).length;
+  const workoutScore=hpPct(workoutCount,hpTarget('workout_sessions',20));
+
+  const sleepRows=healthData.filter(r=>r.type==='sleep'&&last7Days.includes(r.date));
+  const avgSleep=sleepRows.length?sleepRows.reduce((s,r)=>s+(parseFloat(r.value)||0),0)/sleepRows.length:0;
+  const sleepScore=hpPct(avgSleep,hpTarget('sleep',8));
+
+  const waterRows=healthData.filter(r=>r.type==='water'&&last7Days.includes(r.date));
+  const byDateWater={};
+  waterRows.forEach(r=>{byDateWater[r.date]=(byDateWater[r.date]||0)+(parseFloat(r.value)||0);});
+  const waterDays=Object.keys(byDateWater);
+  const avgWater=waterDays.length?waterDays.reduce((s,d)=>s+byDateWater[d],0)/waterDays.length:0;
+  const waterScore=hpPct(avgWater,hpTarget('water',3));
+
+  const stressScore=75; // belum ada intent/tracking stress — placeholder tetap sampai ada sumber data asli
+
+  const breakdown=[
+    {label:'Makan',val:makanScore,color:'#8b5cf6'},
+    {label:'Workout',val:workoutScore,color:'#10b981'},
+    {label:'Tidur',val:sleepScore,color:'#6366f1'},
+    {label:'Air',val:waterScore,color:'#06b6d4'},
+    {label:'Stress',val:stressScore,color:'#f59e0b'}
+  ];
+  const overall=Math.round(breakdown.reduce((s,b)=>s+b.val,0)/breakdown.length);
+  document.getElementById('hp-score-val').textContent=overall;
+  document.getElementById('hp-score-breakdown').innerHTML=breakdown.map(b=>
+    `<div class="hp-score-row"><div class="hp-score-row-label"><span style="width:8px;height:8px;border-radius:50%;background:${b.color};display:inline-block;"></span>${b.label}</div><div class="hp-score-row-val">${b.val}</div></div>`
+  ).join('');
+  mkChart('chartHealthScore',{type:'doughnut',data:{datasets:[{data:[overall,100-overall],backgroundColor:['#6366f1','#f3f4f6'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'78%',plugins:{legend:{display:false},tooltip:{enabled:false}}}});
+}
+
+function renderHpTimeline(){
+  const today=hpTodayJakarta();
+  const todays=healthData.filter(r=>r.date===today).sort((a,b)=>(a.time||'99:99').localeCompare(b.time||'99:99'));
+  if(!todays.length){document.getElementById('hp-timeline').innerHTML='<div class="empty"><div class="emoji">📋</div>Belum ada aktivitas hari ini.</div>';return;}
+  const emojiMap={food:'🍽️',workout:'🏋️',sleep:'🌙',water:'💧',protein:'🍗',weight:'⚖️'};
+  const items=todays.map(r=>{
+    const emoji=emojiMap[r.type]||'📋';
+    const name=r.description||r.food_name||r.exercise_type||(r.type==='sleep'?`Tidur ${r.value||''} jam`:r.type==='water'?`Minum air ${r.value||''} L`:r.type==='protein'?`Protein ${r.value||''} g`:r.type==='weight'?`Berat ${r.weight_kg||''} kg`:r.type);
+    const kcal=r.calories?`${Math.round(r.calories)} kcal`:'';
+    const time=r.time?r.time.slice(0,5).replace(':','.'):'--:--';
+    return `<div class="hp-timeline-item"><span class="hp-timeline-time">${time}</span><span class="hp-timeline-dot"></span><span class="hp-timeline-emoji">${emoji}</span><span class="hp-timeline-name">${name}</span>${kcal?`<span class="hp-timeline-kcal">${kcal}</span>`:''}</div>`;
+  });
+  const mid=Math.ceil(items.length/2);
+  document.getElementById('hp-timeline').innerHTML=`<div>${items.slice(0,mid).join('')}</div><div>${items.slice(mid).join('')}</div>`;
+}
+
+let hpLogsExpanded=false;
+function renderHpRecentLogs(){
+  if(!healthData.length){document.getElementById('health-content').innerHTML='<div class="empty"><div class="emoji">💪</div>Belum ada log kesehatan.</div>';document.getElementById('hp-view-all-btn').style.display='none';return;}
+  document.getElementById('hp-view-all-btn').style.display='';
+  const rows=hpLogsExpanded?healthData:healthData.slice(0,8);
+  const emojiMap={food:'🍽️',workout:'🏋️',sleep:'🌙',water:'💧',protein:'🍗',weight:'⚖️'};
+  document.getElementById('health-content').innerHTML=`<table><thead><tr><th>Tanggal</th><th>Tipe</th><th>Detail</th><th>Kalori</th></tr></thead><tbody>`+
+    rows.map(r=>{
+      const detail=r.description||r.food_name||r.exercise_type||(r.type==='sleep'?`${r.value||''} jam`:r.type==='water'?`${r.value||''} L`:r.type==='protein'?`${r.value||''} g`:r.type==='weight'?`${r.weight_kg||''} kg`:'—');
+      return `<tr><td>${fmtDate(r.date)}</td><td>${emojiMap[r.type]||''} ${r.type}</td><td>${detail}</td><td>${r.calories?Math.round(r.calories):'—'}</td></tr>`;
+    }).join('')+`</tbody></table>`;
+  document.getElementById('hp-view-all-btn').textContent=hpLogsExpanded?'Sembunyikan':'Lihat Semua';
+}
+function hpShowAllLogs(){ hpLogsExpanded=!hpLogsExpanded; renderHpRecentLogs(); }
+
+function openGoalsModal(){
+  document.getElementById('goal-weight').value=hpTarget('weight','');
+  document.getElementById('goal-weight-loss-month').value=hpTarget('weight_loss_month','');
+  document.getElementById('goal-calorie').value=hpTarget('calorie','');
+  document.getElementById('goal-protein').value=hpTarget('protein','');
+  document.getElementById('goal-water').value=hpTarget('water','');
+  document.getElementById('goal-sleep').value=hpTarget('sleep','');
+  document.getElementById('goal-workout-sessions').value=hpTarget('workout_sessions','');
+  document.getElementById('goals-modal').classList.remove('hidden');
+}
+function closeGoalsModal(){ document.getElementById('goals-modal').classList.add('hidden'); }
+async function saveGoalsModal(){
+  const btn=document.getElementById('goals-save-btn'); btn.disabled=true;
+  const fields=[
+    ['weight','goal-weight','ongoing'],
+    ['weight_loss_month','goal-weight-loss-month','monthly'],
+    ['calorie','goal-calorie','daily'],
+    ['protein','goal-protein','daily'],
+    ['water','goal-water','daily'],
+    ['sleep','goal-sleep','daily'],
+    ['workout_sessions','goal-workout-sessions','monthly']
+  ];
+  for(const [metric,elId,period] of fields){
+    const val=parseFloat(document.getElementById(elId).value);
+    if(!isNaN(val))await apiWrite('POST','/targets',{domain:'health',metric,target_value:val,period});
+  }
+  btn.disabled=false;
+  closeGoalsModal();
+  await loadHealth();
 }
 
 async function loadFinance(){
