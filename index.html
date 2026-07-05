@@ -1340,8 +1340,9 @@ function renderHpGoals(){
   }).join('');
 }
 
-function renderHpInsight(){
-  document.getElementById('hp-insight-date').textContent=new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+function hpBoldMd(s){ return (s||'').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>'); }
+
+function hpInsightRuleBasedFallback(){
   const thisWeekStart=new Date(weekStart(0));
   const lastWeekStart=new Date(weekStart(-1));
   const foodRows=healthData.filter(r=>r.type==='food');
@@ -1355,19 +1356,34 @@ function renderHpInsight(){
   thisWeekFood.forEach(r=>{const k=r.description||r.food_name||'?';byDesc[k]=(byDesc[k]||0)+(parseFloat(r.calories)||0);});
   const topItems=Object.entries(byDesc).sort((a,b)=>b[1]-a[1]).slice(0,2);
 
-  let text,causeHtml='',saran;
   if(!lastWeekCal&&!thisWeekCal){
-    text='Belum cukup data buat analisis mingguan. Terus log makanan &amp; workout kamu ya.';
-    saran='Konsisten log tiap hari biar Hermes bisa kasih insight yang lebih akurat.';
+    return {insight:'Belum cukup data buat analisis mingguan. Terus log makanan & workout kamu ya.',causes:[],suggestion:'Konsisten log tiap hari biar Hermes bisa kasih insight yang lebih akurat.'};
   }else if(delta>0){
-    text=`Minggu ini kamu makan <b>+${hpFmtNum(Math.round(delta))} kcal</b> lebih banyak dibanding minggu lalu.`;
-    if(topItems.length)causeHtml=`<div class="hp-insight-cause-label">Penyebab terbesar:</div><ul class="hp-insight-cause-list">${topItems.map(([k,v])=>`<li>${k} (${Math.round(v)} kcal)</li>`).join('')}</ul>`;
-    saran=topItems.length?`Kurangi porsi ${topItems[0][0]} minggu depan untuk membantu mencapai target kalori harianmu.`:'Coba kurangi porsi makan minggu depan untuk kembali ke target kalori harian.';
+    return {
+      insight:`Minggu ini kamu makan **+${hpFmtNum(Math.round(delta))} kcal** lebih banyak dibanding minggu lalu.`,
+      causes:topItems.map(([k,v])=>`${k} (${Math.round(v)} kcal)`),
+      suggestion:topItems.length?`Kurangi porsi ${topItems[0][0]} minggu depan untuk membantu mencapai target kalori harianmu.`:'Coba kurangi porsi makan minggu depan untuk kembali ke target kalori harian.'
+    };
   }else{
-    text=`Minggu ini kamu makan <b>${hpFmtNum(Math.round(Math.abs(delta)))} kcal</b> lebih sedikit dibanding minggu lalu. Kerja bagus!`;
-    saran='Pertahankan pola makan minggu ini dan jangan lupa tetap workout rutin.';
+    return {insight:`Minggu ini kamu makan **${hpFmtNum(Math.round(Math.abs(delta)))} kcal** lebih sedikit dibanding minggu lalu. Kerja bagus!`,causes:[],suggestion:'Pertahankan pola makan minggu ini dan jangan lupa tetap workout rutin.'};
   }
-  document.getElementById('hp-insight-text').innerHTML=`${text}${causeHtml}<div class="hp-insight-saran-label">Saran:</div><div class="hp-insight-saran">${saran}</div>`;
+}
+
+function hpRenderInsightContent(data){
+  const causeHtml=(data.causes&&data.causes.length)?`<div class="hp-insight-cause-label">Penyebab terbesar:</div><ul class="hp-insight-cause-list">${data.causes.map(c=>`<li>${c}</li>`).join('')}</ul>`:'';
+  document.getElementById('hp-insight-text').innerHTML=`${hpBoldMd(data.insight)}${causeHtml}<div class="hp-insight-saran-label">Saran:</div><div class="hp-insight-saran">${hpBoldMd(data.suggestion)}</div>`;
+}
+
+async function renderHpInsight(){
+  document.getElementById('hp-insight-date').textContent=new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  try{
+    const r=await fetch(API_BASE+'/insight?domain=health');
+    if(!r.ok)throw new Error('insight fetch failed');
+    const data=await r.json();
+    hpRenderInsightContent(data);
+  }catch{
+    hpRenderInsightContent(hpInsightRuleBasedFallback());
+  }
 }
 
 function renderHpCalInOut(){
