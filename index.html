@@ -169,6 +169,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tips-bar{background:#fff;border-radius:14px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);margin-top:16px;}
 .tips-left{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);}
 .tips-right{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.tips-bar{flex-wrap:wrap;gap:8px;}
+
+/* Dashboard responsive (basic — no custom mobile layout, just avoid overflow/crush) */
+@media (max-width:1100px){
+  .stat-row{grid-template-columns:repeat(3,1fr);}
+  .col3{grid-template-columns:1fr;}
+  .rw-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media (max-width:860px){
+  .ai-briefing{grid-template-columns:1fr;}
+  .stat-row{grid-template-columns:repeat(2,1fr);}
+  .qa-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media (max-width:480px){
+  .stat-row{grid-template-columns:1fr;}
+  .rw-grid{grid-template-columns:1fr;}
+}
 
 /* ─── OTHER TABS ─── */
 .stat-grid{display:grid;gap:12px;margin-bottom:16px;}
@@ -762,7 +779,7 @@ tr:hover td{background:#f9fafb;}
         </div>
         <div class="rw-grid">
           <div class="rw-card">
-            <div class="rw-label">Kalori</div>
+            <div class="rw-label">Health Score</div>
             <div class="rw-sub">Rata-rata / hari</div>
             <div class="rw-val" id="rw-cal-val">—</div>
             <div class="rw-spark"><canvas id="spark-cal"></canvas></div>
@@ -1522,8 +1539,8 @@ function renderHpHeatmap(){
   document.getElementById('hp-heatmap').innerHTML=`<div class="hp-heatmap-labels">${labelsHtml}</div><div class="hp-heatmap-weeks">${weeksHtml}</div>`;
 }
 
-function renderHpScore(){
-  const last7Days=last7();
+function computeHealthScore(dateList){
+  const last7Days=dateList||last7();
   const foodRows=healthData.filter(r=>r.type==='food'&&last7Days.includes(r.date));
   const byDateCal={};
   foodRows.forEach(r=>{byDateCal[r.date]=(byDateCal[r.date]||0)+(parseFloat(r.calories)||0);});
@@ -1562,6 +1579,11 @@ function renderHpScore(){
   ];
   const scored=breakdown.filter(b=>b.val!=null);
   const overall=scored.length?Math.round(scored.reduce((s,b)=>s+b.val,0)/scored.length):0;
+  return{overall,breakdown};
+}
+
+function renderHpScore(){
+  const{overall,breakdown}=computeHealthScore();
   document.getElementById('hp-score-val').textContent=overall;
   document.getElementById('hp-score-breakdown').innerHTML=breakdown.map(b=>
     `<div class="hp-score-row"><div class="hp-score-row-label"><span style="width:8px;height:8px;border-radius:50%;background:${b.color};display:inline-block;"></span>${b.label}</div><div class="hp-score-row-val">${b.val==null?'—':b.val}</div></div>`
@@ -2268,21 +2290,18 @@ function buildDashboard(){
   const blDots=l8.map(d=>englishData.some(r=>r.date===d));
 
   // Sparkline data
-  const dCal=l7.map(d=>healthData.filter(r=>r.type==='food'&&r.date===d).reduce((s,r)=>s+(parseFloat(r.calories)||0),0));
   const dExp=l7.map(d=>financeData.filter(r=>r.type==='expense'&&r.date===d).reduce((s,r)=>s+(parseFloat(r.amount)||0),0));
   const dVocab=l7.map(d=>englishData.filter(r=>r.date===d).length);
   const dTasks=l7.map(()=>0); // no daily done tracking without due_date
 
   // Weekly averages
-  const avgCal=Math.round(dCal.reduce((s,v)=>s+v,0)/7);
   const avgExp=Math.round(thisWkExp/7);
 
-  // Prev week cal
-  const prevWkCal=Math.round(Array.from({length:7},(_,i)=>{
-    const d=dayStr(i-14);
-    return healthData.filter(r=>r.type==='food'&&r.date===d).reduce((s,r)=>s+(parseFloat(r.calories)||0),0);
-  }).reduce((s,v)=>s+v,0)/7);
-  const calChg=prevWkCal?Math.round((avgCal-prevWkCal)/prevWkCal*100):0;
+  // Health Score trend (7-day, replaces old Kalori mini-trend per Gambar 5 desktop layout)
+  const dHealthScore=l7.map(d=>computeHealthScore([d]).overall);
+  const thisWkHealthScore=computeHealthScore(l7).overall;
+  const prevWkHealthScore=computeHealthScore(Array.from({length:7},(_,i)=>dayStr(i-14))).overall;
+  const healthScoreChg=prevWkHealthScore?Math.round((thisWkHealthScore-prevWkHealthScore)/prevWkHealthScore*100):0;
 
   // Completion
   const completionPct=tasksData.length?Math.round(done.length/tasksData.length*100):0;
@@ -2314,10 +2333,17 @@ function buildDashboard(){
     ?ins.map(x=>`<div class="aib-insight"><span class="aib-insight-icon">${x.i}</span><span>${x.t}</span></div>`).join('')
     :'<div style="color:var(--text3);font-size:13px;">Belum ada data hari ini.</div>';
 
-  // Progress ring
-  const ringOffset=(CIRC44*(1-taskPct/100)).toFixed(1);
+  // Progress ring — composite Daily Progress: Vocab target + Pengeluaran target + Task/Agenda completion + Health Score
+  const vocabDailyPct=Math.min(100,totalVocab?Math.round(wkVocab/Math.max(totalVocab*.1,1)*100):0);
+  const spendDailyPct=Math.max(0,Math.min(100,Math.round((1-todayExpAmt/BUDGET)*100)));
+  const totalAgendaItems=tasksData.length+todayEv.length;
+  const doneAgendaItems=done.length+todayEv.filter(e=>e.time&&e.time<=nowT).length;
+  const taskAgendaPct=totalAgendaItems?Math.round(doneAgendaItems/totalAgendaItems*100):100;
+  const healthScorePct=computeHealthScore().overall;
+  const dailyProgressPct=Math.round((vocabDailyPct+spendDailyPct+taskAgendaPct+healthScorePct)/4);
+  const ringOffset=(CIRC44*(1-dailyProgressPct/100)).toFixed(1);
   document.getElementById('ring-circle').setAttribute('stroke-dashoffset',ringOffset);
-  document.getElementById('ring-val').textContent=taskPct+'%';
+  document.getElementById('ring-val').textContent=dailyProgressPct+'%';
 
   // Stat cards
   const $=id=>document.getElementById(id);
@@ -2392,7 +2418,7 @@ function buildDashboard(){
   $('mini-vocab-pct').textContent=vocabPct+'%';
 
   // Ringkasan
-  $('rw-cal-val').innerHTML=`${avgCal.toLocaleString('id-ID')} kkal <span class="rw-badge ${calChg>=0?'rw-badge-green':'rw-badge-red'}">${calChg>=0?'▲':'▼'} ${Math.abs(calChg)}%</span>`;
+  $('rw-cal-val').innerHTML=`${thisWkHealthScore} <span class="rw-badge ${healthScoreChg>=0?'rw-badge-green':'rw-badge-red'}">${healthScoreChg>=0?'▲':'▼'} ${Math.abs(healthScoreChg)}%</span>`;
   $('rw-exp-val').innerHTML=`${fmtRp(avgExp)} <span class="rw-badge ${expChg<=0?'rw-badge-green':'rw-badge-red'}">${expChg>=0?'▲':'▼'} ${Math.abs(expChg)}%</span>`;
   $('rw-tasks-val').innerHTML=`${completionPct}%`;
   $('rw-vocab-val').innerHTML=`${wkVocab} kata`;
@@ -2400,7 +2426,7 @@ function buildDashboard(){
   // Sparklines (slight delay so canvases are rendered)
   setTimeout(()=>{
     const dayLabels=l7.map(d=>new Date(d+'T00:00:00').toLocaleDateString('en',{weekday:'short'}));
-    mkSparklineLabeled('spark-cal',dayLabels,dCal,'#10b981','rgba(16,185,129,.1)');
+    mkSparklineLabeled('spark-cal',dayLabels,dHealthScore,'#10b981','rgba(16,185,129,.1)');
     mkSparklineLabeled('spark-exp',dayLabels,dExp,'#ec4899','rgba(236,72,153,.1)');
     mkSparklineLabeled('spark-tasks',dayLabels,dTasks,'#6366f1','rgba(99,102,241,.1)');
     mkSparklineLabeled('spark-vocab',dayLabels,dVocab,'#3b82f6','rgba(59,130,246,.1)');
