@@ -503,6 +503,52 @@ tr:hover td{background:#f9fafb;}
   .hp-insight-body{flex-direction:column-reverse;}
   .hp-insight-robot{align-self:center;}
 }
+
+/* ── FINANCE DASHBOARD REDESIGN ── */
+.fin-hero-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:20px;}
+.fin-hero-card{border-radius:20px;padding:22px;color:#fff;display:flex;flex-direction:column;gap:16px;min-width:0;}
+.fin-hero-g1{background:linear-gradient(135deg,#10b981,#06b6d4);}
+.fin-hero-g2{background:linear-gradient(135deg,#c026d3,#ec4899);}
+.fin-hero-g3{background:linear-gradient(135deg,#f5576c,#ef4444);}
+.fin-hero-top{display:flex;align-items:center;gap:12px;min-width:0;}
+.fin-hero-icon{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.fin-hero-label{font-size:11px;text-transform:uppercase;letter-spacing:.8px;opacity:.85;font-weight:700;}
+.fin-hero-value{font-size:26px;font-weight:800;line-height:1.1;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.fin-hero-sub{font-size:11px;opacity:.8;margin-top:2px;}
+.fin-hero-target-box{background:#fff;border-radius:14px;padding:14px 16px;}
+.fin-hero-target-row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;color:var(--text);font-weight:600;margin-bottom:8px;}
+.fin-hero-target-pct{font-weight:800;flex-shrink:0;}
+.fin-hero-target-bar{height:6px;background:#f3f4f6;border-radius:3px;overflow:hidden;}
+.fin-hero-target-fill{height:100%;border-radius:3px;transition:width .6s ease;}
+
+.fin-target-list{display:flex;flex-direction:column;}
+.fin-target-item{display:flex;flex-direction:column;gap:8px;padding:14px 0;border-bottom:1px solid #f3f4f6;}
+.fin-target-item:last-child{border-bottom:none;}
+.fin-target-top{display:flex;align-items:center;gap:12px;min-width:0;}
+.fin-target-icon{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;color:#fff;}
+.fin-target-info{flex:1;min-width:0;}
+.fin-target-label{font-size:13px;font-weight:700;color:var(--text);}
+.fin-target-sub{font-size:11px;color:var(--text3);margin-top:1px;}
+.fin-target-amount{font-size:14px;font-weight:800;flex-shrink:0;white-space:nowrap;}
+.fin-target-bottom{display:flex;align-items:center;gap:10px;}
+.fin-target-bar-bg{flex:1;height:6px;background:#f3f4f6;border-radius:3px;overflow:hidden;}
+.fin-target-bar-fill{height:100%;border-radius:3px;transition:width .6s ease;}
+.fin-target-pct{font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;flex-shrink:0;white-space:nowrap;}
+
+.fin-chart-dropdown{padding:6px 12px;border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--text2);background:#fff;font-weight:600;cursor:pointer;}
+
+@media (max-width:860px){
+  .fin-hero-grid{gap:8px;}
+  .fin-hero-card{padding:12px;gap:10px;border-radius:14px;}
+  .fin-hero-icon{width:30px;height:30px;font-size:14px;border-radius:9px;}
+  .fin-hero-label{font-size:8.5px;}
+  .fin-hero-value{font-size:12px;white-space:nowrap;overflow:visible;text-overflow:clip;}
+  .fin-hero-sub{font-size:9px;}
+  .fin-hero-target-box{padding:8px 10px;border-radius:10px;}
+  .fin-hero-target-row{font-size:10px;margin-bottom:5px;}
+  .fin-target-label{font-size:12px;}
+  .fin-target-amount{font-size:13px;}
+}
 </style>
 </head>
 <body>
@@ -1014,12 +1060,56 @@ tr:hover td{background:#f9fafb;}
 
     <!-- ── FINANCE ── -->
     <div id="tab-finance" class="section">
-      <div class="stat-grid sg3" id="finance-stats"></div>
+      <div class="fin-hero-grid" id="fin-hero-grid"></div>
+
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Target Bulan Ini</span><span class="hp-link" onclick="openFinTargetModal()">⚙️ Kelola Target</span></div>
+        <div class="fin-target-list" id="fin-target-list"></div>
+      </div>
+
       <div class="grid-21">
-        <div class="panel"><div class="panel-header"><span class="panel-title">Income vs Expense (Kategori)</span></div><div class="chart-wrap chart-md"><canvas id="chartFinance2"></canvas></div></div>
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Pengeluaran (Kategori)</span>
+            <select class="fin-chart-dropdown" id="fin-chart-scope" onchange="renderFinChart()">
+              <option value="month">Bulan Ini</option>
+              <option value="week">Minggu Ini</option>
+              <option value="all">Semua</option>
+            </select>
+          </div>
+          <div class="chart-wrap chart-md"><canvas id="chartFinance2"></canvas></div>
+        </div>
         <div class="panel"><div class="panel-header"><span class="panel-title">Breakdown</span></div><div id="finance-breakdown"></div></div>
       </div>
-      <div class="panel"><div class="panel-header"><span class="panel-title">Transaksi</span></div><div id="finance-content"><div class="loading">Loading...</div></div></div>
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Ringkasan Transaksi</span><span class="hp-link" onclick="finShowAllTxn()" id="fin-view-all-btn">Lihat Semua</span></div>
+        <div id="finance-content"><div class="loading">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- FINANCE TARGET MODAL -->
+    <div class="modal-overlay hidden" id="fin-target-modal" onclick="if(event.target===this)closeFinTargetModal()">
+      <div class="modal-box">
+        <div class="modal-title">Kelola Target Finance</div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Target Income Bulanan (Rp)</label><input type="number" class="form-input" id="fintarget-income"></div>
+          <div class="form-group"><label class="form-label">Target Expense Bulanan (Rp)</label><input type="number" class="form-input" id="fintarget-expense"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Target Net/Saldo Bulanan (Rp)</label><input type="number" class="form-input" id="fintarget-net"></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Target Transfer (Rp)</label><input type="number" class="form-input" id="fintarget-category_transfer"></div>
+          <div class="form-group"><label class="form-label">Target Hiburan (Rp)</label><input type="number" class="form-input" id="fintarget-category_hiburan"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Target Tagihan (Rp)</label><input type="number" class="form-input" id="fintarget-category_tagihan"></div>
+          <div class="form-group"><label class="form-label">Target Belanja (Rp)</label><input type="number" class="form-input" id="fintarget-category_belanja"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Target Makan (Rp)</label><input type="number" class="form-input" id="fintarget-category_makan"></div>
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="closeFinTargetModal()">Batal</button>
+          <button class="btn-save" id="fin-target-save-btn" onclick="saveFinTargetModal()">Simpan</button>
+        </div>
+      </div>
     </div>
 
     <!-- ── ENGLISH ── -->
@@ -1541,24 +1631,153 @@ async function saveGoalsModal(){
   await loadHealth();
 }
 
+const FIN_CAT_META={
+  'Transfer':{icon:'🔄',color:'#8b5cf6'},
+  'Hiburan':{icon:'🎬',color:'#3b82f6'},
+  'Tagihan':{icon:'🧾',color:'#ec4899'},
+  'Belanja':{icon:'🛒',color:'#f59e0b'},
+  'Makan':{icon:'🍴',color:'#10b981'}
+};
+function finFallbackColor(cat){
+  let h=0; for(let i=0;i<cat.length;i++) h=(h*31+cat.charCodeAt(i))>>>0;
+  return P[h%P.length];
+}
+function finCatMeta(cat){ return FIN_CAT_META[cat]||{icon:'💰',color:finFallbackColor(cat||'other')}; }
+function finTarget(metric,fallback){
+  const t=targetsData.find(x=>x.domain==='finance'&&x.metric===metric);
+  return t?parseFloat(t.target_value):fallback;
+}
+function finMonthStartStr(){
+  const now=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Jakarta'}));
+  return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
+}
+function finWeekStartStr(){
+  const now=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Jakarta'}));
+  const day=now.getDay();
+  now.setDate(now.getDate()-(day===0?6:day-1));
+  return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+}
+let finTxnExpanded=false;
+
 async function loadFinance(){
-  financeData=await fetchSheet('Finance');
-  const exp=financeData.filter(r=>r.type==='expense');
-  const inc=financeData.filter(r=>r.type==='income');
+  [financeData,targetsData]=await Promise.all([fetchSheet('Finance'),fetchSheet('Targets')]);
+  renderFinHero();
+  renderFinTargetList();
+  renderFinChart();
+  renderFinTxnTable();
+}
+
+function renderFinHero(){
+  const monthStart=finMonthStartStr();
+  const monthRows=financeData.filter(r=>(r.date||'')>=monthStart);
+  const exp=monthRows.filter(r=>r.type==='expense');
+  const inc=monthRows.filter(r=>r.type==='income');
   const tExp=exp.reduce((s,r)=>s+(parseFloat(r.amount)||0),0);
   const tInc=inc.reduce((s,r)=>s+(parseFloat(r.amount)||0),0);
-  document.getElementById('finance-stats').innerHTML=
-    sc('sc-g5','💵','Income',fmtRp(tInc),inc.length+' tx')+
-    sc('sc-g3','💸','Expense',fmtRp(tExp),exp.length+' tx')+
-    sc(tInc-tExp>=0?'sc-g2':'sc-g3','📊','Net',fmtRp(tInc-tExp),'saldo');
+  const net=tInc-tExp;
+  const cards=[
+    {cls:'fin-hero-g1',icon:'👛',label:'Income',value:fmtRp(tInc),sub:inc.length+' tx',target:finTarget('income',10000000),actual:tInc,fill:'#10b981'},
+    {cls:'fin-hero-g2',icon:'💵',label:'Expense',value:fmtRp(tExp),sub:exp.length+' tx',target:finTarget('expense',7000000),actual:tExp,fill:'#ec4899'},
+    {cls:'fin-hero-g3',icon:'📊',label:'Net (Saldo)',value:fmtRp(net),sub:'saldo',target:finTarget('net',3000000),actual:net,fill:net>=0?'#10b981':'#ef4444'}
+  ];
+  document.getElementById('fin-hero-grid').innerHTML=cards.map(c=>{
+    const rawPct=c.target?Math.round(c.actual/c.target*100):0;
+    const barPct=Math.max(0,Math.min(100,rawPct));
+    return `<div class="fin-hero-card ${c.cls}">
+      <div class="fin-hero-top">
+        <div class="fin-hero-icon">${c.icon}</div>
+        <div class="fin-hero-label">${c.label}</div>
+      </div>
+      <div><div class="fin-hero-value">${c.value}</div><div class="fin-hero-sub">${c.sub}</div></div>
+      <div class="fin-hero-target-box">
+        <div class="fin-hero-target-row"><span>Target: ${fmtRp(c.target)}</span><span class="fin-hero-target-pct">${rawPct}%</span></div>
+        <div class="fin-hero-target-bar"><div class="fin-hero-target-fill" style="width:${barPct}%;background:${c.fill};"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderFinTargetList(){
+  const monthStart=finMonthStartStr();
+  const monthExp=financeData.filter(r=>r.type==='expense'&&(r.date||'')>=monthStart);
   const cats={};
-  exp.forEach(r=>{const c=r.category||'Other';cats[c]=(cats[c]||0)+(parseFloat(r.amount)||0);});
-  mkChart('chartFinance2',{type:'bar',data:{labels:Object.keys(cats),datasets:[{label:'Expense',data:Object.values(cats),backgroundColor:PA,borderColor:P,borderWidth:1,borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#9ca3af',font:{size:9}},grid:{display:false}},y:{ticks:{color:'#9ca3af'},grid:{color:'#f3f4f6'}}}}});
+  monthExp.forEach(r=>{const c=r.category||'Other';cats[c]=(cats[c]||0)+(parseFloat(r.amount)||0);});
+  const catList=['Transfer','Hiburan','Tagihan','Belanja','Makan'];
+  document.getElementById('fin-target-list').innerHTML=catList.map(cat=>{
+    const meta=finCatMeta(cat);
+    const actual=cats[cat]||0;
+    const target=finTarget('category_'+cat.toLowerCase(),0);
+    const pct=target?Math.round(actual/target*100):0;
+    const barPct=Math.max(0,Math.min(100,pct));
+    return `<div class="fin-target-item">
+      <div class="fin-target-top">
+        <div class="fin-target-icon" style="background:${meta.color};">${meta.icon}</div>
+        <div class="fin-target-info"><div class="fin-target-label">${cat}</div><div class="fin-target-sub">Target: ${fmtRp(target)}</div></div>
+        <div class="fin-target-amount" style="color:${meta.color};">${fmtRp(actual)}</div>
+      </div>
+      <div class="fin-target-bottom">
+        <div class="fin-target-bar-bg"><div class="fin-target-bar-fill" style="width:${barPct}%;background:${meta.color};"></div></div>
+        <div class="fin-target-pct" style="background:${meta.color}22;color:${meta.color};">${pct}%</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderFinChart(){
+  const scope=document.getElementById('fin-chart-scope')?.value||'month';
+  let rows=financeData.filter(r=>r.type==='expense');
+  if(scope==='month'){const ms=finMonthStartStr();rows=rows.filter(r=>(r.date||'')>=ms);}
+  else if(scope==='week'){const ws=finWeekStartStr();rows=rows.filter(r=>(r.date||'')>=ws);}
+  const cats={};
+  rows.forEach(r=>{const c=r.category||'Other';cats[c]=(cats[c]||0)+(parseFloat(r.amount)||0);});
   const sorted=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
+  mkChart('chartFinance2',{type:'bar',data:{labels:sorted.map(x=>x[0]),datasets:[{label:'Expense',data:sorted.map(x=>x[1]),backgroundColor:sorted.map(([c])=>finCatMeta(c).color+'b3'),borderColor:sorted.map(([c])=>finCatMeta(c).color),borderWidth:1,borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#9ca3af',font:{size:9}},grid:{display:false}},y:{ticks:{color:'#9ca3af'},grid:{color:'#f3f4f6'}}}}});
   const maxV=sorted[0]?.[1]||1;
-  document.getElementById('finance-breakdown').innerHTML=sorted.slice(0,5).map(([cat,val],i)=>`<div class="progress-item"><div class="progress-label"><span>${cat}</span><span>${fmtRp(val)}</span></div><div class="progress-bar"><div class="progress-fill" style="width:${Math.round(val/maxV*100)}%;background:${P[i%P.length]};"></div></div></div>`).join('');
-  if(!financeData.length){document.getElementById('finance-content').innerHTML='<div class="empty"><div class="emoji">💰</div>Belum ada transaksi.</div>';return;}
-  document.getElementById('finance-content').innerHTML=`<table><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Category</th><th>Description</th></tr></thead><tbody>`+financeData.slice().reverse().slice(0,40).map(r=>`<tr><td>${fmtDate(r.date||r.id)}</td><td><span class="badge ${r.type==='expense'?'bpink':'bgreen'}">${r.type||''}</span></td><td style="font-weight:600;color:${r.type==='expense'?'var(--pink)':'var(--green)'}">${fmtRp(r.amount)}</td><td>${r.category||''}</td><td style="color:var(--text3)">${(r.description||'').slice(0,40)}</td></tr>`).join('')+`</tbody></table>`;
+  document.getElementById('finance-breakdown').innerHTML=sorted.length?sorted.map(([cat,val])=>{
+    const color=finCatMeta(cat).color;
+    return `<div class="progress-item"><div class="progress-label"><span>${cat}</span><span>${fmtRp(val)}</span></div><div class="progress-bar"><div class="progress-fill" style="width:${Math.round(val/maxV*100)}%;background:${color};"></div></div></div>`;
+  }).join(''):'<div class="empty" style="padding:20px 0;"><div class="emoji">💰</div>Belum ada expense.</div>';
+}
+
+function renderFinTxnTable(){
+  const btn=document.getElementById('fin-view-all-btn');
+  if(!financeData.length){document.getElementById('finance-content').innerHTML='<div class="empty"><div class="emoji">💰</div>Belum ada transaksi.</div>';if(btn)btn.style.display='none';return;}
+  if(btn)btn.style.display='';
+  const rows=financeData.slice().reverse();
+  const show=finTxnExpanded?rows:rows.slice(0,5);
+  document.getElementById('finance-content').innerHTML=`<table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Amount</th></tr></thead><tbody>`+
+    show.map(r=>{
+      const meta=finCatMeta(r.category||'Other');
+      return `<tr><td>${fmtDate(r.date||r.id)}</td><td><span class="badge ${r.type==='expense'?'bpink':'bgreen'}">${r.type||''}</span></td><td><span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:20px;height:20px;border-radius:50%;background:${meta.color};color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;">${meta.icon}</span>${r.category||''}</span></td><td style="color:var(--text3)">${(r.description||'-').slice(0,40)}</td><td style="font-weight:600;color:${r.type==='expense'?'var(--pink)':'var(--green)'}">${r.type==='expense'?'-':'+'}${fmtRp(r.amount)}</td></tr>`;
+    }).join('')+`</tbody></table>`;
+  if(btn)btn.textContent=finTxnExpanded?'Sembunyikan':'Lihat Semua';
+}
+function finShowAllTxn(){ finTxnExpanded=!finTxnExpanded; renderFinTxnTable(); }
+
+const FIN_TARGET_FIELDS=[
+  ['income','fintarget-income','monthly'],
+  ['expense','fintarget-expense','monthly'],
+  ['net','fintarget-net','monthly'],
+  ['category_transfer','fintarget-category_transfer','monthly'],
+  ['category_hiburan','fintarget-category_hiburan','monthly'],
+  ['category_tagihan','fintarget-category_tagihan','monthly'],
+  ['category_belanja','fintarget-category_belanja','monthly'],
+  ['category_makan','fintarget-category_makan','monthly']
+];
+function openFinTargetModal(){
+  FIN_TARGET_FIELDS.forEach(([metric,elId])=>{ document.getElementById(elId).value=finTarget(metric,''); });
+  document.getElementById('fin-target-modal').classList.remove('hidden');
+}
+function closeFinTargetModal(){ document.getElementById('fin-target-modal').classList.add('hidden'); }
+async function saveFinTargetModal(){
+  const btn=document.getElementById('fin-target-save-btn'); btn.disabled=true;
+  for(const [metric,elId,period] of FIN_TARGET_FIELDS){
+    const val=parseFloat(document.getElementById(elId).value);
+    if(!isNaN(val))await apiWrite('POST','/targets',{domain:'finance',metric,target_value:val,period});
+  }
+  btn.disabled=false;
+  closeFinTargetModal();
+  await loadFinance();
 }
 
 async function loadEnglish(){
