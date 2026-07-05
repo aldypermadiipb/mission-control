@@ -359,8 +359,8 @@ tr:hover td{background:#f9fafb;}
 .cv-grid-wrap{overflow-x:auto;}
 .cv-grid{display:grid;grid-template-columns:56px repeat(7,minmax(120px,1fr));min-width:896px;}
 .cv-gutter{position:sticky;left:0;z-index:3;background:#fff;box-shadow:1px 0 0 #e5e7eb;}
-.cv-gutter-head{height:64px;border-bottom:1px solid #e5e7eb;}
-.cv-hour-labels{position:relative;height:660px;}
+.cv-gutter-head{height:70px;border-bottom:1px solid #e5e7eb;}
+.cv-hour-labels{position:relative;}
 .cv-hour-label{position:absolute;right:8px;left:0;font-size:11px;color:#9ca3af;text-align:right;transform:translateY(-10px);white-space:nowrap;}
 .cv-day-col{position:relative;border-right:1px solid #f3f4f6;overflow:hidden;}
 .cv-day-col:last-child{border-right:none;}
@@ -369,10 +369,12 @@ tr:hover td{background:#f9fafb;}
 .cv-day-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;color:#374151;}
 .cv-day-num.today{background:#6c63ff;color:#fff;}
 .cv-day-count{font-size:10px;color:#9ca3af;}
-.cv-day-body{position:relative;height:660px;background-image:repeating-linear-gradient(180deg,#f3f4f6 0,#f3f4f6 1px,transparent 1px,transparent 60px);}
+.cv-day-body{position:relative;background-image:repeating-linear-gradient(180deg,#f3f4f6 0,#f3f4f6 1px,transparent 1px,transparent 60px);}
 .cv-event{position:absolute;left:4px;right:4px;border-radius:6px;padding:4px 8px;font-size:12px;overflow:hidden;}
 .cv-event-title{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .cv-event-sub{opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cv-event-clamped{border:2px dashed rgba(0,0,0,.4);}
+.cv-event-clamped-note{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .cv-ev-green{background:#d1fae5;border-left:4px solid #10b981;color:#064e3b;}
 .cv-ev-purple{background:#ede9fe;border-left:4px solid #8b5cf6;color:#4c1d95;}
 .cv-ev-orange{background:#fef3c7;border-left:4px solid #f59e0b;color:#78350f;}
@@ -1890,7 +1892,7 @@ async function loadInvestment(){
 
 // ── CALENDAR (week view redesign) ──
 const JADWAL_COLORS=['#6366f1','#3b82f6','#10b981','#f59e0b','#ec4899','#f97316'];
-const CV_HOURS=Array.from({length:11},(_,i)=>7+i); // 07:00..17:00
+const CV_HOURS=Array.from({length:19},(_,i)=>5+i); // 05:00..23:00 - covers realistic daily range; events truly outside this get clamped+flagged, never silently hidden (see renderCalendarView)
 let calOffset=0;
 let calView='week';
 
@@ -1927,9 +1929,13 @@ function renderCalendarView(){
   document.getElementById('cv-week-label').textContent=
     `${days[0].toLocaleDateString('en-GB',{day:'numeric',month:'short'})} – ${days[6].toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`;
 
+  const gridStart=CV_HOURS[0];
+  const gridEnd=CV_HOURS[CV_HOURS.length-1]+1; // exclusive upper bound
+  const gridHeight=CV_HOURS.length*60;
+
   const gutterHtml=`<div class="cv-gutter">
     <div class="cv-gutter-head"></div>
-    <div class="cv-hour-labels">${CV_HOURS.map((h,i)=>`<div class="cv-hour-label" style="top:${i*60}px;">${String(h).padStart(2,'0')}:00</div>`).join('')}</div>
+    <div class="cv-hour-labels" style="height:${gridHeight}px;">${CV_HOURS.map((h,i)=>`<div class="cv-hour-label" style="top:${i*60}px;">${String(h).padStart(2,'0')}:00</div>`).join('')}</div>
   </div>`;
 
   const daysHtml=days.map(d=>{
@@ -1940,12 +1946,19 @@ function renderCalendarView(){
     let bodyHtml=evs.map(e=>{
       const startHour=cvParseStartHour(e.time);
       const durationH=1; // calendar table has no end-time/duration column
-      const top=(startHour-7)*60+2;
+      // Events outside the visible grid range must never be silently invisible - clamp to the nearest edge and flag it clearly instead.
+      let effectiveHour=startHour, clamped=false;
+      if(startHour<gridStart){effectiveHour=gridStart;clamped=true;}
+      else if(startHour>=gridEnd){effectiveHour=gridEnd-1;clamped=true;}
+      const top=(effectiveHour-gridStart)*60+2;
       const height=durationH*60-4;
       const cls=cvEventColorClass(e.title);
       const subtitle=e.location||e.notes||'';
-      return`<div class="cv-event ${cls}" style="top:${top}px;height:${height}px;" title="${cvEscape(e.title||'Event')}">
+      const clampNote=clamped?`<div class="cv-event-clamped-note">⚠️ ${e.time?e.time.slice(0,5):'?'} (di luar ${String(gridStart).padStart(2,'0')}:00–${String(gridEnd-1).padStart(2,'0')}:00)</div>`:'';
+      const clampTitleNote=clamped?` — jam sebenarnya ${e.time||'?'}, ditampilkan di ujung grid`:'';
+      return`<div class="cv-event ${cls}${clamped?' cv-event-clamped':''}" style="top:${top}px;height:${height}px;" title="${cvEscape(e.title||'Event')}${clampTitleNote}">
         <div class="cv-event-title">${cvEscape(e.title||'Event')}</div>
+        ${clampNote}
         ${subtitle?`<div class="cv-event-sub">${cvEscape(subtitle)}</div>`:''}
       </div>`;
     }).join('');
@@ -1953,8 +1966,8 @@ function renderCalendarView(){
     if(isToday){
       const now=new Date();
       const curHour=now.getHours()+now.getMinutes()/60;
-      if(curHour>=7&&curHour<=17){
-        bodyHtml+=`<div class="cv-now-line" style="top:${(curHour-7)*60}px;"><div class="cv-now-dot"></div></div>`;
+      if(curHour>=gridStart&&curHour<gridEnd){
+        bodyHtml+=`<div class="cv-now-line" style="top:${(curHour-gridStart)*60}px;"><div class="cv-now-dot"></div></div>`;
       }
     }
 
@@ -1964,7 +1977,7 @@ function renderCalendarView(){
         <div class="cv-day-num${isToday?' today':''}">${d.getDate()}</div>
         ${evs.length?`<div class="cv-day-count">${evs.length} events</div>`:''}
       </div>
-      <div class="cv-day-body">${bodyHtml}</div>
+      <div class="cv-day-body" style="height:${gridHeight}px;">${bodyHtml}</div>
     </div>`;
   }).join('');
 
