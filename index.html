@@ -334,8 +334,7 @@ tr:hover td{background:#f9fafb;}
 .top-act-rank{width:22px;height:22px;border-radius:50%;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--text2);flex-shrink:0;}
 
 /* ── CALENDAR (week view redesign) ── */
-#tab-calendar{background:#fff;margin:-20px -24px;padding:0;}
-.cv-header{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:80px 112px 20px;border-bottom:1px solid #e5e7eb;}
+.cv-header{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid #e5e7eb;}
 .cv-title{font-size:20px;font-weight:600;color:#111827;}
 .cv-subtitle{font-size:12px;color:#9ca3af;margin-top:2px;}
 .cv-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
@@ -349,8 +348,9 @@ tr:hover td{background:#f9fafb;}
 .cv-add-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border:none;border-radius:8px;background:#6c63ff;color:#fff;font-size:13px;font-weight:600;cursor:pointer;}
 .cv-add-btn:hover{background:#5b52e8;}
 .cv-add-icon{color:#fff;font-weight:700;}
-.cv-week-label{padding:16px 112px 0;font-size:14px;font-weight:700;color:#111827;}
-.cv-grid-wrap{padding:16px 112px 40px;overflow-x:auto;}
+.cv-week-label{margin-bottom:10px;font-size:14px;font-weight:700;color:#111827;}
+.cv-panel{background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.cv-grid-wrap{overflow-x:auto;}
 .cv-grid{display:grid;grid-template-columns:56px repeat(7,minmax(120px,1fr));min-width:896px;}
 .cv-gutter{position:sticky;left:0;z-index:3;background:#fff;box-shadow:1px 0 0 #e5e7eb;}
 .cv-gutter-head{height:64px;border-bottom:1px solid #e5e7eb;}
@@ -376,10 +376,8 @@ tr:hover td{background:#f9fafb;}
 .cv-now-dot{position:absolute;left:-4px;top:-4px;width:8px;height:8px;border-radius:50%;background:#ef4444;}
 
 @media (max-width:860px){
-  .cv-header{padding:20px 16px;gap:12px;}
+  .cv-header{gap:12px;}
   .cv-controls{width:100%;justify-content:flex-start;}
-  .cv-week-label{padding:12px 16px 0;}
-  .cv-grid-wrap{padding:12px 16px 32px;}
 }
 .btn{padding:5px 12px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:none;transition:all .15s;}
 .btn-ghost{background:#fff;color:var(--text2);border:1px solid var(--border);}
@@ -834,8 +832,10 @@ tr:hover td{background:#f9fafb;}
         </div>
       </div>
       <div class="cv-week-label" id="cv-week-label"></div>
-      <div class="cv-grid-wrap">
-        <div class="cv-grid" id="cv-grid"></div>
+      <div class="cv-panel">
+        <div class="cv-grid-wrap">
+          <div class="cv-grid" id="cv-grid"></div>
+        </div>
       </div>
     </div>
 
