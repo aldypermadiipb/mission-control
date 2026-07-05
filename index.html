@@ -204,6 +204,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sc-g4{background:linear-gradient(135deg,#f59e0b,#f97316);}
 .sc-g5{background:linear-gradient(135deg,#10b981,#06b6d4);}
 .panel{background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;}
+/* Global period toggle (Today/Week/Month/Year) — shared across Dashboard/Time Tracker/Health/Finance/Investment */
+.period-toggle{display:inline-flex;border:1px solid var(--border);border-radius:20px;overflow:hidden;flex-shrink:0;}
+.pt-btn{padding:6px 14px;border:none;background:#fff;color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;border-right:1px solid var(--border);}
+.pt-btn:last-child{border-right:none;}
+.pt-btn.active{background:var(--indigo);color:#fff;}
+.pt-btn:hover:not(.active){background:#f9fafb;}
 .panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
 .panel-title{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;}
 .panel-badge{padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;}
@@ -617,6 +623,10 @@ tr:hover td{background:#f9fafb;}
     <!-- ── DASHBOARD ── -->
     <div id="tab-dashboard" class="section active">
 
+      <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+        <div class="period-toggle" id="pt-dashboard"></div>
+      </div>
+
       <!-- AI BRIEFING -->
       <div class="ai-briefing">
         <div>
@@ -652,7 +662,7 @@ tr:hover td{background:#f9fafb;}
         </div>
         <div class="stat-card">
           <div class="sc-icon-wrap" style="background:#eff6ff;">📅</div>
-          <div class="sc-label">Meeting Hari Ini</div>
+          <div class="sc-label" id="sc-meeting-label">Meeting Hari Ini</div>
           <div class="sc-value" id="sc-meeting-val">—</div>
           <div class="sc-sub" id="sc-meeting-sub">memuat...</div>
           <div class="sc-bar-bg"><div class="sc-bar-fill" id="sc-meeting-bar" style="width:0;background:#3b82f6;"></div></div>
@@ -666,14 +676,14 @@ tr:hover td{background:#f9fafb;}
         </div>
         <div class="stat-card">
           <div class="sc-icon-wrap" style="background:#fef2f2;">💳</div>
-          <div class="sc-label">Pengeluaran Hari Ini</div>
+          <div class="sc-label" id="sc-exp-label">Pengeluaran Hari Ini</div>
           <div class="sc-value" id="sc-exp-val">—</div>
           <div class="sc-sub" id="sc-exp-sub">memuat...</div>
           <div class="sc-bar-bg"><div class="sc-bar-fill" id="sc-exp-bar" style="width:0;background:#ec4899;"></div></div>
         </div>
         <div class="stat-card">
           <div class="sc-icon-wrap" style="background:#fffbeb;">📚</div>
-          <div class="sc-label">Vocab Minggu Ini</div>
+          <div class="sc-label" id="sc-vocab-label">Vocab Minggu Ini</div>
           <div class="sc-value" id="sc-vocab-val">—</div>
           <div class="sc-sub" id="sc-vocab-sub">kata baru</div>
           <div class="sc-trend" id="sc-vocab-trend" style="color:#f59e0b;"></div>
@@ -849,10 +859,16 @@ tr:hover td{background:#f9fafb;}
           <div class="tt-subtitle">Kelola waktu dan tingkatkan produktivitas</div>
         </div>
         <div class="tt-controls">
+          <div class="period-toggle" id="pt-tracker"></div>
           <input type="date" class="tt-date-pick" id="tt-date-filter" onchange="renderTracker()">
           <button class="tt-filter-btn" onclick="clearTrackerFilter()">Clear Filter</button>
           <button class="tt-add-btn" onclick="openTaskModal(null,'draft')">+ Add Task</button>
         </div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-size:12px;color:var(--text2);">Target task selesai (<span id="tt-target-period-label">hari ini</span>): <b id="tt-target-progress">—</b></div>
+        <span class="hp-link" onclick="openTargetSettingsModal('timetracker')">⚙️ Kelola Target</span>
       </div>
 
       <!-- Summary stat cards -->
@@ -860,7 +876,7 @@ tr:hover td{background:#f9fafb;}
         <div class="tt-stat"><div class="tts-label">Total Tasks</div><div class="tts-val" id="tts-total">—</div><div class="tts-sub">semua kolom</div></div>
         <div class="tt-stat"><div class="tts-label">In Progress</div><div class="tts-val" id="tts-inp" style="color:#3b82f6;">—</div><div class="tts-sub">sedang dikerjakan</div></div>
         <div class="tt-stat"><div class="tts-label">Review</div><div class="tts-val" id="tts-rev" style="color:#f59e0b;">—</div><div class="tts-sub">menunggu review</div></div>
-        <div class="tt-stat"><div class="tts-label">Done Today</div><div class="tts-val" id="tts-done" style="color:#10b981;">—</div><div class="tts-sub">selesai hari ini</div></div>
+        <div class="tt-stat"><div class="tts-label" id="tts-done-label">Done Today</div><div class="tts-val" id="tts-done" style="color:#10b981;">—</div><div class="tts-sub" id="tts-done-sub">selesai hari ini</div></div>
         <div class="tt-stat"><div class="tts-label">Estimasi Total</div><div class="tts-val" id="tts-time">—</div><div class="tts-sub">menit (estimasi)</div></div>
       </div>
 
@@ -957,6 +973,10 @@ tr:hover td{background:#f9fafb;}
     <!-- ── HEALTH ── -->
     <div id="tab-health" class="section">
 
+      <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+        <div class="period-toggle" id="pt-health"></div>
+      </div>
+
       <!-- Row 1: Today's Progress -->
       <div class="hp-card">
         <div class="hp-card-header">
@@ -971,7 +991,7 @@ tr:hover td{background:#f9fafb;}
         <div class="hp-card">
           <div class="hp-card-header">
             <span class="hp-card-title">Berat Badan</span>
-            <button class="hp-edit-goal-btn" onclick="openGoalsModal()">Edit Goal</button>
+            <button class="hp-edit-goal-btn" onclick="openTargetSettingsModal('health')">Edit Goal</button>
           </div>
           <div class="hp-weight-top">
             <div>
@@ -1051,36 +1071,15 @@ tr:hover td{background:#f9fafb;}
       </div>
     </div>
 
-    <!-- GOALS MODAL -->
-    <div class="modal-overlay hidden" id="goals-modal" onclick="if(event.target===this)closeGoalsModal()">
-      <div class="modal-box">
-        <div class="modal-title">Edit Goals</div>
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Target Berat (kg)</label><input type="number" step="0.1" class="form-input" id="goal-weight"></div>
-          <div class="form-group"><label class="form-label">Turun Berat Bulan Ini (kg)</label><input type="number" step="0.1" class="form-input" id="goal-weight-loss-month"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Kalori Harian (kcal)</label><input type="number" class="form-input" id="goal-calorie"></div>
-          <div class="form-group"><label class="form-label">Protein Harian (g)</label><input type="number" class="form-input" id="goal-protein"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Air Harian (liter)</label><input type="number" step="0.1" class="form-input" id="goal-water"></div>
-          <div class="form-group"><label class="form-label">Tidur Harian (jam)</label><input type="number" step="0.1" class="form-input" id="goal-sleep"></div>
-        </div>
-        <div class="form-group"><label class="form-label">Target Workout (sesi/bulan)</label><input type="number" class="form-input" id="goal-workout-sessions"></div>
-        <div class="modal-actions">
-          <button class="btn-cancel" onclick="closeGoalsModal()">Batal</button>
-          <button class="btn-save" id="goals-save-btn" onclick="saveGoalsModal()">Simpan</button>
-        </div>
-      </div>
-    </div>
-
     <!-- ── FINANCE ── -->
     <div id="tab-finance" class="section">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+        <div class="period-toggle" id="pt-finance"></div>
+      </div>
       <div class="fin-hero-grid" id="fin-hero-grid"></div>
 
       <div class="panel">
-        <div class="panel-header"><span class="panel-title">Target Bulan Ini</span><span class="hp-link" onclick="openFinTargetModal()">⚙️ Kelola Target</span></div>
+        <div class="panel-header"><span class="panel-title">Target Bulan Ini</span><span class="hp-link" onclick="openTargetSettingsModal('finance')">⚙️ Kelola Target</span></div>
         <div class="fin-target-list" id="fin-target-list"></div>
       </div>
 
@@ -1104,27 +1103,14 @@ tr:hover td{background:#f9fafb;}
       </div>
     </div>
 
-    <!-- FINANCE TARGET MODAL -->
-    <div class="modal-overlay hidden" id="fin-target-modal" onclick="if(event.target===this)closeFinTargetModal()">
+    <!-- GENERIC TARGET SETTINGS MODAL (shared by Health/Finance/Time Tracker/Investment) -->
+    <div class="modal-overlay hidden" id="target-settings-modal" onclick="if(event.target===this)closeTargetSettingsModal()">
       <div class="modal-box">
-        <div class="modal-title">Kelola Target Finance</div>
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Target Income Bulanan (Rp)</label><input type="number" class="form-input" id="fintarget-income"></div>
-          <div class="form-group"><label class="form-label">Target Expense Bulanan (Rp)</label><input type="number" class="form-input" id="fintarget-expense"></div>
-        </div>
-        <div class="form-group"><label class="form-label">Target Net/Saldo Bulanan (Rp)</label><input type="number" class="form-input" id="fintarget-net"></div>
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Target Transfer (Rp)</label><input type="number" class="form-input" id="fintarget-category_transfer"></div>
-          <div class="form-group"><label class="form-label">Target Hiburan (Rp)</label><input type="number" class="form-input" id="fintarget-category_hiburan"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Target Tagihan (Rp)</label><input type="number" class="form-input" id="fintarget-category_tagihan"></div>
-          <div class="form-group"><label class="form-label">Target Belanja (Rp)</label><input type="number" class="form-input" id="fintarget-category_belanja"></div>
-        </div>
-        <div class="form-group"><label class="form-label">Target Makan (Rp)</label><input type="number" class="form-input" id="fintarget-category_makan"></div>
+        <div class="modal-title" id="target-settings-title">Kelola Target</div>
+        <div id="target-settings-fields"></div>
         <div class="modal-actions">
-          <button class="btn-cancel" onclick="closeFinTargetModal()">Batal</button>
-          <button class="btn-save" id="fin-target-save-btn" onclick="saveFinTargetModal()">Simpan</button>
+          <button class="btn-cancel" onclick="closeTargetSettingsModal()">Batal</button>
+          <button class="btn-save" id="target-settings-save-btn" onclick="saveTargetSettingsModal()">Simpan</button>
         </div>
       </div>
     </div>
@@ -1138,6 +1124,14 @@ tr:hover td{background:#f9fafb;}
 
     <!-- ── INVESTMENT ── -->
     <div id="tab-investment" class="section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+        <div class="period-toggle" id="pt-investment"></div>
+        <span class="hp-link" onclick="openTargetSettingsModal('investment')">⚙️ Kelola Target</span>
+      </div>
+      <div class="panel">
+        <div class="fin-hero-target-row" style="font-size:13px;"><span>Target Nilai Portfolio: <b id="inv-target-label">—</b></span><span class="fin-hero-target-pct" id="inv-target-pct" style="color:var(--indigo);">—</span></div>
+        <div class="fin-hero-target-bar" style="background:#f3f4f6;"><div class="fin-hero-target-fill" id="inv-target-fill" style="width:0%;background:var(--indigo);"></div></div>
+      </div>
       <div class="stat-grid sg3" id="investment-stats"></div>
       <div class="grid-21" style="margin-bottom:14px;">
         <div class="panel"><div class="panel-header"><span class="panel-title">Portfolio Composition</span></div><div class="chart-wrap chart-md"><canvas id="chartInv"></canvas></div></div>
@@ -1269,6 +1263,45 @@ async function fetchSheet(sheet){
   try{const r=await fetch(API_BASE+'/'+sheet.toLowerCase());if(!r.ok)return[];return await r.json();}catch{return[];}
 }
 
+// ── GLOBAL PERIOD TOGGLE (Today/Week/Month/Year) — shared state across Dashboard/Time Tracker/Health/Finance/Investment ──
+let globalPeriod=localStorage.getItem('mc_period')||'week';
+const PERIOD_LABELS={today:'Today',week:'Week',month:'Month',year:'Year'};
+function jakartaToday(){
+  const now=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Jakarta'}));
+  return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+}
+function periodRange(period){
+  const now=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Jakarta'}));
+  const pad=n=>String(n).padStart(2,'0');
+  const today=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  if(period==='today')return{start:today,end:today};
+  if(period==='week'){
+    const day=now.getDay();const monday=new Date(now);monday.setDate(now.getDate()-(day===0?6:day-1));
+    return{start:`${monday.getFullYear()}-${pad(monday.getMonth()+1)}-${pad(monday.getDate())}`,end:today};
+  }
+  if(period==='year')return{start:`${now.getFullYear()}-01-01`,end:today};
+  return{start:`${now.getFullYear()}-${pad(now.getMonth()+1)}-01`,end:today}; // month (default)
+}
+function dateRangeToList(range){
+  const out=[];const cur=new Date(range.start+'T00:00:00');const end=new Date(range.end+'T00:00:00');
+  while(cur<=end){ out.push(cur.toISOString().split('T')[0]); cur.setDate(cur.getDate()+1); }
+  return out;
+}
+function renderPeriodToggle(elId){
+  const el=document.getElementById(elId); if(!el)return;
+  el.innerHTML=['today','week','month','year'].map(p=>`<button class="pt-btn ${p===globalPeriod?'active':''}" onclick="setGlobalPeriod('${p}')">${PERIOD_LABELS[p]}</button>`).join('');
+}
+function renderAllPeriodToggles(){ ['pt-dashboard','pt-tracker','pt-health','pt-finance','pt-investment'].forEach(renderPeriodToggle); }
+function setGlobalPeriod(p){
+  globalPeriod=p;
+  localStorage.setItem('mc_period',p);
+  renderAllPeriodToggles();
+  if(typeof buildDashboard==='function'&&tasksData)buildDashboard();
+  if(typeof renderTracker==='function')renderTracker();
+  if(typeof renderHpScore==='function'&&healthData.length!==undefined)renderHpScore();
+  if(typeof renderFinHero==='function')renderFinHero();
+}
+
 // ── HELPERS ──
 function fmtDate(d){if(!d)return'';try{return new Date(d).toLocaleDateString('id-ID',{day:'numeric',month:'short'})}catch{return d}}
 function fmtRp(n){return'Rp'+(parseFloat(n)||0).toLocaleString('id-ID')}
@@ -1310,10 +1343,11 @@ function hpTodayJakarta(){
   const now=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Jakarta'}));
   return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
 }
-function hpTarget(metric,fallback){
-  const t=targetsData.find(x=>x.domain==='health'&&x.metric===metric);
+function getTargetValue(domain,metric,fallback){
+  const t=targetsData.find(x=>x.domain===domain&&x.metric===metric);
   return t?parseFloat(t.target_value):fallback;
 }
+function hpTarget(metric,fallback){ return getTargetValue('health',metric,fallback); }
 function hpPct(val,target){ if(!target)return 0; return Math.max(0,Math.min(100,Math.round(val/target*100))); }
 function hpFmtNum(n){
   n=parseFloat(n)||0;
@@ -1583,7 +1617,7 @@ function computeHealthScore(dateList){
 }
 
 function renderHpScore(){
-  const{overall,breakdown}=computeHealthScore();
+  const{overall,breakdown}=computeHealthScore(dateRangeToList(periodRange(globalPeriod)));
   document.getElementById('hp-score-val').textContent=overall;
   document.getElementById('hp-score-breakdown').innerHTML=breakdown.map(b=>
     `<div class="hp-score-row"><div class="hp-score-row-label"><span style="width:8px;height:8px;border-radius:50%;background:${b.color};display:inline-block;"></span>${b.label}</div><div class="hp-score-row-val">${b.val==null?'—':b.val}</div></div>`
@@ -1622,35 +1656,73 @@ function renderHpRecentLogs(){
 }
 function hpShowAllLogs(){ hpLogsExpanded=!hpLogsExpanded; renderHpRecentLogs(); }
 
-function openGoalsModal(){
-  document.getElementById('goal-weight').value=hpTarget('weight','');
-  document.getElementById('goal-weight-loss-month').value=hpTarget('weight_loss_month','');
-  document.getElementById('goal-calorie').value=hpTarget('calorie','');
-  document.getElementById('goal-protein').value=hpTarget('protein','');
-  document.getElementById('goal-water').value=hpTarget('water','');
-  document.getElementById('goal-sleep').value=hpTarget('sleep','');
-  document.getElementById('goal-workout-sessions').value=hpTarget('workout_sessions','');
-  document.getElementById('goals-modal').classList.remove('hidden');
+// ── GENERIC TARGET SETTINGS (shared by all domains — no per-page duplicate modal/logic) ──
+const TARGET_DOMAIN_CONFIGS={
+  health:{
+    label:'Health',
+    fields:[
+      {metric:'weight',label:'Target Berat (kg)',period:'ongoing',step:0.1},
+      {metric:'weight_loss_month',label:'Turun Berat Bulan Ini (kg)',period:'monthly',step:0.1},
+      {metric:'calorie',label:'Kalori Harian (kcal)',period:'daily'},
+      {metric:'protein',label:'Protein Harian (g)',period:'daily'},
+      {metric:'water',label:'Air Harian (liter)',period:'daily',step:0.1},
+      {metric:'sleep',label:'Tidur Harian (jam)',period:'daily',step:0.1},
+      {metric:'workout_sessions',label:'Target Workout (sesi/bulan)',period:'monthly'}
+    ],
+    afterSave:async()=>{ targetsData=await fetchSheet('Targets'); renderHpGoals();renderHpScore(); }
+  },
+  finance:{
+    label:'Finance',
+    fields:[
+      {metric:'income',label:'Target Income Bulanan (Rp)',period:'monthly'},
+      {metric:'expense',label:'Target Expense Bulanan (Rp)',period:'monthly'},
+      {metric:'net',label:'Target Net/Saldo Bulanan (Rp)',period:'monthly'},
+      {metric:'category_transfer',label:'Target Transfer (Rp)',period:'monthly'},
+      {metric:'category_hiburan',label:'Target Hiburan (Rp)',period:'monthly'},
+      {metric:'category_tagihan',label:'Target Tagihan (Rp)',period:'monthly'},
+      {metric:'category_belanja',label:'Target Belanja (Rp)',period:'monthly'},
+      {metric:'category_makan',label:'Target Makan (Rp)',period:'monthly'}
+    ],
+    afterSave:async()=>{ targetsData=await fetchSheet('Targets'); renderFinHero();renderFinTargetList(); }
+  },
+  timetracker:{
+    label:'Time Tracker',
+    fields:[
+      {metric:'daily_tasks',label:'Target Task Selesai / Hari',period:'daily'}
+    ],
+    afterSave:async()=>{ targetsData=await fetchSheet('Targets'); renderTracker(); }
+  },
+  investment:{
+    label:'Investment',
+    fields:[
+      {metric:'portfolio_value',label:'Target Nilai Portfolio (Rp)',period:'ongoing'}
+    ],
+    afterSave:async()=>{ targetsData=await fetchSheet('Targets'); renderInvestmentTarget(); }
+  }
+};
+function openTargetSettingsModal(domain){
+  const cfg=TARGET_DOMAIN_CONFIGS[domain];
+  document.getElementById('target-settings-title').textContent='Kelola Target — '+cfg.label;
+  document.getElementById('target-settings-fields').innerHTML=cfg.fields.map(f=>
+    `<div class="form-group"><label class="form-label">${f.label}</label><input type="number" ${f.step?`step="${f.step}"`:''} class="form-input" id="tgt-${domain}-${f.metric}"></div>`
+  ).join('');
+  cfg.fields.forEach(f=>{ document.getElementById(`tgt-${domain}-${f.metric}`).value=getTargetValue(domain,f.metric,''); });
+  const modal=document.getElementById('target-settings-modal');
+  modal.dataset.domain=domain;
+  modal.classList.remove('hidden');
 }
-function closeGoalsModal(){ document.getElementById('goals-modal').classList.add('hidden'); }
-async function saveGoalsModal(){
-  const btn=document.getElementById('goals-save-btn'); btn.disabled=true;
-  const fields=[
-    ['weight','goal-weight','ongoing'],
-    ['weight_loss_month','goal-weight-loss-month','monthly'],
-    ['calorie','goal-calorie','daily'],
-    ['protein','goal-protein','daily'],
-    ['water','goal-water','daily'],
-    ['sleep','goal-sleep','daily'],
-    ['workout_sessions','goal-workout-sessions','monthly']
-  ];
-  for(const [metric,elId,period] of fields){
-    const val=parseFloat(document.getElementById(elId).value);
-    if(!isNaN(val))await apiWrite('POST','/targets',{domain:'health',metric,target_value:val,period});
+function closeTargetSettingsModal(){ document.getElementById('target-settings-modal').classList.add('hidden'); }
+async function saveTargetSettingsModal(){
+  const domain=document.getElementById('target-settings-modal').dataset.domain;
+  const cfg=TARGET_DOMAIN_CONFIGS[domain];
+  const btn=document.getElementById('target-settings-save-btn'); btn.disabled=true;
+  for(const f of cfg.fields){
+    const val=parseFloat(document.getElementById(`tgt-${domain}-${f.metric}`).value);
+    if(!isNaN(val))await apiWrite('POST','/targets',{domain,metric:f.metric,target_value:val,period:f.period});
   }
   btn.disabled=false;
-  closeGoalsModal();
-  await loadHealth();
+  closeTargetSettingsModal();
+  await cfg.afterSave();
 }
 
 const FIN_CAT_META={
@@ -1665,10 +1737,7 @@ function finFallbackColor(cat){
   return P[h%P.length];
 }
 function finCatMeta(cat){ return FIN_CAT_META[cat]||{icon:'💰',color:finFallbackColor(cat||'other')}; }
-function finTarget(metric,fallback){
-  const t=targetsData.find(x=>x.domain==='finance'&&x.metric===metric);
-  return t?parseFloat(t.target_value):fallback;
-}
+function finTarget(metric,fallback){ return getTargetValue('finance',metric,fallback); }
 function finMonthStartStr(){
   const now=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Jakarta'}));
   return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
@@ -1690,13 +1759,14 @@ async function loadFinance(){
 }
 
 function renderFinHero(){
-  const monthStart=finMonthStartStr();
-  const monthRows=financeData.filter(r=>(r.date||'')>=monthStart);
-  const exp=monthRows.filter(r=>r.type==='expense');
-  const inc=monthRows.filter(r=>r.type==='income');
+  const range=periodRange(globalPeriod);
+  const periodRows=financeData.filter(r=>(r.date||'')>=range.start&&(r.date||'')<=range.end);
+  const exp=periodRows.filter(r=>r.type==='expense');
+  const inc=periodRows.filter(r=>r.type==='income');
   const tExp=exp.reduce((s,r)=>s+(parseFloat(r.amount)||0),0);
   const tInc=inc.reduce((s,r)=>s+(parseFloat(r.amount)||0),0);
   const net=tInc-tExp;
+  const targetNote=globalPeriod==='month'?'':' (target bulanan)';
   const cards=[
     {cls:'fin-hero-g1',icon:'👛',label:'Income',value:fmtRp(tInc),sub:inc.length+' tx',target:finTarget('income',10000000),actual:tInc,fill:'#10b981'},
     {cls:'fin-hero-g2',icon:'💵',label:'Expense',value:fmtRp(tExp),sub:exp.length+' tx',target:finTarget('expense',7000000),actual:tExp,fill:'#ec4899'},
@@ -1712,7 +1782,7 @@ function renderFinHero(){
       </div>
       <div><div class="fin-hero-value">${c.value}</div><div class="fin-hero-sub">${c.sub}</div></div>
       <div class="fin-hero-target-box">
-        <div class="fin-hero-target-row"><span>Target: ${fmtRp(c.target)}</span><span class="fin-hero-target-pct">${rawPct}%</span></div>
+        <div class="fin-hero-target-row"><span>Target: ${fmtRp(c.target)}${targetNote}</span><span class="fin-hero-target-pct">${rawPct}%</span></div>
         <div class="fin-hero-target-bar"><div class="fin-hero-target-fill" style="width:${barPct}%;background:${c.fill};"></div></div>
       </div>
     </div>`;
@@ -1776,31 +1846,6 @@ function renderFinTxnTable(){
 }
 function finShowAllTxn(){ finTxnExpanded=!finTxnExpanded; renderFinTxnTable(); }
 
-const FIN_TARGET_FIELDS=[
-  ['income','fintarget-income','monthly'],
-  ['expense','fintarget-expense','monthly'],
-  ['net','fintarget-net','monthly'],
-  ['category_transfer','fintarget-category_transfer','monthly'],
-  ['category_hiburan','fintarget-category_hiburan','monthly'],
-  ['category_tagihan','fintarget-category_tagihan','monthly'],
-  ['category_belanja','fintarget-category_belanja','monthly'],
-  ['category_makan','fintarget-category_makan','monthly']
-];
-function openFinTargetModal(){
-  FIN_TARGET_FIELDS.forEach(([metric,elId])=>{ document.getElementById(elId).value=finTarget(metric,''); });
-  document.getElementById('fin-target-modal').classList.remove('hidden');
-}
-function closeFinTargetModal(){ document.getElementById('fin-target-modal').classList.add('hidden'); }
-async function saveFinTargetModal(){
-  const btn=document.getElementById('fin-target-save-btn'); btn.disabled=true;
-  for(const [metric,elId,period] of FIN_TARGET_FIELDS){
-    const val=parseFloat(document.getElementById(elId).value);
-    if(!isNaN(val))await apiWrite('POST','/targets',{domain:'finance',metric,target_value:val,period});
-  }
-  btn.disabled=false;
-  closeFinTargetModal();
-  await loadFinance();
-}
 
 async function loadEnglish(){
   englishData=await fetchSheet('English');
@@ -1817,8 +1862,19 @@ async function loadEnglish(){
   document.getElementById('english-content').innerHTML='<div class="vocab-grid">'+englishData.slice().reverse().slice(0,30).map(r=>`<div class="vocab-card"><div class="vocab-word">${r.word||''}</div><div class="vocab-trans">${r.translation||''}</div>${r.example?`<div class="vocab-ex">${r.example}</div>`:''}</div>`).join('')+'</div>';
 }
 
+function renderInvestmentTarget(){
+  const totalValue=invData.reduce((s,r)=>s+(parseFloat(r.total_value)||(parseFloat(r.lot)||0)*(parseFloat(r.current_price||r.avg_price)||0)),0);
+  const target=getTargetValue('investment','portfolio_value',0);
+  const pct=target?Math.round(totalValue/target*100):0;
+  document.getElementById('inv-target-label').textContent=fmtRp(target);
+  document.getElementById('inv-target-pct').textContent=target?pct+'%':'belum diset';
+  document.getElementById('inv-target-fill').style.width=Math.max(0,Math.min(100,pct))+'%';
+}
+
 async function loadInvestment(){
   invData=await fetchSheet('Investment');
+  targetsData=await fetchSheet('Targets');
+  renderInvestmentTarget();
   const tLot=invData.reduce((s,r)=>s+(parseFloat(r.lot)||0),0);
   document.getElementById('investment-stats').innerHTML=
     sc('sc-g5','📈','Holdings',invData.length,'saham')+
@@ -2076,14 +2132,26 @@ function renderTracker(){
   if(dateFilter)tasks=tasks.filter(t=>(t.created_at||'').startsWith(dateFilter));
 
   // Summary stats
-  const doneToday=tasksData.filter(t=>t.status==='done'&&(t.updated_at||'').startsWith(today));
+  const pRange=periodRange(globalPeriod);
+  const donePeriod=tasksData.filter(t=>t.status==='done'&&(t.updated_at||'').slice(0,10)>=pRange.start&&(t.updated_at||'').slice(0,10)<=pRange.end);
   const totalEst=tasksData.reduce((s,t)=>s+(parseInt(t.estimated_minutes)||0),0);
   const $=id=>document.getElementById(id);
   $('tts-total').textContent=tasksData.length;
   $('tts-inp').textContent=tasksData.filter(t=>t.status==='in_progress').length;
   $('tts-rev').textContent=tasksData.filter(t=>t.status==='review').length;
-  $('tts-done').textContent=doneToday.length;
+  $('tts-done-label').textContent=`Done (${PERIOD_LABELS[globalPeriod]})`;
+  $('tts-done').textContent=donePeriod.length;
+  $('tts-done-sub').textContent=globalPeriod==='today'?'selesai hari ini':'selesai dalam periode ini';
   $('tts-time').textContent=totalEst>0?(totalEst>=60?Math.floor(totalEst/60)+'j '+(totalEst%60)+'m':totalEst+' m'):'0 m';
+
+  // Target progress (daily_tasks target, scaled to selected period)
+  const dailyTaskTarget=getTargetValue('timetracker','daily_tasks',0);
+  const periodMultiplier=globalPeriod==='today'?1:globalPeriod==='week'?7:globalPeriod==='month'?30:365;
+  const scaledTaskTarget=dailyTaskTarget*periodMultiplier;
+  const ttPeriodLabelEl=$('tt-target-period-label');
+  if(ttPeriodLabelEl)ttPeriodLabelEl.textContent=PERIOD_LABELS[globalPeriod].toLowerCase();
+  const ttProgressEl=$('tt-target-progress');
+  if(ttProgressEl)ttProgressEl.textContent=scaledTaskTarget?`${donePeriod.length} / ${scaledTaskTarget}`:'belum diset';
 
   // Kanban columns
   ['draft','in_progress','review','done'].forEach(status=>{
@@ -2263,6 +2331,13 @@ function buildDashboard(){
   const todayEv=calData.filter(e=>e.date===today).sort((a,b)=>(a.time||'99:99').localeCompare(b.time||'99:99'));
   const nextEv=todayEv.find(e=>e.time&&e.time>nowT);
 
+  // Period-scoped stats (respects the global Today/Week/Month/Year toggle) — separate from the always-daily variables above
+  const pRange=periodRange(globalPeriod);
+  const periodEvCount=calData.filter(e=>e.date>=pRange.start&&e.date<=pRange.end).length;
+  const periodExpAmt=financeData.filter(r=>r.type==='expense'&&r.date>=pRange.start&&r.date<=pRange.end).reduce((s,r)=>s+(parseFloat(r.amount)||0),0);
+  const periodVocabCount=englishData.filter(r=>r.date&&r.date>=pRange.start&&r.date<=pRange.end).length;
+  const periodBudget=500000*(globalPeriod==='today'?1:globalPeriod==='week'?7:globalPeriod==='month'?30:365);
+
   // Health
   const CAL_TARGET=2350;
   const todayCal=healthData.filter(r=>r.type==='food'&&r.date===today).reduce((s,r)=>s+(parseFloat(r.calories)||0),0);
@@ -2351,24 +2426,27 @@ function buildDashboard(){
   $('sc-tasks-sub').textContent=`dari ${tasksData.length} tasks`;
   $('sc-tasks-bar').style.width=taskPct+'%';
 
-  $('sc-meeting-val').textContent=todayEv.length;
-  $('sc-meeting-sub').textContent=nextEv?`selanjutnya ${nextEv.time}`:'tidak ada jadwal';
-  $('sc-meeting-bar').style.width=(Math.min(todayEv.length*20,100))+'%';
+  $('sc-meeting-label').textContent=`Meeting (${PERIOD_LABELS[globalPeriod]})`;
+  $('sc-meeting-val').textContent=periodEvCount;
+  $('sc-meeting-sub').textContent=globalPeriod==='today'?(nextEv?`selanjutnya ${nextEv.time}`:'tidak ada jadwal'):`${periodEvCount} jadwal dalam periode ini`;
+  $('sc-meeting-bar').style.width=(Math.min(periodEvCount*20,100))+'%';
 
   $('sc-cal-val').textContent=calLeft.toLocaleString('id-ID');
   $('sc-cal-sub').textContent=`dari ${CAL_TARGET.toLocaleString('id-ID')} kkal`;
   const calPct=Math.min(100,Math.round(todayCal/CAL_TARGET*100));
   $('sc-cal-bar').style.width=calPct+'%';
 
-  $('sc-exp-val').textContent=fmtRp(todayExpAmt);
-  $('sc-exp-sub').textContent=`dari budget ${fmtRp(BUDGET)}`;
-  const expPct=Math.min(100,Math.round(todayExpAmt/BUDGET*100));
+  $('sc-exp-label').textContent=`Pengeluaran (${PERIOD_LABELS[globalPeriod]})`;
+  $('sc-exp-val').textContent=fmtRp(periodExpAmt);
+  $('sc-exp-sub').textContent=`dari budget ${fmtRp(periodBudget)}`;
+  const expPct=Math.min(100,Math.round(periodExpAmt/periodBudget*100));
   $('sc-exp-bar').style.width=expPct+'%';
   $('sc-exp-bar').style.background=expPct>90?'#ef4444':expPct>70?'#f59e0b':'#ec4899';
 
-  $('sc-vocab-val').textContent=wkVocab;
-  $('sc-vocab-sub').textContent='kata baru minggu ini';
-  $('sc-vocab-trend').textContent=wkVocab>0?`↑ +${wkVocab} dari minggu lalu`:'';
+  $('sc-vocab-label').textContent=`Vocab (${PERIOD_LABELS[globalPeriod]})`;
+  $('sc-vocab-val').textContent=periodVocabCount;
+  $('sc-vocab-sub').textContent='kata baru dalam periode ini';
+  $('sc-vocab-trend').textContent=periodVocabCount>0?`↑ +${periodVocabCount} kata`:'';
 
   // Today's Focus
   $('focus-list').innerHTML=active.length
@@ -2468,6 +2546,7 @@ function closeSidebar(){
 
 // ── LOAD ALL ──
 async function loadAll(){
+  renderAllPeriodToggles();
   await Promise.all([loadTasks(),loadHealth(),loadFinance(),loadEnglish(),loadInvestment(),loadCalendar()]);
   buildDashboard();
   renderTracker();
