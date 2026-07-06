@@ -1262,7 +1262,7 @@ function mkSparklineLabeled(id,labels,data,color,fill){
 
 // ── FETCH ──
 async function fetchSheet(sheet){
-  try{const r=await fetch(API_BASE+'/'+sheet.toLowerCase(),{cache:'no-store'});if(!r.ok)return[];return await r.json();}catch{return[];}
+  try{const r=await fetch(API_BASE+'/'+sheet.toLowerCase());if(!r.ok)return[];return await r.json();}catch{return[];}
 }
 
 // ── GLOBAL PERIOD TOGGLE (Today/Week/Month/Year) — shared state across Dashboard/Time Tracker/Health/Finance/Investment ──
@@ -1519,7 +1519,7 @@ function hpRenderInsightContent(data){
 async function renderHpInsight(){
   document.getElementById('hp-insight-date').textContent=new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
   try{
-    const r=await fetch(API_BASE+'/insight?domain=health',{cache:'no-store'});
+    const r=await fetch(API_BASE+'/insight?domain=health');
     if(!r.ok)throw new Error('insight fetch failed');
     const data=await r.json();
     hpRenderInsightContent(data);
