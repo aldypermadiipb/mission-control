@@ -592,6 +592,7 @@ tr:hover td{background:#f9fafb;}
     <div class="nav-item" onclick="switchTab('finance',this)"><span class="nav-icon">📊</span> Finance</div>
     <div class="nav-item" onclick="switchTab('english',this)"><span class="nav-icon">📖</span> English</div>
     <div class="nav-item" onclick="switchTab('investment',this)"><span class="nav-icon">📈</span> Investment</div>
+    <div class="nav-item" onclick="switchTab('content',this)"><span class="nav-icon">📝</span> Content</div>
   </div>
   <div class="nav-spacer"></div>
   <div class="sidebar-footer">
@@ -1142,6 +1143,15 @@ tr:hover td{background:#f9fafb;}
       <div class="panel"><div class="panel-header"><span class="panel-title">Portfolio Detail</span></div><div id="investment-content"><div class="loading">Loading...</div></div></div>
     </div>
 
+    <!-- ── CONTENT ── -->
+    <div id="tab-content" class="section">
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Content Tracker (SIGNAL)</span></div>
+        <input type="text" class="form-input" id="content-search" placeholder="Cari topik..." style="margin-bottom:12px;" oninput="filterContent(this.value)">
+        <div id="content-content"><div class="loading">Loading...</div></div>
+      </div>
+    </div>
+
   </div><!-- /content -->
 </div><!-- /main -->
 
@@ -1331,7 +1341,7 @@ function sc(g,ic,lbl,val,sub){
 }
 
 // ── DATA STORES ──
-let tasksData=[],healthData=[],financeData=[],englishData=[],invData=[],calData=[];
+let tasksData=[],healthData=[],financeData=[],englishData=[],invData=[],calData=[],contentData=[],contentSearchTerm='';
 
 // ── LOAD FUNCTIONS ──
 async function loadTasks(){
@@ -1861,6 +1871,57 @@ async function loadEnglish(){
   mkChart('chartEnglish',{type:'bar',data:{labels:Object.keys(cats),datasets:[{label:'Words',data:Object.values(cats),backgroundColor:PA.slice(0,Object.keys(cats).length),borderColor:P,borderWidth:1,borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#9ca3af'},grid:{display:false}},y:{ticks:{color:'#9ca3af',stepSize:1},grid:{color:'#f3f4f6'}}}}});
   if(!englishData.length){document.getElementById('english-content').innerHTML='<div class="empty"><div class="emoji">📚</div>Belum ada vocab.</div>';return;}
   document.getElementById('english-content').innerHTML='<div class="vocab-grid">'+englishData.slice().reverse().slice(0,30).map(r=>`<div class="vocab-card"><div class="vocab-word">${r.word||''}</div><div class="vocab-trans">${r.translation||''}</div>${r.example?`<div class="vocab-ex">${r.example}</div>`:''}</div>`).join('')+'</div>';
+}
+
+// ── CONTENT TAB (SIGNAL topic/caption tracker, read-only) ──
+function escHtml(s){
+  return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+const CONTENT_STATUS_META={
+  draft:{label:'Draft',bg:'#f3f4f6',color:'#6b7280'},
+  awaiting_media:{label:'Nunggu Media',bg:'#fffbeb',color:'#f59e0b'},
+  ready_to_publish:{label:'Siap Publish',bg:'#eff6ff',color:'#3b82f6'},
+  published:{label:'Published',bg:'#f0fdf4',color:'#10b981'},
+  partial_failure:{label:'Sebagian Gagal',bg:'#fff7ed',color:'#f97316'},
+  failed:{label:'Gagal',bg:'#fef2f2',color:'#ef4444'}
+};
+function contentStatusBadge(status){
+  const m=CONTENT_STATUS_META[status]||{label:status||'—',bg:'#f3f4f6',color:'#6b7280'};
+  return `<span class="badge" style="background:${m.bg};color:${m.color};">${m.label}</span>`;
+}
+function contentModeBadge(mode){
+  return mode==='ai'
+    ?'<span class="badge" style="background:#f5f3ff;color:#8b5cf6;">AI</span>'
+    :'<span class="badge" style="background:#eff6ff;color:#3b82f6;">Manual</span>';
+}
+function filterContent(val){
+  contentSearchTerm=(val||'').trim().toLowerCase();
+  renderContentTable();
+}
+function renderContentTable(){
+  const wrap=document.getElementById('content-content');
+  if(!wrap)return;
+  if(!contentData.length){wrap.innerHTML='<div class="empty"><div class="emoji">📝</div>Belum ada konten.</div>';return;}
+  const term=contentSearchTerm;
+  const filtered=term?contentData.filter(r=>(r.topic||'').toLowerCase().includes(term)):contentData;
+  if(!filtered.length){wrap.innerHTML=`<div class="empty"><div class="emoji">🔍</div>Gak ada topik yang cocok "${escHtml(term)}".</div>`;return;}
+  const rows=filtered.map(r=>{
+    const caption=r.caption||'';
+    const preview=caption.length>100?escHtml(caption.slice(0,100))+'…':escHtml(caption);
+    return `<tr>
+      <td>${escHtml(r.topic)}</td>
+      <td>${contentModeBadge(r.content_mode)}</td>
+      <td>${contentStatusBadge(r.status)}</td>
+      <td style="max-width:280px;" title="${escHtml(caption)}">${preview||'<span style="color:var(--text3);">—</span>'}</td>
+      <td>${r.scheduled_date||'—'}</td>
+      <td style="text-align:center;">${r.has_media?'✅':'—'}</td>
+    </tr>`;
+  }).join('');
+  wrap.innerHTML=`<table><thead><tr><th>Topik</th><th>Mode</th><th>Status</th><th>Caption</th><th>Tanggal Publish</th><th>Media</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+async function loadContent(){
+  contentData=await fetchSheet('Content');
+  renderContentTable();
 }
 
 function renderInvestmentTarget(){
@@ -2534,7 +2595,7 @@ function buildDashActivity(){} // legacy, kept for compat
 // ── TAB SWITCHING ──
 const pageMeta={
   dashboard:'Dashboard',calendar:'Calendar',tracker:'Time Tracker',
-  health:'Health',finance:'Finance',english:'English',investment:'Investment'
+  health:'Health',finance:'Finance',english:'English',investment:'Investment',content:'Content'
 };
 
 function switchTab(name,btn){
@@ -2559,7 +2620,7 @@ function closeSidebar(){
 // ── LOAD ALL ──
 async function loadAll(){
   renderAllPeriodToggles();
-  await Promise.all([loadTasks(),loadHealth(),loadFinance(),loadEnglish(),loadInvestment(),loadCalendar()]);
+  await Promise.all([loadTasks(),loadHealth(),loadFinance(),loadEnglish(),loadInvestment(),loadCalendar(),loadContent()]);
   buildDashboard();
   renderTracker();
 }
