@@ -2566,36 +2566,6 @@ async function loadAll(){
 
 loadAll();
 </script>
-</body>
-  <!--
-  MISSION CONTROL — Viewer/Editor Auth Patch (frontend half)
-  ============================================================
-  What this does:
-  - Dashboard stays public/read-only by default (viewer mode).
-  - Clicking the "AP" avatar (top-right, .tb-avatar) opens a password modal.
-  - Correct password -> stores a token in localStorage -> "editor mode" unlocked
-    (avatar gets a green check badge instead of a lock icon).
-  - EVERY write request (Add Task, Add Event, Kelola Target/Edit Goal, Kanban
-    drag/move, delete, etc.) is gated at the window.fetch level — this is the
-    single choke point ALL of them go through, so nothing needs to be touched
-    in the existing createTask/patchTask/deleteTask/dropCard/saveEventModal/
-    saveTargetSettingsModal/apiWrite functions. If not logged in, the write is
-    blocked and the login modal opens automatically instead.
-  - Click the avatar again while in editor mode to log out.
-
-  HOW TO APPLY:
-  1. Open your GitHub repo (aldypermadiipb/mission-control) -> index.html ->
-     Edit (pencil icon).
-  2. Paste this ENTIRE block right before the closing </body> tag.
-  3. Commit directly to main (Vercel will auto-redeploy).
-  4. This half is useless without the backend half — see
-     dashboard-auth-backend-spec.md in this same folder. Until the backend
-     adds the /auth/login endpoint and checks the Authorization header on
-     write routes, this patch will show the login modal but login will always
-     fail (404/501 from the API), and — more importantly — anyone who reads
-     the old client code / old header could still bypass it. Do BOTH halves
-     together, not just this one.
--->
 <style>
 .tb-avatar{position:relative;cursor:pointer;user-select:none;}
 .tb-avatar .mc-lock-badge{position:absolute;bottom:-3px;right:-3px;background:#1c2640;border:1.5px solid #0e1425;border-radius:50%;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:9px;line-height:1;}
@@ -2708,7 +2678,8 @@ loadAll();
     const method = ((opts && opts.method) || 'GET').toUpperCase();
     const isWrite = method !== 'GET' && method !== 'HEAD';
     const isApi = u.indexOf('api.aldypermadi.com') !== -1;
-    if(isApi && isWrite){
+    const isAuthLogin = u.indexOf('/auth/login') !== -1;
+    if(isApi && isWrite && !isAuthLogin){
       if(!mcIsEditor()){
         window.mcOpenAuth();
         return Promise.reject(new Error('Editor login required'));
@@ -2723,5 +2694,5 @@ loadAll();
   document.addEventListener('DOMContentLoaded', paintAvatar);
 })();
 </script>
-
+</body>
 </html>
