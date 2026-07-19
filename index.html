@@ -452,6 +452,7 @@ tr:hover td{background:#f9fafb;}
 .hp-weight-progress-wrap{margin:10px 0 14px;}
 .hp-weight-progress-label{display:flex;justify-content:flex-end;font-size:11px;color:var(--text2);margin-bottom:4px;}
 .hp-weight-chart-wrap{flex:1;min-height:160px;position:relative;}
+.hp-weight-chart-empty-wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
 
 .hp-goals-list{display:flex;flex-direction:column;gap:16px;flex:1;}
 .hp-goal-item{display:flex;flex-direction:column;gap:6px;}
@@ -1011,7 +1012,12 @@ tr:hover td{background:#f9fafb;}
             <div class="hp-weight-progress-label"><span id="hp-weight-progress-pct">—</span></div>
             <div class="hp-bar-bg"><div class="hp-bar-fill" id="hp-weight-progress-bar" style="background:var(--indigo);width:0%;"></div></div>
           </div>
-          <div class="hp-weight-chart-wrap"><canvas id="chartWeight"></canvas></div>
+          <div class="hp-weight-chart-wrap">
+            <canvas id="chartWeight"></canvas>
+            <div class="hp-weight-chart-empty-wrap" id="hp-weight-chart-empty-wrap" style="display:none;">
+              <div class="empty"><div class="emoji">⚖️</div>Belum ada histori berat badan</div>
+            </div>
+          </div>
         </div>
 
         <div class="hp-card">
@@ -1419,9 +1425,13 @@ function renderHpWeight(){
     document.getElementById('hp-weight-current').textContent='—';
     document.getElementById('hp-weight-progress-pct').textContent='Belum ada data berat';
     document.getElementById('hp-weight-progress-bar').style.width='0%';
-    mkChart('chartWeight',{type:'line',data:{labels:[],datasets:[]},options:{responsive:true,maintainAspectRatio:false}});
+    if(charts['chartWeight']){charts['chartWeight'].destroy();delete charts['chartWeight'];}
+    document.getElementById('chartWeight').style.display='none';
+    document.getElementById('hp-weight-chart-empty-wrap').style.display='';
     return;
   }
+  document.getElementById('chartWeight').style.display='';
+  document.getElementById('hp-weight-chart-empty-wrap').style.display='none';
   const current=parseFloat(weights[weights.length-1].weight_kg);
   document.getElementById('hp-weight-current').innerHTML=`${hpFmtNum(current)}<span class="hp-weight-unit"> kg</span>`;
 
