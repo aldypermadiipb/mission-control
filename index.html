@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mission Control — Aldy</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -210,6 +211,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .pt-btn:last-child{border-right:none;}
 .pt-btn.active{background:var(--indigo);color:#fff;}
 .pt-btn:hover:not(.active){background:#f9fafb;}
+/* Vocab language filter (PRD-0005 Section 11.5) */
+.lang-filter{display:inline-flex;border:1px solid var(--border);border-radius:20px;overflow:hidden;flex-shrink:0;}
+.lang-btn{padding:6px 12px;border:none;background:#fff;color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;border-right:1px solid var(--border);white-space:nowrap;}
+.lang-btn:last-child{border-right:none;}
+.lang-btn.active{background:var(--indigo);color:#fff;}
+.lang-btn:hover:not(.active){background:#f9fafb;}
 .panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
 .panel-title{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;}
 .panel-badge{padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;}
@@ -1128,7 +1135,7 @@ tr:hover td{background:#f9fafb;}
     <div id="tab-english" class="section">
       <div class="stat-grid sg3" id="english-stats"></div>
       <div class="panel" style="margin-bottom:14px;"><div class="panel-header"><span class="panel-title">Vocab by Category</span></div><div class="chart-wrap" style="height:130px;"><canvas id="chartEnglish"></canvas></div></div>
-      <div class="panel"><div class="panel-header"><span class="panel-title">Vocab Bank</span></div><div id="english-content"><div class="loading">Loading...</div></div></div>
+      <div class="panel"><div class="panel-header"><span class="panel-title">Vocab Bank</span><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><div class="lang-filter" id="lang-filter-vocab"></div><button class="qa-btn" onclick="exportVocabExcel()">⬇️ Excel</button></div></div><div id="english-content"><div class="loading">Loading...</div></div></div>
     </div>
 
     <!-- ── INVESTMENT ── -->
@@ -1868,19 +1875,62 @@ function renderFinTxnTable(){
 function finShowAllTxn(){ finTxnExpanded=!finTxnExpanded; renderFinTxnTable(); }
 
 
+let currentVocabLangFilter='all';
+const LANG_FLAG={EN:'🇬🇧',JA:'🇯🇵',ZH:'🇨🇳',KO:'🇰🇷'};
 async function loadEnglish(){
   englishData=await fetchSheet('English');
+  renderEnglishView();
+}
+function vocabLangOf(r){ return r.language_code||'EN'; }
+function filteredVocab(){
+  return currentVocabLangFilter==='all'?englishData:englishData.filter(r=>vocabLangOf(r)===currentVocabLangFilter);
+}
+function renderEnglishView(){
+  const langs=[...new Set(englishData.map(vocabLangOf))].sort();
+  const filterEl=document.getElementById('lang-filter-vocab');
+  if(filterEl){
+    if(langs.length<=1){
+      filterEl.innerHTML='';
+    }else{
+      const opts=['all',...langs];
+      filterEl.innerHTML=opts.map(l=>`<button class="lang-btn ${l===currentVocabLangFilter?'active':''}" onclick="setVocabLangFilter('${l}')">${l==='all'?'🌐 All':(LANG_FLAG[l]||'')+' '+l}</button>`).join('');
+    }
+  }
+  const filtered=filteredVocab();
   const cats={};
-  englishData.forEach(r=>{const c=r.category||'other';cats[c]=(cats[c]||0)+1;});
+  filtered.forEach(r=>{const c=r.category||'other';cats[c]=(cats[c]||0)+1;});
   const ws=weekStart();
-  const thisWeek=englishData.filter(r=>r.date&&r.date>=ws).length;
+  const thisWeek=filtered.filter(r=>r.date&&r.date>=ws).length;
   document.getElementById('english-stats').innerHTML=
-    sc('sc-g1','📖','Total Vocab',englishData.length,'kata')+
+    sc('sc-g1','📖','Total Vocab',filtered.length,'kata')+
     sc('sc-g2','🌱','Minggu Ini',thisWeek,'baru')+
     sc('sc-g4','🏷️','Kategori',Object.keys(cats).length,'topik');
   mkChart('chartEnglish',{type:'bar',data:{labels:Object.keys(cats),datasets:[{label:'Words',data:Object.values(cats),backgroundColor:PA.slice(0,Object.keys(cats).length),borderColor:P,borderWidth:1,borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#9ca3af'},grid:{display:false}},y:{ticks:{color:'#9ca3af',stepSize:1},grid:{color:'#f3f4f6'}}}}});
-  if(!englishData.length){document.getElementById('english-content').innerHTML='<div class="empty"><div class="emoji">📚</div>Belum ada vocab.</div>';return;}
-  document.getElementById('english-content').innerHTML='<div class="vocab-grid">'+englishData.slice().reverse().slice(0,30).map(r=>`<div class="vocab-card"><div class="vocab-word">${r.word||''}</div><div class="vocab-trans">${r.translation||''}</div>${r.example?`<div class="vocab-ex">${r.example}</div>`:''}</div>`).join('')+'</div>';
+  if(!filtered.length){document.getElementById('english-content').innerHTML='<div class="empty"><div class="emoji">📚</div>Belum ada vocab.</div>';return;}
+  document.getElementById('english-content').innerHTML='<div class="vocab-grid">'+filtered.slice().reverse().slice(0,30).map(r=>`<div class="vocab-card"><div class="vocab-word">${r.word||''}${vocabLangOf(r)!=='EN'?` <span style="font-size:9px;color:var(--text3);font-weight:600;">${LANG_FLAG[vocabLangOf(r)]||''} ${vocabLangOf(r)}</span>`:''}</div><div class="vocab-trans">${r.translation||''}</div>${r.example?`<div class="vocab-ex">${r.example}</div>`:''}</div>`).join('')+'</div>';
+}
+function setVocabLangFilter(l){
+  currentVocabLangFilter=l;
+  renderEnglishView();
+}
+function exportVocabExcel(){
+  if(typeof XLSX==='undefined'){alert('Library Excel belum kemuat, coba refresh halaman.');return;}
+  const filtered=filteredVocab();
+  if(!filtered.length){alert('Gak ada vocab buat di-export.');return;}
+  const rows=filtered.map(r=>({
+    Word:r.word||'',
+    Translation:r.translation||'',
+    Example:r.example||'',
+    Language:vocabLangOf(r),
+    Category:r.category||'',
+    Notes:r.notes||'',
+    Date:r.date||''
+  }));
+  const ws=XLSX.utils.json_to_sheet(rows);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Vocab');
+  const suffix=currentVocabLangFilter==='all'?'all':currentVocabLangFilter;
+  XLSX.writeFile(wb,`vocab-bank-${suffix}-${ymd(new Date())}.xlsx`);
 }
 
 // ── CONTENT TAB (SIGNAL topic/caption tracker, read-only) ──
