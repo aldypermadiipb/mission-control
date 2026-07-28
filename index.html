@@ -235,6 +235,26 @@ tr:hover td{background:#f9fafb;}
 .badge{display:inline-flex;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:600;}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
 .grid-21{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px;}
+/* Language Hub: Grammar Tracker / Output & Mistakes / Reading Log / Proficiency (PRD-0005 Section 11.5) */
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+@media (max-width:1100px){.grid-4{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:480px){.grid-4{grid-template-columns:1fr;}}
+.prof-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px;}
+.prof-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;}
+.prof-scale{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px;}
+.prof-pill{font-size:9px;font-weight:700;padding:3px 7px;border-radius:20px;background:#f3f4f6;color:var(--text3);}
+.prof-pill.active{background:var(--indigo);color:#fff;}
+.lang-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--text2);border:1px solid var(--border);border-radius:20px;padding:4px 10px;white-space:nowrap;}
+.sec-badge{width:26px;height:26px;border-radius:50%;background:var(--indigo);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sec-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:12px;flex-wrap:wrap;}
+.sec-hdr-title{font-size:14px;font-weight:700;color:var(--text);}
+.sec-hdr-sub{font-size:11.5px;color:var(--text3);margin-top:2px;}
+.sec-toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+.period-label{font-size:11px;font-weight:600;color:var(--text2);background:#fff;border:1px solid var(--border);border-radius:20px;padding:6px 12px;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;cursor:help;}
+.legend-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-left:auto;}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--text2);font-weight:600;white-space:nowrap;}
+.legend-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.sec-info{cursor:help;color:var(--text3);font-weight:400;}
 .chart-wrap{position:relative;}
 .chart-sm{height:150px;}
 .chart-md{height:210px;}
@@ -1136,6 +1156,86 @@ tr:hover td{background:#f9fafb;}
       <div class="stat-grid sg3" id="english-stats"></div>
       <div class="panel" style="margin-bottom:14px;"><div class="panel-header"><span class="panel-title">Vocab by Category</span></div><div class="chart-wrap" style="height:130px;"><canvas id="chartEnglish"></canvas></div></div>
       <div class="panel"><div class="panel-header"><span class="panel-title">Vocab Bank</span><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><div class="lang-filter" id="lang-filter-vocab"></div><button class="qa-btn" onclick="exportVocabExcel()">⬇️ Excel</button></div></div><div id="english-content"><div class="loading">Loading...</div></div></div>
+
+      <!-- Grammar Tracker (PRD-0005 Section 11.5 Part B) -->
+      <div class="panel">
+        <div class="sec-hdr">
+          <div style="display:flex;gap:10px;">
+            <div class="sec-badge">1</div>
+            <div><div class="sec-hdr-title">Grammar Tracker</div><div class="sec-hdr-sub">Pantau grammar point yang sedang dipelajari per bahasa</div></div>
+          </div>
+          <button class="qa-btn" id="grammar-expand-btn" onclick="grammarExpanded=!grammarExpanded;renderGrammarTracker();" style="display:none;">Lihat Semua →</button>
+        </div>
+        <div class="sec-toolbar">
+          <div class="lang-filter" id="lang-filter-grammar"></div>
+          <div class="legend-row">
+            <span class="legend-item"><span class="legend-dot" style="background:#f59e0b;"></span>Learning</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#3b82f6;"></span>Reviewing</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#10b981;"></span>Mastered</span>
+          </div>
+        </div>
+        <div id="grammar-tracker-content"><div class="loading">Loading...</div></div>
+      </div>
+
+      <!-- Output & Mistake Patterns (Part A) -->
+      <div class="panel">
+        <div class="sec-hdr">
+          <div style="display:flex;gap:10px;">
+            <div class="sec-badge">2</div>
+            <div><div class="sec-hdr-title">Output & Mistake Patterns</div><div class="sec-hdr-sub">Tracking output practice & pola kesalahan berulang</div></div>
+          </div>
+        </div>
+        <div class="sec-toolbar">
+          <div class="lang-filter" id="lang-filter-output"></div>
+          <span class="period-label" style="margin-left:auto;" title="Endpoint saat ini fixed 7 hari terakhir — opsi periode lain nunggu backend support">📅 7 Hari Terakhir</span>
+        </div>
+        <div class="grid-21">
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:10px;">(a) Output Practice per Hari <span class="sec-info" title="Cuma jumlah kata — metrik durasi practice sengaja di-drop, gak ada cara akurat nge-track waktu dari chat Telegram">ⓘ</span></div>
+            <div id="output-stats" style="max-width:230px;margin-bottom:12px;"></div>
+            <div class="chart-wrap chart-sm"><canvas id="chartOutputPractice"></canvas></div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:10px;">(b) Top Kesalahan Berulang</div>
+            <div id="mistake-patterns-content"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reading / Listening Log (Part C) -->
+      <div class="panel">
+        <div class="sec-hdr">
+          <div style="display:flex;gap:10px;">
+            <div class="sec-badge">3</div>
+            <div><div class="sec-hdr-title">Reading / Listening Log</div><div class="sec-hdr-sub">Ringkasan materi yang telah dikonsumsi per bahasa</div></div>
+          </div>
+        </div>
+        <div class="sec-toolbar">
+          <div class="lang-filter" id="lang-filter-reading"></div>
+          <span class="period-label" style="margin-left:auto;" title="Endpoint saat ini fixed rentang mingguannya — opsi periode lain nunggu backend support">🗓️ 4 Minggu Terakhir</span>
+        </div>
+        <div class="stat-grid sg3" id="reading-log-stats"></div>
+        <div class="grid-21">
+          <div class="chart-wrap chart-md"><canvas id="chartReadingLog"></canvas></div>
+          <div>
+            <div class="panel-title" style="margin-bottom:10px;">Log Terbaru</div>
+            <div id="reading-log-recent"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Proficiency Milestone (Part D) -->
+      <div class="panel">
+        <div class="sec-hdr">
+          <div style="display:flex;gap:10px;">
+            <div class="sec-badge">4</div>
+            <div><div class="sec-hdr-title">Proficiency Milestone</div><div class="sec-hdr-sub">Estimasi level kemahiran berdasarkan data internal (vocab + grammar + output)</div></div>
+          </div>
+          <span style="font-size:10px;color:#b45309;background:#fffbeb;padding:3px 10px;border-radius:20px;font-weight:600;white-space:nowrap;">⚠️ Estimasi, bukan hasil tes resmi</span>
+        </div>
+        <div class="grid-4" id="proficiency-content"><div class="loading">Loading...</div></div>
+        <div style="font-size:10.5px;color:var(--text3);margin-top:14px;text-align:center;">ⓘ Level adalah estimasi kasar berdasarkan aktivitas belajar internal, bukan hasil tes resmi. Tetap lakukan evaluasi berkala buat hasil yang lebih akurat.</div>
+      </div>
     </div>
 
     <!-- ── INVESTMENT ── -->
@@ -1880,6 +1980,8 @@ const LANG_FLAG={EN:'🇬🇧',JA:'🇯🇵',ZH:'🇨🇳',KO:'🇰🇷'};
 async function loadEnglish(){
   englishData=await fetchSheet('English');
   renderEnglishView();
+  renderLearningLangFilter();
+  await Promise.all([loadGrammarPoints(),loadOutputSummary(),loadReadingLog(),loadProficiencyAll()]);
 }
 function vocabLangOf(r){ return r.language_code||'EN'; }
 function filteredVocab(){
@@ -1931,6 +2033,195 @@ function exportVocabExcel(){
   XLSX.utils.book_append_sheet(wb,ws,'Vocab');
   const suffix=currentVocabLangFilter==='all'?'all':currentVocabLangFilter;
   XLSX.writeFile(wb,`vocab-bank-${suffix}-${ymd(new Date())}.xlsx`);
+}
+
+// ── LANGUAGE HUB: Grammar Tracker / Output & Mistakes / Reading Log / Proficiency (PRD-0005 Section 11.5) ──
+const LEARNING_LANGS=['EN','JA','ZH','KO'];
+const LANG_LABEL={EN:'English',JA:'日本語',ZH:'中文 (Mandarin)',KO:'한국어 (Korean)'};
+const PROF_SCALE={EN:['A1','A2','B1','B2','C1','C2'],JA:['N5','N4','N3','N2','N1'],ZH:['HSK 1','2','3','4','5','6'],KO:['TOPIK 1','2','3','4','5','6']};
+const STATUS_META={learning:{label:'Learning',cls:'byellow'},reviewing:{label:'Reviewing',cls:'bblue'},mastered:{label:'Mastered',cls:'bgreen'}};
+const CIRC22=2*Math.PI*22; // 138.23
+let currentLearningLangFilter='EN';
+let grammarPointsData=[],outputSummaryData=null,readingLogData=null,proficiencyData={};
+let grammarExpanded=false,mistakesExpanded=false,readingLogExpanded=false;
+
+function timeAgo(d){
+  if(!d)return'-';
+  try{
+    const diffDays=Math.floor((new Date().setHours(0,0,0,0)-new Date(d).setHours(0,0,0,0))/86400000);
+    if(diffDays<=0)return'Hari ini';
+    if(diffDays===1)return'Kemarin';
+    if(diffDays<14)return diffDays+' hari lalu';
+    return fmtDate(d);
+  }catch{return'-';}
+}
+function dayName(d){try{return new Date(d).toLocaleDateString('id-ID',{weekday:'short'});}catch{return d||'';}}
+function statCard(bg,icon,label,val,sub){
+  return `<div class="stat-card"><div class="sc-icon-wrap" style="background:${bg};">${icon}</div><div class="sc-label">${label}</div><div class="sc-value">${val}</div><div class="sc-sub">${sub}</div></div>`;
+}
+
+function renderLearningLangFilter(){
+  ['lang-filter-grammar','lang-filter-output','lang-filter-reading'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.innerHTML=LEARNING_LANGS.map(l=>`<button class="lang-btn ${l===currentLearningLangFilter?'active':''}" onclick="setLearningLangFilter('${l}')">${LANG_FLAG[l]||''} ${l}</button>`).join('');
+  });
+}
+function setLearningLangFilter(l){
+  currentLearningLangFilter=l;
+  renderLearningLangFilter();
+  loadGrammarPoints();loadOutputSummary();loadReadingLog();
+}
+
+// -- Part B: Grammar Tracker --
+async function loadGrammarPoints(){
+  document.getElementById('grammar-tracker-content').innerHTML='<div class="loading">Loading...</div>';
+  try{
+    const r=await fetch(API_BASE+'/learning/grammar-points?language_code='+currentLearningLangFilter);
+    const j=r.ok?await r.json():[];
+    grammarPointsData=Array.isArray(j)?j:(j.rows||j.grammar_points||j.data||[]);
+  }catch{grammarPointsData=[];}
+  grammarExpanded=false;
+  renderGrammarTracker();
+}
+function renderGrammarTracker(){
+  const el=document.getElementById('grammar-tracker-content');
+  const btn=document.getElementById('grammar-expand-btn');
+  if(!grammarPointsData.length){el.innerHTML='<div class="empty"><div class="emoji">📘</div>Belum ada grammar point yang tertrack.</div>';if(btn)btn.style.display='none';return;}
+  const rows=grammarPointsData.slice().sort((a,b)=>(b.progress_pct??0)-(a.progress_pct??0));
+  const show=grammarExpanded?rows:rows.slice(0,5);
+  el.innerHTML=`<table><thead><tr><th>Grammar Point</th><th>Level</th><th>Status</th><th>Progress</th><th>Last Review</th></tr></thead><tbody>`+
+    show.map(r=>{
+      const meta=STATUS_META[r.status]||{label:r.status||'-',cls:'bpurple'};
+      const total=(r.correct_count||0)+(r.incorrect_count||0);
+      const pct=r.progress_pct!=null?Math.round(r.progress_pct):(total?Math.round((r.correct_count||0)/total*100):0);
+      const suggest=r.suggested_status_change?` <span title="Progress udah cukup buat naik status — konfirmasi manual ke Ana, gak auto-berubah" style="cursor:help;">⬆️</span>`:'';
+      return `<tr><td style="font-weight:600;color:var(--text);">${escHtml(r.grammar_point||'')}</td><td>${escHtml(r.level||'-')}</td><td><span class="badge ${meta.cls}">${meta.label}</span>${suggest}</td><td style="min-width:120px;"><div class="progress-item" style="margin-bottom:0;"><div class="progress-label"><span>${pct}%</span></div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:var(--indigo);"></div></div></div></td><td>${timeAgo(r.updated_at)}</td></tr>`;
+    }).join('')+`</tbody></table>`;
+  if(btn){
+    if(rows.length>5){btn.style.display='';btn.textContent=grammarExpanded?'Sembunyikan →':'Lihat Semua →';}
+    else btn.style.display='none';
+  }
+}
+
+// -- Part A: Output & Mistake Patterns --
+async function loadOutputSummary(){
+  document.getElementById('output-stats').innerHTML='<div class="loading">Loading...</div>';
+  try{
+    const r=await fetch(API_BASE+'/learning/output-summary?language_code='+currentLearningLangFilter);
+    outputSummaryData=r.ok?await r.json():null;
+  }catch{outputSummaryData=null;}
+  mistakesExpanded=false;
+  renderOutputSummary();
+}
+function renderOutputSummary(){
+  const d=outputSummaryData||{};
+  // NOTE: field names below (daily/mistakes) are a best guess from the backend spec — Cowork's
+  // sandbox can't reach api.aldypermadi.com to curl-verify the exact response shape. Fallback keys
+  // are included, but if the panel shows "Belum ada..." with data known to exist, ping Cowork with
+  // a sample `curl .../learning/output-summary?language_code=EN` response to fix the key names.
+  const daily=d.daily||d.output_by_day||d.words_per_day||(Array.isArray(d)?d:[]);
+  const mistakes=d.mistakes||d.top_mistakes||d.mistake_patterns||[];
+  const totalWords=daily.reduce((s,x)=>s+(x.word_count||0),0);
+  document.getElementById('output-stats').innerHTML=statCard('#eef2ff','💬','Kata Dipraktikkan (7 Hari)',totalWords.toLocaleString('id-ID'),'kata');
+  mkChart('chartOutputPractice',{type:'line',data:{labels:daily.map(x=>dayName(x.date)),datasets:[{label:'Kata',data:daily.map(x=>x.word_count||0),borderColor:'#8b5cf6',backgroundColor:'rgba(139,92,246,.15)',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#8b5cf6',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#9ca3af',font:{size:9}},grid:{display:false}},y:{ticks:{color:'#9ca3af',stepSize:1},grid:{color:'#f3f4f6'}}}}});
+  const mc=document.getElementById('mistake-patterns-content');
+  if(!mistakes.length){mc.innerHTML='<div class="empty"><div class="emoji">✅</div>Belum ada kesalahan berulang tercatat.</div>';return;}
+  const sorted=mistakes.slice().sort((a,b)=>(b.freq||0)-(a.freq||0));
+  const show=mistakesExpanded?sorted:sorted.slice(0,5);
+  mc.innerHTML=`<table><thead><tr><th>Kesalahan</th><th>Contoh Salah</th><th>Koreksi</th><th>Freq</th></tr></thead><tbody>`+
+    show.map(m=>`<tr><td style="font-weight:600;color:var(--text);white-space:nowrap;">${escHtml(m.pattern_type||'')}</td><td style="color:var(--red);">${escHtml(m.example_text||'')}</td><td style="color:var(--green);">${escHtml(m.corrected_text||'-')}</td><td><span class="badge bred">${m.freq||0}x</span></td></tr>`).join('')+`</tbody></table>`+
+    (sorted.length>5?`<div style="text-align:center;margin-top:10px;"><span class="hp-link" onclick="mistakesExpanded=!mistakesExpanded;renderOutputSummary();">${mistakesExpanded?'Sembunyikan':'Lihat Semua Kesalahan →'}</span></div>`:'');
+}
+
+// -- Part C: Reading/Listening Log --
+async function loadReadingLog(){
+  document.getElementById('reading-log-stats').innerHTML='<div class="loading">Loading...</div>';
+  try{
+    const r=await fetch(API_BASE+'/learning/reading-log?language_code='+currentLearningLangFilter);
+    readingLogData=r.ok?await r.json():null;
+  }catch{readingLogData=null;}
+  readingLogExpanded=false;
+  renderReadingLog();
+}
+function renderReadingLog(){
+  const d=readingLogData||{};
+  // NOTE: same caveat as output-summary — weekly/recent keys are a best guess, not curl-verified.
+  const weekly=d.weekly||d.by_week||d.weeks||[];
+  const recent=d.recent||d.recent_items||d.latest||[];
+  const val=(w,k)=>w[k]??w[k.charAt(0).toUpperCase()+k.slice(1)]??0;
+  const sum=k=>weekly.reduce((s,w)=>s+val(w,k),0);
+  const totals={artikel:sum('artikel'),video:sum('video'),audio:sum('audio')};
+  const trend=k=>{
+    if(weekly.length<2)return null;
+    const prev=val(weekly[weekly.length-2],k);
+    if(!prev)return null;
+    return Math.round((val(weekly[weekly.length-1],k)-prev)/prev*100);
+  };
+  const subFor=k=>{const t=trend(k);return t==null?'dari periode lalu':`${t>=0?'↑':'↓'} ${Math.abs(t)}% dari periode lalu`;};
+  document.getElementById('reading-log-stats').innerHTML=
+    statCard('#eef2ff','📖','Artikel Dibaca',totals.artikel,subFor('artikel'))+
+    statCard('#fdf2f8','📺','Video Ditonton',totals.video,subFor('video'))+
+    statCard('#f0fdf4','🎧','Audio Didengar',totals.audio,subFor('audio'));
+  mkChart('chartReadingLog',{type:'bar',data:{labels:weekly.map((w,i)=>w.week_label||w.label||'Minggu '+(i+1)),datasets:[
+    {label:'Artikel',data:weekly.map(w=>val(w,'artikel')),backgroundColor:'#8b5cf6',borderRadius:4},
+    {label:'Video',data:weekly.map(w=>val(w,'video')),backgroundColor:'#3b82f6',borderRadius:4},
+    {label:'Audio',data:weekly.map(w=>val(w,'audio')),backgroundColor:'#10b981',borderRadius:4}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:8,font:{size:10},color:'#6b7280'}}},scales:{x:{stacked:true,ticks:{color:'#9ca3af',font:{size:9}},grid:{display:false}},y:{stacked:true,ticks:{color:'#9ca3af',stepSize:1},grid:{color:'#f3f4f6'}}}}});
+  const rc=document.getElementById('reading-log-recent');
+  if(!recent.length){rc.innerHTML='<div class="empty"><div class="emoji">📭</div>Belum ada materi tercatat.</div>';return;}
+  const CAT_BADGE={artikel:'bpurple',video:'bblue',audio:'bgreen'};
+  const show=readingLogExpanded?recent:recent.slice(0,5);
+  rc.innerHTML=show.map(it=>{
+    const cat=(it.display_category||it.category||it.source_type||'artikel').toLowerCase();
+    const label=cat.charAt(0).toUpperCase()+cat.slice(1);
+    return `<div class="activity-item"><div class="adot" style="background:var(--indigo);"></div><div style="flex:1;"><div class="atitle">${escHtml(it.title||'-')}</div><div class="ameta">${timeAgo(it.created_at)}</div></div><span class="badge ${CAT_BADGE[cat]||'bpurple'}">${label}</span></div>`;
+  }).join('')+
+    (recent.length>5?`<div style="text-align:center;margin-top:8px;"><span class="hp-link" onclick="readingLogExpanded=!readingLogExpanded;renderReadingLog();">${readingLogExpanded?'Sembunyikan':'Lihat Semua Log →'}</span></div>`:'');
+}
+
+// -- Part D: Proficiency Milestone --
+async function loadProficiencyAll(){
+  document.getElementById('proficiency-content').innerHTML='<div class="loading">Loading...</div>';
+  const results=await Promise.all(LEARNING_LANGS.map(async l=>{
+    try{
+      const r=await fetch(API_BASE+'/learning/proficiency?language_code='+l);
+      return r.ok?await r.json():null;
+    }catch{return null;}
+  }));
+  LEARNING_LANGS.forEach((l,i)=>proficiencyData[l]=results[i]);
+  renderProficiency();
+}
+function renderProficiency(){
+  const el=document.getElementById('proficiency-content');
+  el.innerHTML=LEARNING_LANGS.map(l=>{
+    const d=proficiencyData[l];
+    if(!d)return `<div class="prof-card"><span class="lang-pill">${LANG_FLAG[l]||''} ${l}</span><div class="empty" style="padding:14px 0;"><div class="emoji">📊</div>Belum ada data.</div></div>`;
+    const tierMax=d.tier_max,tierMin=d.tier_min||0,pts=d.total_points||0;
+    const pct=tierMax?Math.max(0,Math.min(100,Math.round((pts-tierMin)/(tierMax-tierMin)*100))):100;
+    const offset=(CIRC22*(1-pct/100)).toFixed(1);
+    const cur=(d.estimated_cefr_jlpt_hsk_topik||'').toString().toUpperCase().replace(/\s+/g,'');
+    const scale=PROF_SCALE[l]||[];
+    return `<div class="prof-card">
+      <div class="prof-card-top">
+        <span class="lang-pill">${LANG_FLAG[l]||''} ${l}</span>
+        <div style="position:relative;display:inline-block;flex-shrink:0;">
+          <svg class="ring-svg" width="56" height="56" viewBox="0 0 56 56">
+            <circle cx="28" cy="28" r="22" fill="none" stroke="#f3f4f6" stroke-width="6"/>
+            <circle cx="28" cy="28" r="22" fill="none" stroke="#6366f1" stroke-width="6" stroke-dasharray="${CIRC22.toFixed(1)}" stroke-dashoffset="${offset}" stroke-linecap="round"/>
+          </svg>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;font-size:11px;font-weight:800;color:var(--text);">${pct}%</div>
+        </div>
+      </div>
+      <div style="font-weight:800;font-size:17px;margin-top:6px;">${escHtml(d.tier_label||'-')}</div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:10px;">≈ ${escHtml(d.estimated_cefr_jlpt_hsk_topik||'-')}</div>
+      <div class="prof-scale">${scale.map(s=>`<span class="prof-pill ${s.toUpperCase().replace(/\s+/g,'')===cur?'active':''}">${s}</span>`).join('')}</div>
+      <div style="margin-top:14px;">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-bottom:4px;"><span>Poin Kemajuan</span><span>${pts.toLocaleString('id-ID')}${tierMax?' / '+tierMax.toLocaleString('id-ID'):''}</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:var(--indigo);"></div></div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 // ── CONTENT TAB (SIGNAL topic/caption tracker, read-only) ──
