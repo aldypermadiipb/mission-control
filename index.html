@@ -256,6 +256,43 @@ tr:hover td{background:#f9fafb;}
 .legend-item{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--text2);font-weight:600;white-space:nowrap;}
 .legend-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 .sec-info{cursor:help;color:var(--text3);font-weight:400;}
+/* Learning tab / Knowledge Hub (PRD-0005 Section 5.8) */
+.sg7{grid-template-columns:repeat(7,1fr);}
+@media (max-width:1100px){.sg7{grid-template-columns:repeat(4,1fr);}}
+@media (max-width:640px){.sg7{grid-template-columns:repeat(2,1fr);}}
+.type-filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.type-chip{padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:#fff;color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
+.type-chip.active{background:var(--indigo);color:#fff;border-color:var(--indigo);}
+.type-chip:hover:not(.active){background:#f9fafb;}
+.learn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+@media (max-width:1100px){.learn-grid{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:680px){.learn-grid{grid-template-columns:1fr;}}
+.learn-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;flex-direction:column;}
+.learn-card-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
+.learn-icon-wrap{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.learn-title{font-size:13px;font-weight:700;color:var(--text);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.learn-summary{font-size:11.5px;color:var(--text2);line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.learn-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.learn-tag{font-size:10px;font-weight:600;color:var(--indigo);background:var(--indigo-light);padding:2px 8px;border-radius:20px;}
+.learn-card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto;gap:8px;}
+.learn-date{font-size:10.5px;color:var(--text3);white-space:nowrap;}
+.learn-play-btn{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--indigo);background:var(--indigo-light);border:none;border-radius:20px;padding:6px 12px;cursor:pointer;white-space:nowrap;}
+.learn-play-btn:hover{background:#e0e4fd;}
+.learn-play-btn:disabled{opacity:.6;cursor:default;}
+.learn-player{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.learn-player-btn{width:30px;height:30px;border-radius:50%;background:var(--indigo);color:#fff;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.learn-player-track{flex:1;height:5px;border-radius:20px;background:#f3f4f6;cursor:pointer;position:relative;}
+.learn-player-fill{position:absolute;left:0;top:0;height:100%;border-radius:20px;background:var(--indigo);width:0%;}
+.learn-player-time{font-size:10px;color:var(--text3);white-space:nowrap;font-variant-numeric:tabular-nums;}
+.learn-empty-card{background:#fff;border:1.5px dashed var(--border);border-radius:14px;padding:30px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--text3);gap:6px;}
+.learn-empty-card b{color:var(--text2);font-size:12.5px;}
+.learn-empty-card span{font-size:11px;}
+.learn-pagination{display:flex;align-items:center;justify-content:space-between;margin-top:16px;flex-wrap:wrap;gap:10px;}
+.learn-pg-info{font-size:11.5px;color:var(--text3);}
+.learn-pg-btns{display:flex;align-items:center;gap:6px;}
+.learn-pg-btn{width:28px;height:28px;border-radius:8px;border:1px solid var(--border);background:#fff;color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.learn-pg-btn.active{background:var(--indigo);color:#fff;border-color:var(--indigo);}
+.learn-pg-btn:disabled{opacity:.4;cursor:default;}
 .chart-wrap{position:relative;}
 .chart-sm{height:150px;}
 .chart-md{height:210px;}
@@ -622,6 +659,9 @@ tr:hover td{background:#f9fafb;}
     <div class="nav-item" onclick="switchTab('english',this)"><span class="nav-icon">📖</span> Language</div>
     <div class="nav-item" onclick="switchTab('investment',this)"><span class="nav-icon">📈</span> Investment</div>
     <div class="nav-item" onclick="switchTab('content',this)"><span class="nav-icon">📝</span> Content</div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-item" onclick="switchTab('learning',this)"><span class="nav-icon">📚</span> Learning</div>
   </div>
   <div class="nav-spacer"></div>
   <div class="sidebar-footer">
@@ -1277,6 +1317,22 @@ tr:hover td{background:#f9fafb;}
         <div class="panel-header"><span class="panel-title">Content Tracker (SIGNAL)</span></div>
         <input type="text" class="form-input" id="content-search" placeholder="Cari topik..." style="margin-bottom:12px;" oninput="filterContent(this.value)">
         <div id="content-content"><div class="loading">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- ── LEARNING (Knowledge Hub, PRD-0005 Section 5.8) ── -->
+    <div id="tab-learning" class="section">
+      <div class="panel">
+        <div class="sec-hdr">
+          <div style="display:flex;gap:10px;">
+            <div class="sec-badge">1</div>
+            <div><div class="sec-hdr-title">Knowledge Hub</div><div class="sec-hdr-sub">Kumpulan sumber belajar dan wawasan pilihanmu.</div></div>
+          </div>
+        </div>
+        <div class="stat-grid sg7" id="learning-stats"></div>
+        <div class="type-filter" id="learning-type-filter"></div>
+        <div class="learn-grid" id="learning-grid"><div class="loading">Loading...</div></div>
+        <div class="learn-pagination" id="learning-pagination"></div>
       </div>
     </div>
 
@@ -2088,6 +2144,15 @@ const ICONS={
   trendingUp:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></svg>`,
   calendar:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>`,
   calendarDays:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>`,
+  fileText:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>`,
+  video:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>`,
+  file:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg>`,
+  fileType2:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22h6a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v6"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M3 16v-1.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5V16"/><path d="M6 22h2"/><path d="M7 14v8"/></svg>`,
+  stickyNote:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 9a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"/><path d="M15 3v5a1 1 0 0 0 1 1h5"/></svg>`,
+  play:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></svg>`,
+  pause:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="3" width="5" height="18" rx="1"/><rect x="5" y="3" width="5" height="18" rx="1"/></svg>`,
+  chevronLeft:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>`,
+  chevronRight:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`,
 };
 function ico(name,px){return (ICONS[name]||'').replace(/width="18"/,'width="'+px+'"').replace(/height="18"/,'height="'+px+'"');}
 function statCard(bg,color,icon,label,val,sub){
@@ -2264,6 +2329,193 @@ function renderProficiency(){
       </div>
     </div>`;
   }).join('');
+}
+
+// ── LEARNING TAB (Knowledge Hub, PRD-0005 Section 5.8) ──
+// NOTE: field names below (items/documents/total/has_audio/audio_location/tags/
+// summary_notes) are the contract requested from Claude Code, not yet confirmed
+// against a real response — has fallbacks, needs re-check once backend replies.
+const LEARN_TYPE_META={
+  article:{label:'Artikel',icon:'fileText',bg:'#eff6ff',color:'#3b82f6'},
+  youtube:{label:'Video',icon:'video',bg:'#fef2f2',color:'#ef4444'},
+  pdf:{label:'PDF',icon:'file',bg:'#f0fdf4',color:'#10b981'},
+  docx:{label:'Docx',icon:'fileType2',bg:'#ecfeff',color:'#06b6d4'},
+  audio:{label:'Audio',icon:'headphones',bg:'#fffbeb',color:'#f59e0b'},
+  note:{label:'Note',icon:'stickyNote',bg:'#f5f3ff',color:'#8b5cf6'},
+};
+const LEARN_TYPE_ORDER=['article','youtube','pdf','docx','audio','note'];
+let learningDocsAll=[];
+let currentLearningTypeFilter='all';
+let currentLearningPage=0;
+const LEARNING_PAGE_SIZE=6;
+let learningAudioState={};
+
+async function loadLearningDocuments(){
+  document.getElementById('learning-grid').innerHTML='<div class="loading">Loading...</div>';
+  try{
+    const r=await fetch(API_BASE+'/learning/documents?limit=500');
+    const j=r.ok?await r.json():{};
+    learningDocsAll=Array.isArray(j)?j:(j.items||j.documents||j.data||[]);
+  }catch{learningDocsAll=[];}
+  currentLearningPage=0;
+  renderLearningTab();
+}
+
+function renderLearningTab(){
+  renderLearningStats();
+  renderLearningTypeFilter();
+  renderLearningGrid();
+}
+
+function renderLearningStats(){
+  const el=document.getElementById('learning-stats');
+  if(!el)return;
+  const counts={};
+  LEARN_TYPE_ORDER.forEach(t=>counts[t]=0);
+  learningDocsAll.forEach(d=>{const t=d.source_type;if(counts[t]!=null)counts[t]++;else counts.note++;});
+  let html=statCard('var(--indigo-light)','var(--indigo)',ico('bookOpen',20),'Total Dokumen',learningDocsAll.length,'semua tipe');
+  LEARN_TYPE_ORDER.forEach(t=>{
+    const m=LEARN_TYPE_META[t];
+    html+=statCard(m.bg,m.color,ico(m.icon,20),m.label,counts[t],'');
+  });
+  el.innerHTML=html;
+}
+
+function renderLearningTypeFilter(){
+  const el=document.getElementById('learning-type-filter');
+  if(!el)return;
+  const chips=['all',...LEARN_TYPE_ORDER];
+  el.innerHTML=chips.map(t=>{
+    const label=t==='all'?'All':LEARN_TYPE_META[t].label;
+    return `<button class="type-chip ${t===currentLearningTypeFilter?'active':''}" onclick="setLearningTypeFilter('${t}')">${label}</button>`;
+  }).join('');
+}
+function setLearningTypeFilter(t){
+  currentLearningTypeFilter=t;
+  currentLearningPage=0;
+  renderLearningGrid();
+  renderLearningTypeFilter();
+}
+
+function renderLearningGrid(){
+  let docs=learningDocsAll;
+  if(currentLearningTypeFilter!=='all')docs=docs.filter(d=>d.source_type===currentLearningTypeFilter);
+  docs=docs.slice().sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+  const total=docs.length;
+  const totalPages=Math.max(1,Math.ceil(total/LEARNING_PAGE_SIZE));
+  if(currentLearningPage>=totalPages)currentLearningPage=totalPages-1;
+  const start=currentLearningPage*LEARNING_PAGE_SIZE;
+  const page=docs.slice(start,start+LEARNING_PAGE_SIZE);
+  const grid=document.getElementById('learning-grid');
+  if(!total){
+    grid.innerHTML=`<div class="learn-empty-card" style="grid-column:1/-1;">${ico('fileText',28)}<b>Belum ada dokumen di kategori ini</b><span>Coba pilih kategori lain atau kembali lagi nanti.</span></div>`;
+  }else{
+    grid.innerHTML=page.map(learnCardHtml).join('');
+  }
+  renderLearningPagination(total,totalPages,start);
+}
+
+function learnCardHtml(doc){
+  const type=LEARN_TYPE_META[doc.source_type]||LEARN_TYPE_META.note;
+  const id=doc.id;
+  const hasAudio=!!(doc.has_audio||doc.audio_location||doc.audio_file_path);
+  const tags=Array.isArray(doc.tags)?doc.tags:[];
+  const summary=doc.summary_notes||doc.summary||'';
+  return `<div class="learn-card">
+    <div class="learn-card-top">
+      <div class="learn-icon-wrap" style="background:${type.bg};color:${type.color};">${ico(type.icon,18)}</div>
+      <div class="learn-title">${escHtml(doc.title||'Tanpa judul')}</div>
+    </div>
+    ${summary?`<div class="learn-summary">${escHtml(summary)}</div>`:''}
+    ${tags.length?`<div class="learn-tags">${tags.map(t=>`<span class="learn-tag">${escHtml(t)}</span>`).join('')}</div>`:''}
+    <div class="learn-card-foot">
+      <span class="learn-date">${timeAgo(doc.created_at)}</span>
+      ${hasAudio?`<button class="learn-play-btn" id="learn-playbtn-${id}" onclick="learnTogglePlay('${id}',this)">${ico('play',13)} Play</button>`:''}
+    </div>
+    ${hasAudio?`<div class="learn-player" id="learn-player-${id}" style="display:none;">
+      <div class="learn-player-track" onclick="learnSeek('${id}',event)"><div class="learn-player-fill" id="learn-fill-${id}"></div></div>
+      <span class="learn-player-time" id="learn-time-${id}">0:00 / 0:00</span>
+    </div>`:''}
+  </div>`;
+}
+
+function renderLearningPagination(total,totalPages,start){
+  const el=document.getElementById('learning-pagination');
+  if(!el)return;
+  if(!total){el.innerHTML='';return;}
+  const end=Math.min(start+LEARNING_PAGE_SIZE,total);
+  let btns=`<button class="learn-pg-btn" ${currentLearningPage===0?'disabled':''} onclick="goLearningPage(${currentLearningPage-1})">${ico('chevronLeft',14)}</button>`;
+  for(let i=0;i<totalPages;i++){
+    btns+=`<button class="learn-pg-btn ${i===currentLearningPage?'active':''}" onclick="goLearningPage(${i})">${i+1}</button>`;
+  }
+  btns+=`<button class="learn-pg-btn" ${currentLearningPage>=totalPages-1?'disabled':''} onclick="goLearningPage(${currentLearningPage+1})">${ico('chevronRight',14)}</button>`;
+  el.innerHTML=`<div class="learn-pg-info">Menampilkan ${start+1}–${end} dari ${total} dokumen</div><div class="learn-pg-btns">${btns}</div>`;
+}
+function goLearningPage(p){currentLearningPage=p;renderLearningGrid();}
+
+// -- Audio playback: single control per card (the "Play" pill toggles play/pause;
+// the expanded row below is progress-only, no second control) --
+async function learnTogglePlay(id,btnEl){
+  const state=learningAudioState[id]||(learningAudioState[id]={});
+  if(!state.audioEl){
+    btnEl.disabled=true;btnEl.textContent='Loading...';
+    try{
+      const r=await fetch(API_BASE+'/learning/audio/'+id);
+      if(!r.ok)throw new Error('status '+r.status);
+      const blob=await r.blob();
+      const url=URL.createObjectURL(blob);
+      const audio=new Audio(url);
+      state.audioEl=audio;state.objectUrl=url;
+      audio.addEventListener('timeupdate',()=>updateLearnPlayerUI(id));
+      audio.addEventListener('loadedmetadata',()=>updateLearnPlayerUI(id));
+      audio.addEventListener('ended',()=>learnSetPlaying(id,false));
+    }catch(e){
+      btnEl.disabled=false;btnEl.innerHTML=ico('play',13)+' Play';
+      alert('Gagal load audio: '+e.message);
+      return;
+    }
+  }
+  if(state.audioEl.paused){
+    Object.keys(learningAudioState).forEach(k=>{
+      const s=learningAudioState[k];
+      if(k!==id&&s.audioEl&&!s.audioEl.paused){s.audioEl.pause();learnSetPlaying(k,false);}
+    });
+    state.audioEl.play();
+    learnSetPlaying(id,true);
+  }else{
+    state.audioEl.pause();
+    learnSetPlaying(id,false);
+  }
+}
+function learnSetPlaying(id,playing){
+  const btn=document.getElementById('learn-playbtn-'+id);
+  const player=document.getElementById('learn-player-'+id);
+  if(btn){btn.disabled=false;btn.innerHTML=playing?(ico('pause',13)+' Pause'):(ico('play',13)+' Play');}
+  if(player)player.style.display='flex';
+  updateLearnPlayerUI(id);
+}
+function updateLearnPlayerUI(id){
+  const state=learningAudioState[id];
+  if(!state||!state.audioEl)return;
+  const a=state.audioEl;
+  const fill=document.getElementById('learn-fill-'+id);
+  const time=document.getElementById('learn-time-'+id);
+  const pct=a.duration?(a.currentTime/a.duration*100):0;
+  if(fill)fill.style.width=pct+'%';
+  if(time)time.textContent=fmtTime(a.currentTime)+' / '+fmtTime(a.duration||0);
+}
+function fmtTime(s){
+  if(!isFinite(s))return'0:00';
+  const m=Math.floor(s/60),sec=Math.floor(s%60);
+  return m+':'+String(sec).padStart(2,'0');
+}
+function learnSeek(id,evt){
+  const state=learningAudioState[id];
+  if(!state||!state.audioEl||!state.audioEl.duration)return;
+  const rect=evt.currentTarget.getBoundingClientRect();
+  const pct=Math.min(1,Math.max(0,(evt.clientX-rect.left)/rect.width));
+  state.audioEl.currentTime=pct*state.audioEl.duration;
+  updateLearnPlayerUI(id);
 }
 
 // ── CONTENT TAB (SIGNAL topic/caption tracker, read-only) ──
@@ -2987,7 +3239,7 @@ function buildDashActivity(){} // legacy, kept for compat
 // ── TAB SWITCHING ──
 const pageMeta={
   dashboard:'Dashboard',calendar:'Calendar',tracker:'Time Tracker',
-  health:'Health',finance:'Finance',english:'Language',investment:'Investment',content:'Content'
+  health:'Health',finance:'Finance',english:'Language',investment:'Investment',content:'Content',learning:'Learning'
 };
 
 function switchTab(name,btn){
@@ -3012,7 +3264,7 @@ function closeSidebar(){
 // ── LOAD ALL ──
 async function loadAll(){
   renderAllPeriodToggles();
-  await Promise.all([loadTasks(),loadHealth(),loadFinance(),loadEnglish(),loadInvestment(),loadCalendar(),loadContent()]);
+  await Promise.all([loadTasks(),loadHealth(),loadFinance(),loadEnglish(),loadInvestment(),loadCalendar(),loadContent(),loadLearningDocuments()]);
   buildDashboard();
   renderTracker();
 }
