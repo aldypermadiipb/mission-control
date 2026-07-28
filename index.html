@@ -251,6 +251,7 @@ tr:hover td{background:#f9fafb;}
 .sec-hdr-sub{font-size:11.5px;color:var(--text3);margin-top:2px;}
 .sec-toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
 .period-label{font-size:11px;font-weight:600;color:var(--text2);background:#fff;border:1px solid var(--border);border-radius:20px;padding:6px 12px;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;cursor:help;}
+.period-select{font-size:11px;font-weight:600;color:var(--text2);background:#fff;border:1px solid var(--border);border-radius:20px;padding:6px 10px;cursor:pointer;}
 .legend-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-left:auto;}
 .legend-item{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--text2);font-weight:600;white-space:nowrap;}
 .legend-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
@@ -1155,7 +1156,7 @@ tr:hover td{background:#f9fafb;}
     <div id="tab-english" class="section">
       <div class="stat-grid sg3" id="english-stats"></div>
       <div class="panel" style="margin-bottom:14px;"><div class="panel-header"><span class="panel-title">Vocab by Category</span></div><div class="chart-wrap" style="height:130px;"><canvas id="chartEnglish"></canvas></div></div>
-      <div class="panel"><div class="panel-header"><span class="panel-title">Vocab Bank</span><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><div class="lang-filter" id="lang-filter-vocab"></div><button class="qa-btn" onclick="exportVocabExcel()">⬇️ Excel</button></div></div><div id="english-content"><div class="loading">Loading...</div></div></div>
+      <div class="panel"><div class="panel-header"><span class="panel-title">Vocab Bank</span><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><div class="lang-filter" id="lang-filter-vocab"></div><button class="qa-btn" onclick="exportVocabExcel()" style="display:inline-flex;align-items:center;gap:5px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>Excel</button></div></div><div id="english-content"><div class="loading">Loading...</div></div></div>
 
       <!-- Grammar Tracker (PRD-0005 Section 11.5 Part B) -->
       <div class="panel">
@@ -1187,7 +1188,14 @@ tr:hover td{background:#f9fafb;}
         </div>
         <div class="sec-toolbar">
           <div class="lang-filter" id="lang-filter-output"></div>
-          <span class="period-label" style="margin-left:auto;" title="Endpoint saat ini fixed 7 hari terakhir — opsi periode lain nunggu backend support">📅 7 Hari Terakhir</span>
+          <span style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;flex-shrink:0;"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+            <select class="period-select" id="output-days-select" onchange="setOutputDays(this.value)">
+              <option value="7">7 Hari Terakhir</option>
+              <option value="14">14 Hari Terakhir</option>
+              <option value="30">30 Hari Terakhir</option>
+            </select>
+          </span>
         </div>
         <div class="grid-21">
           <div>
@@ -1212,7 +1220,14 @@ tr:hover td{background:#f9fafb;}
         </div>
         <div class="sec-toolbar">
           <div class="lang-filter" id="lang-filter-reading"></div>
-          <span class="period-label" style="margin-left:auto;" title="Endpoint saat ini fixed rentang mingguannya — opsi periode lain nunggu backend support">🗓️ 4 Minggu Terakhir</span>
+          <span style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;flex-shrink:0;"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
+            <select class="period-select" id="reading-weeks-select" onchange="setReadingWeeks(this.value)">
+              <option value="4">4 Minggu Terakhir</option>
+              <option value="8">8 Minggu Terakhir</option>
+              <option value="12">12 Minggu Terakhir</option>
+            </select>
+          </span>
         </div>
         <div class="stat-grid sg3" id="reading-log-stats"></div>
         <div class="grid-21">
@@ -1231,7 +1246,7 @@ tr:hover td{background:#f9fafb;}
             <div class="sec-badge">4</div>
             <div><div class="sec-hdr-title">Proficiency Milestone</div><div class="sec-hdr-sub">Estimasi level kemahiran berdasarkan data internal (vocab + grammar + output)</div></div>
           </div>
-          <span style="font-size:10px;color:#b45309;background:#fffbeb;padding:3px 10px;border-radius:20px;font-weight:600;white-space:nowrap;">⚠️ Estimasi, bukan hasil tes resmi</span>
+          <span style="font-size:10px;color:#b45309;background:#fffbeb;padding:3px 10px;border-radius:20px;font-weight:600;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:block;flex-shrink:0;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Estimasi, bukan hasil tes resmi</span>
         </div>
         <div class="grid-4" id="proficiency-content"><div class="loading">Loading...</div></div>
         <div style="font-size:10.5px;color:var(--text3);margin-top:14px;text-align:center;">ⓘ Level adalah estimasi kasar berdasarkan aktivitas belajar internal, bukan hasil tes resmi. Tetap lakukan evaluasi berkala buat hasil yang lebih akurat.</div>
@@ -2004,9 +2019,9 @@ function renderEnglishView(){
   const ws=weekStart();
   const thisWeek=filtered.filter(r=>r.date&&r.date>=ws).length;
   document.getElementById('english-stats').innerHTML=
-    sc('sc-g1','📖','Total Vocab',filtered.length,'kata')+
-    sc('sc-g2','🌱','Minggu Ini',thisWeek,'baru')+
-    sc('sc-g4','🏷️','Kategori',Object.keys(cats).length,'topik');
+    sc('sc-g1',ico('bookOpen',20),'Total Vocab',filtered.length,'kata')+
+    sc('sc-g2',ico('sprout',20),'Minggu Ini',thisWeek,'baru')+
+    sc('sc-g4',ico('tag',20),'Kategori',Object.keys(cats).length,'topik');
   mkChart('chartEnglish',{type:'bar',data:{labels:Object.keys(cats),datasets:[{label:'Words',data:Object.values(cats),backgroundColor:PA.slice(0,Object.keys(cats).length),borderColor:P,borderWidth:1,borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#9ca3af'},grid:{display:false}},y:{ticks:{color:'#9ca3af',stepSize:1},grid:{color:'#f3f4f6'}}}}});
   if(!filtered.length){document.getElementById('english-content').innerHTML='<div class="empty"><div class="emoji">📚</div>Belum ada vocab.</div>';return;}
   document.getElementById('english-content').innerHTML='<div class="vocab-grid">'+filtered.slice().reverse().slice(0,30).map(r=>`<div class="vocab-card"><div class="vocab-word">${r.word||''}${vocabLangOf(r)!=='EN'?` <span style="font-size:9px;color:var(--text3);font-weight:600;">${LANG_FLAG[vocabLangOf(r)]||''} ${vocabLangOf(r)}</span>`:''}</div><div class="vocab-trans">${r.translation||''}</div>${r.example?`<div class="vocab-ex">${r.example}</div>`:''}</div>`).join('')+'</div>';
@@ -2042,6 +2057,9 @@ const PROF_SCALE={EN:['A1','A2','B1','B2','C1','C2'],JA:['N5','N4','N3','N2','N1
 const STATUS_META={learning:{label:'Learning',cls:'byellow'},reviewing:{label:'Reviewing',cls:'bblue'},mastered:{label:'Mastered',cls:'bgreen'}};
 const CIRC22=2*Math.PI*22; // 138.23
 let currentLearningLangFilter='EN';
+let currentOutputDays=7,currentReadingWeeks=4;
+function setOutputDays(v){currentOutputDays=parseInt(v)||7;loadOutputSummary();}
+function setReadingWeeks(v){currentReadingWeeks=parseInt(v)||4;loadReadingLog();}
 let grammarPointsData=[],outputSummaryData=null,readingLogData=null,proficiencyData={};
 let grammarExpanded=false,mistakesExpanded=false,readingLogExpanded=false;
 
@@ -2056,8 +2074,24 @@ function timeAgo(d){
   }catch{return'-';}
 }
 function dayName(d){try{return new Date(d).toLocaleDateString('id-ID',{weekday:'short'});}catch{return d||'';}}
-function statCard(bg,icon,label,val,sub){
-  return `<div class="stat-card"><div class="sc-icon-wrap" style="background:${bg};">${icon}</div><div class="sc-label">${label}</div><div class="sc-value">${val}</div><div class="sc-sub">${sub}</div></div>`;
+// Lucide line icons (ISC license, lucide.dev), inlined so no extra HTTP request. stroke=currentColor
+// so each icon's color is set by the wrapping element's CSS `color`, not baked into the SVG itself.
+const ICONS={
+  bookOpen:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v16"/><path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z"/></svg>`,
+  sprout:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9.536V7a4 4 0 0 1 4-4h1.5a.5.5 0 0 1 .5.5V5a4 4 0 0 1-4 4 4 4 0 0 0-4 4c0 2 1 3 1 5a5 5 0 0 1-1 3"/><path d="M4 9a5 5 0 0 1 8 4 5 5 0 0 1-8-4"/><path d="M5 21h14"/></svg>`,
+  tag:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></svg>`,
+  messageCircle:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/></svg>`,
+  tv:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2-5 5-5-5"/><rect width="20" height="15" x="2" y="7" rx="2"/></svg>`,
+  headphones:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>`,
+  download:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>`,
+  alertTriangle:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>`,
+  trendingUp:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></svg>`,
+  calendar:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>`,
+  calendarDays:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>`,
+};
+function ico(name,px){return (ICONS[name]||'').replace(/width="18"/,'width="'+px+'"').replace(/height="18"/,'height="'+px+'"');}
+function statCard(bg,color,icon,label,val,sub){
+  return `<div class="stat-card"><div class="sc-icon-wrap" style="background:${bg};color:${color};">${icon}</div><div class="sc-label">${label}</div><div class="sc-value">${val}</div><div class="sc-sub">${sub}</div></div>`;
 }
 
 function renderLearningLangFilter(){
@@ -2095,7 +2129,7 @@ function renderGrammarTracker(){
       const meta=STATUS_META[r.status]||{label:r.status||'-',cls:'bpurple'};
       const total=(r.correct_count||0)+(r.incorrect_count||0);
       const pct=r.progress_pct!=null?Math.round(r.progress_pct):(total?Math.round((r.correct_count||0)/total*100):0);
-      const suggest=r.suggested_status_change?` <span title="Progress udah cukup buat naik status — konfirmasi manual ke Ana, gak auto-berubah" style="cursor:help;">⬆️</span>`:'';
+      const suggest=r.suggested_status_change?` <span title="Progress udah cukup buat naik status — konfirmasi manual ke Ana, gak auto-berubah" style="cursor:help;color:#10b981;vertical-align:middle;display:inline-flex;">${ico('trendingUp',14)}</span>`:'';
       return `<tr><td style="font-weight:600;color:var(--text);">${escHtml(r.grammar_point||'')}</td><td>${escHtml(r.level||'-')}</td><td><span class="badge ${meta.cls}">${meta.label}</span>${suggest}</td><td style="min-width:120px;"><div class="progress-item" style="margin-bottom:0;"><div class="progress-label"><span>${pct}%</span></div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:var(--indigo);"></div></div></div></td><td>${timeAgo(r.updated_at)}</td></tr>`;
     }).join('')+`</tbody></table>`;
   if(btn){
@@ -2108,7 +2142,7 @@ function renderGrammarTracker(){
 async function loadOutputSummary(){
   document.getElementById('output-stats').innerHTML='<div class="loading">Loading...</div>';
   try{
-    const r=await fetch(API_BASE+'/learning/output-summary?language_code='+currentLearningLangFilter);
+    const r=await fetch(API_BASE+'/learning/output-summary?language_code='+currentLearningLangFilter+'&days='+currentOutputDays);
     outputSummaryData=r.ok?await r.json():null;
   }catch{outputSummaryData=null;}
   mistakesExpanded=false;
@@ -2116,15 +2150,13 @@ async function loadOutputSummary(){
 }
 function renderOutputSummary(){
   const d=outputSummaryData||{};
-  // NOTE: field names below (daily/mistakes) are a best guess from the backend spec — Cowork's
-  // sandbox can't reach api.aldypermadi.com to curl-verify the exact response shape. Fallback keys
-  // are included, but if the panel shows "Belum ada..." with data known to exist, ping Cowork with
-  // a sample `curl .../learning/output-summary?language_code=EN` response to fix the key names.
-  const daily=d.daily||d.output_by_day||d.words_per_day||(Array.isArray(d)?d:[]);
-  const mistakes=d.mistakes||d.top_mistakes||d.mistake_patterns||[];
+  // Field names confirmed by Claude Code (curl sample, 2026-07-28): daily_word_count / top_mistakes.
+  // Older fallback keys kept just in case the backend shape ever shifts again.
+  const daily=d.daily_word_count||d.daily||d.output_by_day||d.words_per_day||(Array.isArray(d)?d:[]);
+  const mistakes=d.top_mistakes||d.mistakes||d.mistake_patterns||[];
   const totalWords=daily.reduce((s,x)=>s+(x.word_count||0),0);
-  document.getElementById('output-stats').innerHTML=statCard('#eef2ff','💬','Kata Dipraktikkan (7 Hari)',totalWords.toLocaleString('id-ID'),'kata');
-  mkChart('chartOutputPractice',{type:'line',data:{labels:daily.map(x=>dayName(x.date)),datasets:[{label:'Kata',data:daily.map(x=>x.word_count||0),borderColor:'#8b5cf6',backgroundColor:'rgba(139,92,246,.15)',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#8b5cf6',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#9ca3af',font:{size:9}},grid:{display:false}},y:{ticks:{color:'#9ca3af',stepSize:1},grid:{color:'#f3f4f6'}}}}});
+  document.getElementById('output-stats').innerHTML=statCard('#eef2ff','#6366f1',ico('messageCircle',20),'Kata Dipraktikkan ('+currentOutputDays+' Hari)',totalWords.toLocaleString('id-ID'),'kata');
+  mkChart('chartOutputPractice',{type:'line',data:{labels:daily.map(x=>currentOutputDays<=7?dayName(x.date):fmtDate(x.date)),datasets:[{label:'Kata',data:daily.map(x=>x.word_count||0),borderColor:'#8b5cf6',backgroundColor:'rgba(139,92,246,.15)',fill:true,tension:.4,pointRadius:currentOutputDays<=14?3:0,pointBackgroundColor:'#8b5cf6',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#9ca3af',font:{size:9},maxRotation:0},grid:{display:false}},y:{ticks:{color:'#9ca3af',stepSize:1},grid:{color:'#f3f4f6'}}}}});
   const mc=document.getElementById('mistake-patterns-content');
   if(!mistakes.length){mc.innerHTML='<div class="empty"><div class="emoji">✅</div>Belum ada kesalahan berulang tercatat.</div>';return;}
   const sorted=mistakes.slice().sort((a,b)=>(b.freq||0)-(a.freq||0));
@@ -2138,7 +2170,7 @@ function renderOutputSummary(){
 async function loadReadingLog(){
   document.getElementById('reading-log-stats').innerHTML='<div class="loading">Loading...</div>';
   try{
-    const r=await fetch(API_BASE+'/learning/reading-log?language_code='+currentLearningLangFilter);
+    const r=await fetch(API_BASE+'/learning/reading-log?language_code='+currentLearningLangFilter+'&weeks='+currentReadingWeeks);
     readingLogData=r.ok?await r.json():null;
   }catch{readingLogData=null;}
   readingLogExpanded=false;
@@ -2146,28 +2178,38 @@ async function loadReadingLog(){
 }
 function renderReadingLog(){
   const d=readingLogData||{};
-  // NOTE: same caveat as output-summary — weekly/recent keys are a best guess, not curl-verified.
-  const weekly=d.weekly||d.by_week||d.weeks||[];
-  const recent=d.recent||d.recent_items||d.latest||[];
-  const val=(w,k)=>w[k]??w[k.charAt(0).toUpperCase()+k.slice(1)]??0;
-  const sum=k=>weekly.reduce((s,w)=>s+val(w,k),0);
-  const totals={artikel:sum('artikel'),video:sum('video'),audio:sum('audio')};
+  // Field names confirmed by Claude Code (curl sample, 2026-07-28): weekly_by_source_type / recent_materials.
+  // weekly_by_source_type is FLAT — one row per (week_start, source_type), not pre-pivoted per week —
+  // so it's pivoted client-side below using the display_category the backend already computed.
+  const rawWeekly=d.weekly_by_source_type||d.weekly||d.by_week||d.weeks||[];
+  const recent=d.recent_materials||d.recent||d.recent_items||d.latest||[];
+  const weeksOrder=[...new Set(rawWeekly.map(r=>r.week_start))].sort();
+  const weekly=weeksOrder.map(ws=>{
+    const row={week_start:ws,Artikel:0,Video:0,Audio:0};
+    rawWeekly.filter(r=>r.week_start===ws).forEach(r=>{
+      const cat=r.display_category||'Artikel';
+      row[cat]=(row[cat]||0)+(r.cnt??r.count??0);
+    });
+    return row;
+  });
+  const sum=k=>weekly.reduce((s,w)=>s+(w[k]||0),0);
+  const totals={Artikel:sum('Artikel'),Video:sum('Video'),Audio:sum('Audio')};
   const trend=k=>{
     if(weekly.length<2)return null;
-    const prev=val(weekly[weekly.length-2],k);
+    const prev=weekly[weekly.length-2][k]||0;
     if(!prev)return null;
-    return Math.round((val(weekly[weekly.length-1],k)-prev)/prev*100);
+    return Math.round((weekly[weekly.length-1][k]-prev)/prev*100);
   };
   const subFor=k=>{const t=trend(k);return t==null?'dari periode lalu':`${t>=0?'↑':'↓'} ${Math.abs(t)}% dari periode lalu`;};
   document.getElementById('reading-log-stats').innerHTML=
-    statCard('#eef2ff','📖','Artikel Dibaca',totals.artikel,subFor('artikel'))+
-    statCard('#fdf2f8','📺','Video Ditonton',totals.video,subFor('video'))+
-    statCard('#f0fdf4','🎧','Audio Didengar',totals.audio,subFor('audio'));
-  mkChart('chartReadingLog',{type:'bar',data:{labels:weekly.map((w,i)=>w.week_label||w.label||'Minggu '+(i+1)),datasets:[
-    {label:'Artikel',data:weekly.map(w=>val(w,'artikel')),backgroundColor:'#8b5cf6',borderRadius:4},
-    {label:'Video',data:weekly.map(w=>val(w,'video')),backgroundColor:'#3b82f6',borderRadius:4},
-    {label:'Audio',data:weekly.map(w=>val(w,'audio')),backgroundColor:'#10b981',borderRadius:4}
-  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:8,font:{size:10},color:'#6b7280'}}},scales:{x:{stacked:true,ticks:{color:'#9ca3af',font:{size:9}},grid:{display:false}},y:{stacked:true,ticks:{color:'#9ca3af',stepSize:1},grid:{color:'#f3f4f6'}}}}});
+    statCard('#eef2ff','#6366f1',ico('bookOpen',20),'Artikel Dibaca',totals.Artikel,subFor('Artikel'))+
+    statCard('#fdf2f8','#ec4899',ico('tv',20),'Video Ditonton',totals.Video,subFor('Video'))+
+    statCard('#f0fdf4','#10b981',ico('headphones',20),'Audio Didengar',totals.Audio,subFor('Audio'));
+  mkChart('chartReadingLog',{type:'bar',data:{labels:weekly.map(w=>fmtDate(w.week_start)),datasets:[
+    {label:'Artikel',data:weekly.map(w=>w.Artikel),backgroundColor:'#8b5cf6',borderRadius:4},
+    {label:'Video',data:weekly.map(w=>w.Video),backgroundColor:'#3b82f6',borderRadius:4},
+    {label:'Audio',data:weekly.map(w=>w.Audio),backgroundColor:'#10b981',borderRadius:4}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:8,font:{size:10},color:'#6b7280'}}},scales:{x:{stacked:true,ticks:{color:'#9ca3af',font:{size:9},maxRotation:0},grid:{display:false}},y:{stacked:true,ticks:{color:'#9ca3af',stepSize:1},grid:{color:'#f3f4f6'}}}}});
   const rc=document.getElementById('reading-log-recent');
   if(!recent.length){rc.innerHTML='<div class="empty"><div class="emoji">📭</div>Belum ada materi tercatat.</div>';return;}
   const CAT_BADGE={artikel:'bpurple',video:'bblue',audio:'bgreen'};
@@ -2215,7 +2257,7 @@ function renderProficiency(){
       </div>
       <div style="font-weight:800;font-size:17px;margin-top:6px;">${escHtml(d.tier_label||'-')}</div>
       <div style="font-size:11px;color:var(--text3);margin-bottom:10px;">≈ ${escHtml(d.estimated_cefr_jlpt_hsk_topik||'-')}</div>
-      <div class="prof-scale">${scale.map(s=>`<span class="prof-pill ${s.toUpperCase().replace(/\s+/g,'')===cur?'active':''}">${s}</span>`).join('')}</div>
+      <div class="prof-scale">${scale.map(s=>{const full=(/^[A-Za-z]/.test(s)?s:(l==='ZH'?'HSK ':'TOPIK ')+s).toUpperCase().replace(/\s+/g,'');return `<span class="prof-pill ${full===cur?'active':''}">${s}</span>`;}).join('')}</div>
       <div style="margin-top:14px;">
         <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-bottom:4px;"><span>Poin Kemajuan</span><span>${pts.toLocaleString('id-ID')}${tierMax?' / '+tierMax.toLocaleString('id-ID'):''}</span></div>
         <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:var(--indigo);"></div></div>
