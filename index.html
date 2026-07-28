@@ -2452,14 +2452,13 @@ function calViewChange(v){
 }
 
 // ── TIME TRACKER (API-based) ──
-const WRITE_KEY='hsINdSfRQaobPEtnVeuck2gM97ZYHqGL';
 let draggedTaskId=null;
 
 async function apiWrite(method,path,body){
   try{
     const r=await fetch(API_BASE+path,{
       method,
-      headers:{'Content-Type':'application/json','X-Write-Key':WRITE_KEY},
+      headers:{'Content-Type':'application/json'},
       body:body?JSON.stringify(body):undefined
     });
     if(!r.ok){const e=await r.json().catch(()=>({}));alert('Error: '+(e.detail||r.status));return null;}
@@ -3018,7 +3017,8 @@ async function loadAll(){
   renderTracker();
 }
 
-loadAll();
+// loadAll() is now triggered by the auth gate below (script at end of body) —
+// only fires once a valid X-Dashboard-Key is confirmed, not unconditionally.
 </script>
 <style>
 .tb-avatar{position:relative;cursor:pointer;user-select:none;}
@@ -3050,8 +3050,8 @@ loadAll();
     av.classList.toggle('mc-editor', mcIsEditor());
     let badge = av.querySelector('.mc-lock-badge');
     if(!badge){ badge = document.createElement('span'); badge.className = 'mc-lock-badge'; av.appendChild(badge); }
-    badge.textContent = mcIsEditor() ? '✓' : '🔒'; // check or lock emoji
-    av.title = mcIsEditor() ? 'Editor mode — klik untuk logout' : 'Viewer mode — klik untuk login sebagai editor';
+    badge.textContent = mcIsEditor() ? '✓' : '🔒';
+    av.title = mcIsEditor() ? 'Klik untuk logout' : 'Klik untuk login';
   }
 
   function ensureModal(){
@@ -3059,12 +3059,12 @@ loadAll();
     document.body.insertAdjacentHTML('beforeend', [
       '<div id="mc-auth-overlay">',
         '<div id="mc-auth-modal">',
-          '<h3>Masuk sebagai Editor</h3>',
-          '<p>Masukkan password buat bisa nambah/edit task, event, atau goal. Tanpa login, dashboard ini read-only.</p>',
+          '<h3>Masuk ke Dashboard</h3>',
+          '<p id="mc-auth-desc">Masukkan password buat buka Mission Control.</p>',
           '<input type="password" id="mc-auth-pass" placeholder="Password" autocomplete="off">',
           '<div class="mc-err" id="mc-auth-err">Password salah, coba lagi.</div>',
-          '<div class="mc-btns">',
-            '<button class="mc-cancel" onclick="window.mcCloseAuth()">Batal</button>',
+          '<div class="mc-btns" id="mc-auth-btns">',
+            '<button class="mc-cancel" id="mc-auth-cancel" onclick="window.mcCloseAuth()">Batal</button>',
             '<button class="mc-submit" onclick="window.mcSubmitAuth()">Masuk</button>',
           '</div>',
         '</div>',
@@ -3075,14 +3075,21 @@ loadAll();
     });
   }
 
-  window.mcOpenAuth = function(){
-    if(mcIsEditor()){
-      if(confirm('Logout dari editor mode?')){ setToken(''); paintAvatar(); }
+  // mandatory=true: nothing to fall back to (initial load, or session expired
+  // mid-use) — Batal is hidden, there's no dashboard behind the overlay to
+  // cancel back to.
+  window.mcOpenAuth = function(mandatory, expired){
+    if(!mandatory && mcIsEditor()){
+      if(confirm('Logout dari dashboard?')){ setToken(''); paintAvatar(); location.reload(); }
       return;
     }
     ensureModal();
     document.getElementById('mc-auth-err').style.display = 'none';
     document.getElementById('mc-auth-pass').value = '';
+    document.getElementById('mc-auth-cancel').style.display = mandatory ? 'none' : '';
+    document.getElementById('mc-auth-desc').textContent = expired
+      ? 'Sesi berakhir, masukkan password lagi.'
+      : 'Masukkan password buat buka Mission Control.';
     document.getElementById('mc-auth-overlay').classList.add('open');
     setTimeout(function(){ document.getElementById('mc-auth-pass').focus(); }, 50);
   };
@@ -3107,6 +3114,7 @@ loadAll();
       setToken(data.token);
       window.mcCloseAuth();
       paintAvatar();
+      if(!window.mcLoaded){ window.mcLoaded = true; loadAll(); }
     }catch(e){
       document.getElementById('mc-auth-err').style.display = 'block';
     }finally{
@@ -3114,38 +3122,54 @@ loadAll();
     }
   };
 
-  // Entry point: clicking the AP avatar top-right opens login (or logout if already editor)
+  // Clicking the AP avatar top-right opens login, or offers logout if already in.
   document.addEventListener('click', function(e){
     const av = e.target.closest('.tb-avatar');
-    if(av) window.mcOpenAuth();
+    if(av) window.mcOpenAuth(false);
   });
 
-  // The actual gate: window.fetch is the one place every write request in the
-  // app funnels through (createTask, patchTask, deleteTask, dropCard,
-  // saveEventModal, saveTargetSettingsModal, apiWrite — all of them end up
-  // calling fetch()). Any non-GET request to the API is blocked + prompts
-  // login if not authenticated, and gets the Authorization header attached
-  // if authenticated.
+  // The gate: every request to the API — reads included, not just writes —
+  // funnels through window.fetch, so this is the one place that needs to
+  // attach the credential and block when missing. X-Dashboard-Key is the
+  // single header used for both; the backend also still accepts the older
+  // Authorization/X-Write-Key paths for anything else still using them.
   const _origFetch = window.fetch;
   window.fetch = function(url, opts){
     const u = '' + url;
-    const method = ((opts && opts.method) || 'GET').toUpperCase();
-    const isWrite = method !== 'GET' && method !== 'HEAD';
     const isApi = u.indexOf('api.aldypermadi.com') !== -1;
     const isAuthLogin = u.indexOf('/auth/login') !== -1;
-    if(isApi && isWrite && !isAuthLogin){
+    if(isApi && !isAuthLogin){
       if(!mcIsEditor()){
-        window.mcOpenAuth();
-        return Promise.reject(new Error('Editor login required'));
+        window.mcOpenAuth(true);
+        return Promise.reject(new Error('Login required'));
       }
       opts = Object.assign({}, opts);
-      opts.headers = Object.assign({}, opts.headers, {'Authorization': 'Bearer ' + getToken()});
+      opts.headers = Object.assign({}, opts.headers, {'X-Dashboard-Key': getToken()});
     }
-    return _origFetch.call(this, url, opts);
+    const p = _origFetch.call(this, url, opts);
+    if(isApi && !isAuthLogin){
+      return p.then(function(r){
+        if(r.status === 401){
+          setToken('');
+          paintAvatar();
+          window.mcOpenAuth(true, true);
+        }
+        return r;
+      });
+    }
+    return p;
   };
 
   if(document.readyState !== 'loading') paintAvatar();
   document.addEventListener('DOMContentLoaded', paintAvatar);
+
+  // Entry point: gate the whole dashboard behind login before loading any data.
+  if(mcIsEditor()){
+    window.mcLoaded = true;
+    loadAll();
+  } else {
+    window.mcOpenAuth(true);
+  }
 })();
 </script>
 </body>
