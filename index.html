@@ -2418,7 +2418,10 @@ function renderLearningGrid(){
 function learnCardHtml(doc){
   const type=LEARN_TYPE_META[doc.source_type]||LEARN_TYPE_META.note;
   const id=doc.id;
-  const hasAudio=!!(doc.has_audio||doc.audio_location||doc.audio_file_path);
+  // audio_location defaults to 'local' even when no file exists yet (confirmed
+  // against real schema sample from Claude Code) — audio_file_path (or an
+  // explicit has_audio flag) is the only reliable signal a file is playable.
+  const hasAudio=!!(doc.has_audio||doc.audio_file_path);
   const tags=Array.isArray(doc.tags)?doc.tags:[];
   const summary=doc.summary_notes||doc.summary||'';
   return `<div class="learn-card">
