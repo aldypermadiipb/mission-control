@@ -305,6 +305,13 @@ tr:hover td{background:#f9fafb;}
 .goal-empty-card svg{margin-bottom:8px;}
 .goal-empty-card b{display:block;color:var(--text2);font-size:13px;margin-bottom:4px;}
 .goal-empty-card span{font-size:11.5px;}
+.goal-add-item-row{display:flex;gap:6px;margin-top:12px;padding-top:10px;border-top:1px dashed var(--border);}
+.goal-add-level{flex:0 0 116px;padding:7px 8px;border:1px solid var(--border);border-radius:8px;font-size:11.5px;color:var(--text);background:#fff;outline:none;}
+.goal-add-text{flex:1;min-width:0;padding:7px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--text);outline:none;}
+.goal-add-text:focus,.goal-add-level:focus{border-color:var(--indigo);}
+.goal-add-submit{flex:0 0 auto;width:30px;height:30px;border-radius:8px;border:none;background:var(--indigo);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.goal-add-submit:hover{background:var(--indigo2);}
+.goal-add-submit:disabled{opacity:.5;cursor:not-allowed;}
 .learn-play-btn{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--indigo);background:var(--indigo-light);border:none;border-radius:20px;padding:6px 12px;cursor:pointer;white-space:nowrap;}
 .learn-play-btn:hover{background:#e0e4fd;}
 .learn-play-btn:disabled{opacity:.6;cursor:default;}
@@ -1373,6 +1380,7 @@ tr:hover td{background:#f9fafb;}
             <div class="sec-badge">1</div>
             <div><div class="sec-hdr-title">Goal Belajar</div><div class="sec-hdr-sub">Curriculum & progress belajar, dari beginner sampai advanced.</div></div>
           </div>
+          <span class="hp-link" onclick="openGoalModal()">＋ Goal Baru</span>
         </div>
         <div class="stat-grid sg4" id="goals-stats"></div>
         <div class="type-filter" id="goals-filter"></div>
@@ -1460,6 +1468,29 @@ tr:hover td{background:#f9fafb;}
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeEventModal()">Cancel</button>
       <button class="btn-save" id="modal-event-save-btn" onclick="saveEventModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD GOAL MODAL -->
+<div class="modal-overlay hidden" id="goal-modal" onclick="if(event.target===this)closeGoalModal()">
+  <div class="modal-box">
+    <div class="modal-title">🎯 Goal Belajar Baru</div>
+    <div class="form-group">
+      <label class="form-label">Judul Goal *</label>
+      <input type="text" class="form-input" id="modal-goal-title" placeholder="Contoh: Belajar SQL" maxlength="200">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Target Deadline</label>
+      <input type="date" class="form-input" id="modal-goal-deadline">
+    </div>
+    <div class="form-group" style="display:flex;align-items:center;gap:8px;margin-bottom:0;">
+      <input type="checkbox" id="modal-goal-sequential" style="width:15px;height:15px;">
+      <label class="form-label" style="margin-bottom:0;cursor:pointer;" for="modal-goal-sequential">Mode berurutan (item harus diselesaikan urut)</label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeGoalModal()">Batal</button>
+      <button class="btn-save" id="modal-goal-save-btn" onclick="saveGoalModal()">Simpan</button>
     </div>
   </div>
 </div>
@@ -2201,6 +2232,7 @@ const ICONS={
   target:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
   check:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`,
   checkCircle:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>`,
+  plus:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>`,
 };
 function ico(name,px){return (ICONS[name]||'').replace(/width="18"/,'width="'+px+'"').replace(/height="18"/,'height="'+px+'"');}
 function statCard(bg,color,icon,label,val,sub){
@@ -2696,22 +2728,65 @@ function renderGoalChecklistInner(id){
   const detail=goalsDetailCache[id];
   if(!detail||!Array.isArray(detail.items))return'<div class="loading">Gagal memuat checklist.</div>';
   const items=detail.items;
-  if(!items.length)return'<div class="loading">Belum ada item.</div>';
   let html='';
-  GOAL_LEVEL_ORDER.forEach(level=>{
-    const levelItems=items.filter(it=>it.level===level).sort((a,b)=>(a.item_order||0)-(b.item_order||0));
-    if(!levelItems.length)return;
-    const doneCount=levelItems.filter(it=>it.is_done).length;
-    html+=`<div class="goal-level-hdr">${GOAL_LEVEL_LABEL[level]} (${doneCount}/${levelItems.length})</div>`;
-    html+=levelItems.map(it=>goalItemRowHtml(id,it)).join('');
-  });
-  const knownLevels=new Set(GOAL_LEVEL_ORDER);
-  const other=items.filter(it=>!knownLevels.has(it.level));
-  if(other.length){
-    html+='<div class="goal-level-hdr">Lainnya</div>';
-    html+=other.map(it=>goalItemRowHtml(id,it)).join('');
+  if(!items.length){
+    html+='<div class="loading" style="padding:10px 0;">Belum ada item.</div>';
+  }else{
+    GOAL_LEVEL_ORDER.forEach(level=>{
+      const levelItems=items.filter(it=>it.level===level).sort((a,b)=>(a.item_order||0)-(b.item_order||0));
+      if(!levelItems.length)return;
+      const doneCount=levelItems.filter(it=>it.is_done).length;
+      html+=`<div class="goal-level-hdr">${GOAL_LEVEL_LABEL[level]} (${doneCount}/${levelItems.length})</div>`;
+      html+=levelItems.map(it=>goalItemRowHtml(id,it)).join('');
+    });
+    const knownLevels=new Set(GOAL_LEVEL_ORDER);
+    const other=items.filter(it=>!knownLevels.has(it.level));
+    if(other.length){
+      html+='<div class="goal-level-hdr">Lainnya</div>';
+      html+=other.map(it=>goalItemRowHtml(id,it)).join('');
+    }
   }
+  html+=goalAddItemRowHtml(id);
   return html;
+}
+
+function goalAddItemRowHtml(goalId){
+  return `<div class="goal-add-item-row">
+    <select class="goal-add-level" id="goal-add-level-${goalId}">
+      <option value="beginner">Beginner</option>
+      <option value="intermediate">Intermediate</option>
+      <option value="advanced">Advanced</option>
+    </select>
+    <input type="text" class="goal-add-text" id="goal-add-text-${goalId}" placeholder="Tambah item baru..." maxlength="300" onkeydown="if(event.key==='Enter')submitAddGoalItem('${goalId}')">
+    <button class="goal-add-submit" id="goal-add-submit-${goalId}" onclick="submitAddGoalItem('${goalId}')" title="Tambah item">${ico('plus',15)}</button>
+  </div>`;
+}
+
+async function submitAddGoalItem(goalId){
+  const levelEl=document.getElementById('goal-add-level-'+goalId);
+  const textEl=document.getElementById('goal-add-text-'+goalId);
+  const btnEl=document.getElementById('goal-add-submit-'+goalId);
+  const text=textEl.value.trim();
+  if(!text){textEl.focus();return;}
+  const level=levelEl.value;
+  btnEl.disabled=true;
+  const result=await apiWrite('POST',`/goals/${goalId}/items`,{level,text});
+  btnEl.disabled=false;
+  if(!result)return;
+  const detail=goalsDetailCache[goalId];
+  if(detail&&Array.isArray(detail.items)){
+    detail.items.push(result.item);
+    detail.total_items=result.total_items;
+    detail.done_items=result.done_items;
+    detail.progress_pct=result.progress_pct;
+  }
+  const gIdx=goalsAll.findIndex(g=>g.id===goalId);
+  if(gIdx>=0){
+    goalsAll[gIdx].total_items=result.total_items;
+    goalsAll[gIdx].done_items=result.done_items;
+    goalsAll[gIdx].progress_pct=result.progress_pct;
+  }
+  renderGoalsTab();
 }
 
 function goalItemRowHtml(goalId,it){
@@ -2743,6 +2818,34 @@ async function toggleGoalItem(goalId,itemId,currentlyDone){
     goalsAll[gIdx].done_items=result.done_items;
     goalsAll[gIdx].total_items=result.total_items;
   }
+  renderGoalsTab();
+}
+
+function openGoalModal(){
+  document.getElementById('modal-goal-title').value='';
+  document.getElementById('modal-goal-deadline').value='';
+  document.getElementById('modal-goal-sequential').checked=false;
+  document.getElementById('goal-modal').classList.remove('hidden');
+  document.getElementById('modal-goal-title').focus();
+}
+function closeGoalModal(){
+  document.getElementById('goal-modal').classList.add('hidden');
+}
+async function saveGoalModal(){
+  const title=document.getElementById('modal-goal-title').value.trim();
+  if(!title){alert('Judul goal wajib diisi.');return;}
+  const data={
+    title,
+    target_deadline:document.getElementById('modal-goal-deadline').value||null,
+    sequential_mode:document.getElementById('modal-goal-sequential').checked
+  };
+  const btn=document.getElementById('modal-goal-save-btn');btn.disabled=true;
+  const result=await apiWrite('POST','/goals',data);
+  btn.disabled=false;
+  if(!result)return;
+  goalsAll.unshift(result);
+  currentGoalsFilter='all';
+  closeGoalModal();
   renderGoalsTab();
 }
 
