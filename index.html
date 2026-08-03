@@ -312,6 +312,12 @@ tr:hover td{background:#f9fafb;}
 .goal-add-submit{flex:0 0 auto;width:30px;height:30px;border-radius:8px;border:none;background:var(--indigo);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
 .goal-add-submit:hover{background:var(--indigo2);}
 .goal-add-submit:disabled{opacity:.5;cursor:not-allowed;}
+.biz-list-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #f9fafb;}
+.biz-list-row:last-child{border-bottom:none;}
+.biz-row-title{font-size:12.5px;font-weight:600;color:var(--text);}
+.biz-row-sub{font-size:10.5px;color:var(--text3);margin-top:2px;}
+.biz-alert{background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:12px;color:#991b1b;display:flex;align-items:flex-start;gap:10px;}
+.biz-alert svg{flex-shrink:0;margin-top:1px;}
 .learn-play-btn{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--indigo);background:var(--indigo-light);border:none;border-radius:20px;padding:6px 12px;cursor:pointer;white-space:nowrap;}
 .learn-play-btn:hover{background:#e0e4fd;}
 .learn-play-btn:disabled{opacity:.6;cursor:default;}
@@ -699,6 +705,7 @@ tr:hover td{background:#f9fafb;}
   <div class="nav-group">
     <div class="nav-item" onclick="switchTab('learning',this)"><span class="nav-icon">📚</span> Learning</div>
     <div class="nav-item" onclick="switchTab('goals',this)"><span class="nav-icon">🎯</span> Goals</div>
+    <div class="nav-item" onclick="switchTab('business',this)"><span class="nav-icon">🏪</span> Bisnis</div>
   </div>
   <div class="nav-spacer"></div>
   <div class="sidebar-footer">
@@ -1385,6 +1392,72 @@ tr:hover td{background:#f9fafb;}
         <div class="stat-grid sg4" id="goals-stats"></div>
         <div class="type-filter" id="goals-filter"></div>
         <div class="goals-grid" id="goals-grid"><div class="loading">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- ── BISNIS (PRD-0007 Bisnis Tracker — Usaha Kuliner, dashboard v1 read-only) ── -->
+    <div id="tab-business" class="section">
+      <div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+        <div class="type-filter" id="biz-scope-filter" style="margin-bottom:0;"></div>
+      </div>
+      <div id="biz-stock-alert"></div>
+      <div class="stat-grid sg4" id="biz-summary-stats"></div>
+      <div class="panel" id="biz-target-panel" style="display:none;">
+        <div class="fin-hero-target-row" style="font-size:13px;"><span>Target Omzet Bulanan: <b id="biz-target-label">—</b></span><span class="fin-hero-target-pct" id="biz-target-pct" style="color:var(--indigo);">—</span></div>
+        <div class="fin-hero-target-bar" style="background:#f3f4f6;"><div class="fin-hero-target-fill" id="biz-target-fill" style="width:0%;background:var(--indigo);"></div></div>
+      </div>
+
+      <div class="grid-21">
+        <div class="panel">
+          <div class="sec-hdr">
+            <div style="display:flex;gap:10px;">
+              <div class="sec-badge">1</div>
+              <div><div class="sec-hdr-title">Ide Bisnis</div><div class="sec-hdr-sub">Backlog ide sampai yang udah dipromosikan.</div></div>
+            </div>
+          </div>
+          <div id="biz-ideas-list"><div class="loading">Loading...</div></div>
+        </div>
+        <div class="panel">
+          <div class="sec-hdr">
+            <div style="display:flex;gap:10px;">
+              <div class="sec-badge">2</div>
+              <div><div class="sec-hdr-title">Milestone</div><div class="sec-hdr-sub">Progress milestone usaha.</div></div>
+            </div>
+          </div>
+          <div id="biz-milestones-list"><div class="loading">Loading...</div></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="sec-hdr">
+          <div style="display:flex;gap:10px;">
+            <div class="sec-badge">3</div>
+            <div><div class="sec-hdr-title">Resep &amp; Pricing</div><div class="sec-hdr-sub">HPP &amp; harga saran per resep — klik buat lihat bahan + riwayat harga.</div></div>
+          </div>
+        </div>
+        <div class="goals-grid" id="biz-recipes-grid"><div class="loading">Loading...</div></div>
+      </div>
+
+      <div class="grid-21">
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">Produksi Terbaru</span><span class="hp-link" id="biz-batches-toggle" onclick="bizToggleBatches()" style="display:none;">Lihat Semua</span></div>
+          <div id="biz-batches-content"><div class="loading">Loading...</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">Stok Bahan Baku</span></div>
+          <div id="biz-stock-content"><div class="loading">Loading...</div></div>
+        </div>
+      </div>
+
+      <div class="grid-21">
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">Penjualan Terbaru</span><span class="hp-link" id="biz-sales-toggle" onclick="bizToggleSales()" style="display:none;">Lihat Semua</span></div>
+          <div id="biz-sales-content"><div class="loading">Loading...</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">Pengeluaran Terbaru</span><span class="hp-link" id="biz-expenses-toggle" onclick="bizToggleExpenses()" style="display:none;">Lihat Semua</span></div>
+          <div id="biz-expenses-content"><div class="loading">Loading...</div></div>
+        </div>
       </div>
     </div>
 
@@ -2233,6 +2306,11 @@ const ICONS={
   check:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`,
   checkCircle:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>`,
   plus:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>`,
+  wallet:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>`,
+  receipt:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17V7"/><path d="M16 8h-6a2 2 0 0 0 0 4h4a2 2 0 0 1 0 4H8"/><path d="M4 3a1 1 0 0 1 1-1 1.3 1.3 0 0 1 .7.2l.933.6a1.3 1.3 0 0 0 1.4 0l.934-.6a1.3 1.3 0 0 1 1.4 0l.933.6a1.3 1.3 0 0 0 1.4 0l.933-.6a1.3 1.3 0 0 1 1.4 0l.934.6a1.3 1.3 0 0 0 1.4 0l.933-.6A1.3 1.3 0 0 1 19 2a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1 1.3 1.3 0 0 1-.7-.2l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.934.6a1.3 1.3 0 0 1-1.4 0l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-1.4 0l-.934-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-.7.2 1 1 0 0 1-1-1z"/></svg>`,
+  package:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><polyline points="3.29 7 12 12 20.71 7"/><path d="m7.5 4.27 9 5.15"/></svg>`,
+  chefHat:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="M6 17h12"/></svg>`,
+  trendingDown:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 17h6v-6"/><path d="m22 17-8.5-8.5-5 5L2 7"/></svg>`,
 };
 function ico(name,px){return (ICONS[name]||'').replace(/width="18"/,'width="'+px+'"').replace(/height="18"/,'height="'+px+'"');}
 function statCard(bg,color,icon,label,val,sub){
@@ -2853,6 +2931,275 @@ async function saveGoalModal(){
 function escHtml(s){
   return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
+
+// ── BISNIS TAB (PRD-0007 Bisnis Tracker — Usaha Kuliner, dashboard v1 read-only) ──
+let bizIdeas=[],bizMilestones=[],bizRecipes=[],bizBatches=[],bizStock=[],bizSales=[],bizExpenses=[],bizTargetsData=[];
+let bizPricingCache={},bizExpandedRecipes=new Set();
+let bizScope=localStorage.getItem('mc_biz_scope')||'month';
+let bizBatchesExpanded=false,bizSalesExpanded=false,bizExpensesExpanded=false;
+let bizMonthSummary=null;
+
+const BIZ_SCOPES=[{key:'today',label:'Hari Ini'},{key:'week',label:'Minggu Ini'},{key:'month',label:'Bulan Ini'},{key:'all',label:'Semua'}];
+const IDEA_STATUS_META={backlog:{label:'Backlog',cls:'bgray'},in_review:{label:'Direview',cls:'byellow'},promoted:{label:'Dipromosikan',cls:'bgreen'},archived:{label:'Diarsipkan',cls:'bred'}};
+const MILESTONE_STATUS_META={not_started:{label:'Belum mulai',cls:'bgray'},in_progress:{label:'Berjalan',cls:'bblue'},done:{label:'Selesai',cls:'bgreen'},paused:{label:'Ditunda',cls:'byellow'}};
+const EXPENSE_CAT_META={bahan_baku:{label:'Bahan Baku',color:'#f59e0b'},operasional:{label:'Operasional',color:'#3b82f6'},marketing:{label:'Marketing',color:'#ec4899'},legal:{label:'Legal',color:'#6b7280'},lainnya:{label:'Lainnya',color:'#8b5cf6'}};
+
+async function fetchApi(path){
+  try{const r=await fetch(API_BASE+path);if(!r.ok)return null;return await r.json();}catch{return null;}
+}
+function fmtBizDate(d){
+  if(!d)return'-';
+  try{return new Date(d).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});}catch{return d;}
+}
+function getBizTarget(metric,fallback){
+  const t=bizTargetsData.find(x=>x.metric===metric);
+  return t?parseFloat(t.target_value):fallback;
+}
+
+async function loadBusiness(){
+  const [ideasR,milesR,recipesR,batchesR,stockR,salesR,expensesR,targetsR,monthSummaryR]=await Promise.all([
+    fetchApi('/business/ideas'),
+    fetchApi('/business/milestones'),
+    fetchApi('/business/recipes'),
+    fetchApi('/business/production-batches?limit=50'),
+    fetchApi('/business/ingredient-stock'),
+    fetchApi('/business/sales'),
+    fetchApi('/business/expenses'),
+    fetchApi('/targets?domain=bisnis'),
+    fetchApi('/business/summary?scope=month')
+  ]);
+  bizIdeas=ideasR?.items||[];
+  bizMilestones=milesR?.items||[];
+  bizRecipes=recipesR?.items||[];
+  bizBatches=batchesR?.items||[];
+  bizStock=stockR?.items||[];
+  bizSales=salesR?.items||[];
+  bizExpenses=expensesR?.items||[];
+  bizTargetsData=Array.isArray(targetsR)?targetsR:(targetsR?.items||[]);
+  bizMonthSummary=monthSummaryR||null;
+  renderBusinessTab();
+  await loadBizSummary();
+}
+
+function renderBusinessTab(){
+  renderBizScopeFilter();
+  renderBizStockAlert();
+  renderBizTargetPanel();
+  renderBizIdeas();
+  renderBizMilestones();
+  renderBizRecipes();
+  renderBizBatches();
+  renderBizStock();
+  renderBizSales();
+  renderBizExpenses();
+}
+
+function renderBizScopeFilter(){
+  const el=document.getElementById('biz-scope-filter');
+  if(!el)return;
+  el.innerHTML=BIZ_SCOPES.map(s=>`<button class="type-chip ${s.key===bizScope?'active':''}" onclick="setBizScope('${s.key}')">${s.label}</button>`).join('');
+}
+function setBizScope(k){bizScope=k;localStorage.setItem('mc_biz_scope',k);renderBizScopeFilter();loadBizSummary();}
+
+async function loadBizSummary(){
+  const el=document.getElementById('biz-summary-stats');
+  const data=(bizScope==='month'&&bizMonthSummary)?bizMonthSummary:await fetchApi('/business/summary?scope='+bizScope);
+  const s=data||{};
+  const margin=(s.margin_pct===null||s.margin_pct===undefined)?null:parseFloat(s.margin_pct);
+  const marginTxt=margin===null?'—':(Math.round(margin*10)/10)+'%';
+  const marginNeg=margin!==null&&margin<0;
+  if(!el)return;
+  const scopeLabel=BIZ_SCOPES.find(x=>x.key===bizScope)?.label||'';
+  el.innerHTML=
+    statCard('#f0fdf4','#10b981',ico('wallet',20),'Total Omzet',fmtRp(s.total_omzet||0),scopeLabel)+
+    statCard('#fdf2f8','#ec4899',ico('receipt',20),'Total Expense',fmtRp(s.total_expense||0),scopeLabel)+
+    statCard(marginNeg?'#fef2f2':'var(--indigo-light)',marginNeg?'#ef4444':'var(--indigo)',ico(marginNeg?'trendingDown':'trendingUp',20),'Margin',marginTxt,'omzet vs expense')+
+    statCard('#eff6ff','#3b82f6',ico('package',20),'Jumlah Batch',s.jumlah_batch||0,'produksi');
+}
+
+function renderBizStockAlert(){
+  const el=document.getElementById('biz-stock-alert');
+  if(!el)return;
+  const low=bizStock.filter(s=>s.below_threshold);
+  if(!low.length){el.innerHTML='';return;}
+  el.innerHTML=`<div class="biz-alert">${ico('alertTriangle',16)}<div><b>${low.length} bahan di bawah reorder threshold:</b> ${low.map(s=>escHtml(s.ingredient_name||'')).join(', ')}</div></div>`;
+}
+
+function renderBizTargetPanel(){
+  const panel=document.getElementById('biz-target-panel');
+  const target=getBizTarget('omzet_bulanan',0);
+  if(!panel)return;
+  if(!target){panel.style.display='none';return;}
+  panel.style.display='';
+  const actual=bizMonthSummary?(parseFloat(bizMonthSummary.total_omzet)||0):0;
+  const pct=target?Math.round(actual/target*100):0;
+  document.getElementById('biz-target-label').textContent=fmtRp(target);
+  document.getElementById('biz-target-pct').textContent=pct+'% ('+fmtRp(actual)+' bulan ini)';
+  document.getElementById('biz-target-fill').style.width=Math.max(0,Math.min(100,pct))+'%';
+}
+
+function renderBizIdeas(){
+  const el=document.getElementById('biz-ideas-list');
+  if(!el)return;
+  if(!bizIdeas.length){el.innerHTML='<div class="empty"><div class="emoji">💡</div>Belum ada ide bisnis.</div>';return;}
+  const rows=bizIdeas.slice().sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+  el.innerHTML=rows.map(i=>{
+    const meta=IDEA_STATUS_META[i.status]||IDEA_STATUS_META.backlog;
+    return `<div class="biz-list-row"><div><div class="biz-row-title">${escHtml(i.title||'Tanpa judul')}</div>${i.description?`<div class="biz-row-sub">${escHtml(i.description)}</div>`:''}</div><span class="badge ${meta.cls}">${meta.label}</span></div>`;
+  }).join('');
+}
+
+function renderBizMilestones(){
+  const el=document.getElementById('biz-milestones-list');
+  if(!el)return;
+  if(!bizMilestones.length){el.innerHTML='<div class="empty"><div class="emoji">🚩</div>Belum ada milestone.</div>';return;}
+  const rows=bizMilestones.slice().sort((a,b)=>(a.item_order||0)-(b.item_order||0)||new Date(a.created_at||0)-new Date(b.created_at||0));
+  el.innerHTML=rows.map(m=>{
+    const meta=MILESTONE_STATUS_META[m.status]||MILESTONE_STATUS_META.not_started;
+    const dateTxt=(m.status==='done'&&m.completed_at)?('Selesai '+fmtBizDate(m.completed_at)):(m.target_date?('Target '+fmtBizDate(m.target_date)):'Tanpa target');
+    return `<div class="biz-list-row"><div><div class="biz-row-title">${escHtml(m.title||'Tanpa judul')}</div><div class="biz-row-sub">${dateTxt}</div></div><span class="badge ${meta.cls}">${meta.label}</span></div>`;
+  }).join('');
+}
+
+function bizHpp(recipe){
+  if(!recipe.ingredients||!recipe.ingredients.length)return{hpp:null,missing:0};
+  let sum=0,missing=0;
+  recipe.ingredients.forEach(ing=>{
+    if(ing.unit_cost===null||ing.unit_cost===undefined||ing.unit_cost===''){missing++;return;}
+    sum+=(parseFloat(ing.qty)||0)*(parseFloat(ing.unit_cost)||0);
+  });
+  const yieldQty=parseFloat(recipe.yield_qty)||0;
+  const hpp=(yieldQty>0&&missing===0)?sum/yieldQty:null;
+  return{hpp,missing};
+}
+
+function recipeCardHtml(r){
+  const isOpen=bizExpandedRecipes.has(r.id);
+  const{hpp,missing}=bizHpp(r);
+  const ingCount=r.ingredients?r.ingredients.length:0;
+  return `<div class="goal-card">
+    <div class="goal-card-top">
+      <div>
+        <div class="goal-title">${escHtml(r.name||'Tanpa nama')}</div>
+        <div class="goal-meta"><span>${ico('chefHat',12)}${ingCount} bahan</span><span>${r.yield_qty?r.yield_qty+' '+(r.yield_unit||''):'—'} / batch</span></div>
+      </div>
+      ${hpp!==null?`<span class="badge bblue">HPP ${fmtRp(hpp)}</span>`:'<span class="badge bgray">HPP N/A</span>'}
+    </div>
+    ${missing?`<div style="font-size:10.5px;color:#b45309;margin-top:8px;display:flex;align-items:center;gap:5px;">${ico('alertTriangle',12)} ${missing} bahan belum ada harga — HPP mungkin gak akurat</div>`:''}
+    <button class="goal-expand-btn ${isOpen?'open':''}" onclick="toggleBizRecipe('${r.id}')"><span class="gxi">${ico('chevronDown',13)}</span><span id="biz-recipe-label-${r.id}">${isOpen?'Sembunyikan detail':'Lihat bahan & riwayat harga'}</span></button>
+    <div class="goal-checklist ${isOpen?'open':''}" id="biz-recipe-detail-${r.id}">${isOpen?renderBizRecipeDetail(r):''}</div>
+  </div>`;
+}
+
+function renderBizRecipeDetail(r){
+  let html='';
+  html+='<div class="goal-level-hdr">Bahan</div>';
+  if(!r.ingredients||!r.ingredients.length){
+    html+='<div class="loading" style="padding:6px 0;">Belum ada bahan.</div>';
+  }else{
+    html+=r.ingredients.map(ing=>`<div class="goal-item-row"><div style="flex:1;"><div class="goal-item-text">${escHtml(ing.ingredient_name||'')}</div></div><div style="font-size:11px;color:var(--text3);white-space:nowrap;">${ing.qty||0} ${ing.unit||''} ${ing.unit_cost?'· '+fmtRp(ing.unit_cost)+'/'+(ing.unit||''):'· harga N/A'}</div></div>`).join('');
+  }
+  html+='<div class="goal-level-hdr">Riwayat Harga</div>';
+  html+=`<div id="biz-pricing-${r.id}"><div class="loading">Loading...</div></div>`;
+  return html;
+}
+
+function renderBizPricingList(items){
+  if(!items||!items.length)return'<div class="loading" style="padding:6px 0;">Belum ada snapshot pricing.</div>';
+  const sorted=items.slice().sort((a,b)=>new Date(b.calculated_at||0)-new Date(a.calculated_at||0));
+  return sorted.map(p=>`<div class="goal-item-row"><div style="flex:1;"><div class="goal-item-text">HPP ${fmtRp(p.hpp_per_unit)}${p.target_margin_pct?` · margin ${p.target_margin_pct}%`:''}</div><div class="goal-item-note">${fmtBizDate(p.calculated_at)}${p.suggested_price?' · saran '+fmtRp(p.suggested_price):''}${p.actual_price?' · aktual '+fmtRp(p.actual_price):''}</div></div></div>`).join('');
+}
+
+async function toggleBizRecipe(id){
+  const panel=document.getElementById('biz-recipe-detail-'+id);
+  const btn=panel?.previousElementSibling;
+  const label=document.getElementById('biz-recipe-label-'+id);
+  if(bizExpandedRecipes.has(id)){
+    bizExpandedRecipes.delete(id);
+    panel.classList.remove('open');
+    if(btn)btn.classList.remove('open');
+    label.textContent='Lihat bahan & riwayat harga';
+    return;
+  }
+  bizExpandedRecipes.add(id);
+  const recipe=bizRecipes.find(x=>x.id===id);
+  panel.innerHTML=renderBizRecipeDetail(recipe);
+  panel.classList.add('open');
+  if(btn)btn.classList.add('open');
+  label.textContent='Sembunyikan detail';
+  if(!bizPricingCache[id]){
+    const data=await fetchApi('/business/pricing?recipe_id='+encodeURIComponent(id));
+    bizPricingCache[id]=data?.items||[];
+  }
+  const pricingEl=document.getElementById('biz-pricing-'+id);
+  if(pricingEl)pricingEl.innerHTML=renderBizPricingList(bizPricingCache[id]);
+}
+
+function renderBizRecipes(){
+  const grid=document.getElementById('biz-recipes-grid');
+  if(!grid)return;
+  if(!bizRecipes.length){grid.innerHTML=`<div class="goal-empty-card">${ico('chefHat',28)}<b>Belum ada resep</b><span>Resep baru dibikin lewat chat Ana.</span></div>`;return;}
+  const rows=bizRecipes.slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  grid.innerHTML=rows.map(recipeCardHtml).join('');
+}
+
+function renderBizBatches(){
+  const el=document.getElementById('biz-batches-content');
+  const toggleBtn=document.getElementById('biz-batches-toggle');
+  if(!el)return;
+  if(!bizBatches.length){el.innerHTML='<div class="empty"><div class="emoji">🏭</div>Belum ada batch produksi.</div>';if(toggleBtn)toggleBtn.style.display='none';return;}
+  const rows=bizBatches.slice().sort((a,b)=>new Date(b.batch_date||0)-new Date(a.batch_date||0));
+  if(toggleBtn)toggleBtn.style.display=rows.length>8?'':'none';
+  const show=bizBatchesExpanded?rows:rows.slice(0,8);
+  el.innerHTML=`<table><thead><tr><th>Tanggal</th><th>Resep</th><th>Qty</th><th>Catatan</th></tr></thead><tbody>`+
+    show.map(b=>`<tr><td>${fmtBizDate(b.batch_date)}</td><td style="font-weight:600;">${escHtml(b.recipe_name||'—')}</td><td>${b.qty_produced||0} ${b.qty_unit||''}</td><td style="color:var(--text3);">${escHtml((b.notes||'-').slice(0,40))}</td></tr>`).join('')+
+    `</tbody></table>`;
+  if(toggleBtn)toggleBtn.textContent=bizBatchesExpanded?'Sembunyikan':'Lihat Semua';
+}
+function bizToggleBatches(){bizBatchesExpanded=!bizBatchesExpanded;renderBizBatches();}
+
+function renderBizStock(){
+  const el=document.getElementById('biz-stock-content');
+  if(!el)return;
+  if(!bizStock.length){el.innerHTML='<div class="empty"><div class="emoji">📦</div>Belum ada data stok.</div>';return;}
+  const rows=bizStock.slice().sort((a,b)=>(b.below_threshold?1:0)-(a.below_threshold?1:0)||(a.ingredient_name||'').localeCompare(b.ingredient_name||''));
+  el.innerHTML=`<table><thead><tr><th>Bahan</th><th>Stok</th><th>Reorder At</th><th></th></tr></thead><tbody>`+
+    rows.map(s=>`<tr${s.below_threshold?' style="background:#fef2f2;"':''}><td style="font-weight:600;">${escHtml(s.ingredient_name||'')}</td><td>${s.qty_on_hand||0} ${s.unit||''}</td><td style="color:var(--text3);">${s.reorder_threshold!=null?s.reorder_threshold+' '+(s.unit||''):'—'}</td><td>${s.below_threshold?'<span class="badge bred">⚠️ Reorder</span>':''}</td></tr>`).join('')+
+    `</tbody></table>`;
+}
+
+function renderBizSales(){
+  const el=document.getElementById('biz-sales-content');
+  const toggleBtn=document.getElementById('biz-sales-toggle');
+  if(!el)return;
+  if(!bizSales.length){el.innerHTML='<div class="empty"><div class="emoji">🛒</div>Belum ada penjualan.</div>';if(toggleBtn)toggleBtn.style.display='none';return;}
+  const rows=bizSales.slice().sort((a,b)=>new Date(b.sale_date||0)-new Date(a.sale_date||0));
+  if(toggleBtn)toggleBtn.style.display=rows.length>8?'':'none';
+  const show=bizSalesExpanded?rows:rows.slice(0,8);
+  el.innerHTML=`<table><thead><tr><th>Tanggal</th><th>Produk</th><th>Qty</th><th>Channel</th><th>Total</th></tr></thead><tbody>`+
+    show.map(s=>`<tr><td>${fmtBizDate(s.sale_date)}</td><td style="font-weight:600;">${escHtml(s.product_name||'')}</td><td>${s.qty||0}</td><td style="color:var(--text3);">${escHtml(s.channel||'-')}</td><td style="font-weight:600;color:var(--green);">${fmtRp(s.total_amount)}</td></tr>`).join('')+
+    `</tbody></table>`;
+  if(toggleBtn)toggleBtn.textContent=bizSalesExpanded?'Sembunyikan':'Lihat Semua';
+}
+function bizToggleSales(){bizSalesExpanded=!bizSalesExpanded;renderBizSales();}
+
+function renderBizExpenses(){
+  const el=document.getElementById('biz-expenses-content');
+  const toggleBtn=document.getElementById('biz-expenses-toggle');
+  if(!el)return;
+  if(!bizExpenses.length){el.innerHTML='<div class="empty"><div class="emoji">🧾</div>Belum ada pengeluaran.</div>';if(toggleBtn)toggleBtn.style.display='none';return;}
+  const rows=bizExpenses.slice().sort((a,b)=>new Date(b.expense_date||0)-new Date(a.expense_date||0));
+  if(toggleBtn)toggleBtn.style.display=rows.length>8?'':'none';
+  const show=bizExpensesExpanded?rows:rows.slice(0,8);
+  el.innerHTML=`<table><thead><tr><th>Tanggal</th><th>Kategori</th><th>Deskripsi</th><th>Jumlah</th></tr></thead><tbody>`+
+    show.map(x=>{
+      const meta=EXPENSE_CAT_META[x.category]||{label:x.category||'-',color:'#6b7280'};
+      return `<tr><td>${fmtBizDate(x.expense_date)}</td><td><span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;border-radius:50%;background:${meta.color};display:inline-block;"></span>${meta.label}</span></td><td style="color:var(--text3);">${escHtml((x.description||'-').slice(0,40))}</td><td style="font-weight:600;color:var(--pink);">${fmtRp(x.amount)}</td></tr>`;
+    }).join('')+
+    `</tbody></table>`;
+  if(toggleBtn)toggleBtn.textContent=bizExpensesExpanded?'Sembunyikan':'Lihat Semua';
+}
+function bizToggleExpenses(){bizExpensesExpanded=!bizExpensesExpanded;renderBizExpenses();}
 const CONTENT_STATUS_META={
   draft:{label:'Draft',bg:'#f3f4f6',color:'#6b7280'},
   awaiting_media:{label:'Nunggu Media',bg:'#fffbeb',color:'#f59e0b'},
@@ -3570,7 +3917,7 @@ function buildDashActivity(){} // legacy, kept for compat
 // ── TAB SWITCHING ──
 const pageMeta={
   dashboard:'Dashboard',calendar:'Calendar',tracker:'Time Tracker',
-  health:'Health',finance:'Finance',english:'Language',investment:'Investment',content:'Content',learning:'Learning',goals:'Goals'
+  health:'Health',finance:'Finance',english:'Language',investment:'Investment',content:'Content',learning:'Learning',goals:'Goals',business:'Bisnis'
 };
 
 function switchTab(name,btn){
@@ -3595,7 +3942,7 @@ function closeSidebar(){
 // ── LOAD ALL ──
 async function loadAll(){
   renderAllPeriodToggles();
-  await Promise.all([loadTasks(),loadHealth(),loadFinance(),loadEnglish(),loadInvestment(),loadCalendar(),loadContent(),loadLearningDocuments(),loadGoals()]);
+  await Promise.all([loadTasks(),loadHealth(),loadFinance(),loadEnglish(),loadInvestment(),loadCalendar(),loadContent(),loadLearningDocuments(),loadGoals(),loadBusiness()]);
   buildDashboard();
   renderTracker();
 }
