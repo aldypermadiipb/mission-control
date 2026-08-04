@@ -258,8 +258,8 @@ tr:hover td{background:#f9fafb;}
 .sec-info{cursor:help;color:var(--text3);font-weight:400;}
 /* Learning tab / Knowledge Hub (PRD-0005 Section 5.8) */
 .sg7{grid-template-columns:repeat(7,1fr);}
-@media (max-width:1100px){.sg7{grid-template-columns:repeat(4,1fr);}}
-@media (max-width:640px){.sg7{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:1100px){.sg7{grid-template-columns:repeat(4,1fr);}.sg5{grid-template-columns:repeat(3,1fr);}}
+@media (max-width:640px){.sg7{grid-template-columns:repeat(2,1fr);}.sg5{grid-template-columns:repeat(2,1fr);}}
 .type-filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
 .type-chip{padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:#fff;color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
 .type-chip.active{background:var(--indigo);color:#fff;border-color:var(--indigo);}
@@ -329,6 +329,17 @@ tr:hover td{background:#f9fafb;}
 .biz-ing-remove:hover{background:#fecaca;}
 .biz-warn-box{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 12px;margin-top:14px;font-size:11.5px;color:#92400e;}
 .biz-milestone-status-select{flex-shrink:0;padding:3px 8px;border-radius:20px;font-size:9px;font-weight:600;border:1px solid var(--border);background:#f9fafb;color:var(--text2);cursor:pointer;outline:none;}
+.lang-hero{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#eef2ff,#fdf4ff);border:1px solid #e9e5fc;border-radius:16px;padding:18px 24px;margin-bottom:16px;gap:16px;flex-wrap:wrap;}
+.lang-hero-streak{font-size:14px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;}
+.lang-hero-streak span{font-size:16px;}
+.lang-hero-sub{font-size:11.5px;color:var(--text3);margin-top:3px;}
+.lang-hero-mascot-wrap{position:relative;display:flex;align-items:center;justify-content:center;width:78px;height:64px;flex-shrink:0;}
+.lang-hero-mascot-badge{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#c7d2fe,#f5d0fe);display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 6px 16px rgba(99,102,241,.18);}
+.lang-hero-bubble{position:absolute;top:-16px;right:-10px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:4px 10px;font-size:10px;font-weight:600;color:var(--text2);box-shadow:0 4px 10px rgba(0,0,0,.08);white-space:nowrap;}
+@media (max-width:640px){
+  .lang-hero{padding:14px 16px;}
+  .lang-hero-mascot-wrap{display:none;}
+}
 .learn-play-btn{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--indigo);background:var(--indigo-light);border:none;border-radius:20px;padding:6px 12px;cursor:pointer;white-space:nowrap;}
 .learn-play-btn:hover{background:#e0e4fd;}
 .learn-play-btn:disabled{opacity:.6;cursor:default;}
@@ -1249,7 +1260,17 @@ tr:hover td{background:#f9fafb;}
 
     <!-- ── ENGLISH ── -->
     <div id="tab-english" class="section">
-      <div class="stat-grid sg3" id="english-stats"></div>
+      <div class="lang-hero">
+        <div class="lang-hero-left">
+          <div class="lang-hero-streak">🔥 <span id="lang-streak-days">0</span> Day Streak</div>
+          <div class="lang-hero-sub">Keep it up! Consistency is the key.</div>
+        </div>
+        <div class="lang-hero-mascot-wrap">
+          <div class="lang-hero-bubble">You got this! ✨</div>
+          <div class="lang-hero-mascot-badge">🐱</div>
+        </div>
+      </div>
+      <div class="stat-grid sg5" id="english-stats"></div>
       <div class="panel" style="margin-bottom:14px;"><div class="panel-header"><span class="panel-title">Vocab by Category</span></div><div class="chart-wrap" style="height:130px;"><canvas id="chartEnglish"></canvas></div></div>
       <div class="panel"><div class="panel-header"><span class="panel-title">Vocab Bank</span><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><div class="lang-filter" id="lang-filter-vocab"></div><button class="qa-btn" onclick="exportVocabExcel()" style="display:inline-flex;align-items:center;gap:5px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>Excel</button></div></div><div id="english-content"><div class="loading">Loading...</div></div></div>
 
@@ -1818,6 +1839,7 @@ async function fetchSheet(sheet){
 let globalPeriod=localStorage.getItem('mc_period')||'week';
 const PERIOD_LABELS={today:'Today',week:'Week',month:'Month',year:'Year'};
 function jakartaNow(){return new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Jakarta'}));}
+function jakartaDateFrom(d){return new Date(new Date(d).toLocaleString('en-US',{timeZone:'Asia/Jakarta'}));}
 function ymd(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function jakartaToday(){return ymd(jakartaNow());}
 function periodRange(period){
@@ -2413,6 +2435,35 @@ function vocabLangOf(r){ return r.language_code||'EN'; }
 function filteredVocab(){
   return currentVocabLangFilter==='all'?englishData:englishData.filter(r=>vocabLangOf(r)===currentVocabLangFilter);
 }
+// Streak = consecutive days (back from today) with at least 1 vocab entry logged.
+// Today not logged yet doesn't break the streak (grace period until the day ends).
+function computeVocabStreak(data){
+  const dateSet=new Set(data.map(r=>r.date).filter(Boolean));
+  const cur=new Date(jakartaToday()+'T00:00:00');
+  if(!dateSet.has(ymd(cur)))cur.setDate(cur.getDate()-1);
+  let streak=0;
+  while(dateSet.has(ymd(cur))){streak++;cur.setDate(cur.getDate()-1);}
+  return streak;
+}
+function renderLangHeroStats(){
+  const streakEl=document.getElementById('lang-streak-days');
+  if(streakEl)streakEl.textContent=computeVocabStreak(englishData);
+  const filtered=filteredVocab();
+  const cats={};
+  filtered.forEach(r=>{const c=r.category||'other';cats[c]=(cats[c]||0)+1;});
+  const ws=weekStart();
+  const thisWeek=filtered.filter(r=>r.date&&r.date>=ws).length;
+  const reviewDue=grammarPointsData.filter(g=>g.status==='reviewing').length;
+  const mastered=grammarPointsData.filter(g=>g.status==='mastered').length;
+  const el=document.getElementById('english-stats');
+  if(el)el.innerHTML=
+    sc('sc-g1',ico('bookOpen',20),'Total Vocab',filtered.length,'kata')+
+    sc('sc-g2',ico('sprout',20),'Minggu Ini',thisWeek,'baru')+
+    sc('sc-g4',ico('tag',20),'Kategori',Object.keys(cats).length,'topik')+
+    sc('sc-g3',ico('refreshCw',20),'Review Due',reviewDue,'grammar point ('+currentLearningLangFilter+')')+
+    sc('sc-g5',ico('trophy',20),'Mastered',mastered,'grammar point ('+currentLearningLangFilter+')');
+  return cats;
+}
 function renderEnglishView(){
   const langs=[...new Set(englishData.map(vocabLangOf))].sort();
   const filterEl=document.getElementById('lang-filter-vocab');
@@ -2425,14 +2476,7 @@ function renderEnglishView(){
     }
   }
   const filtered=filteredVocab();
-  const cats={};
-  filtered.forEach(r=>{const c=r.category||'other';cats[c]=(cats[c]||0)+1;});
-  const ws=weekStart();
-  const thisWeek=filtered.filter(r=>r.date&&r.date>=ws).length;
-  document.getElementById('english-stats').innerHTML=
-    sc('sc-g1',ico('bookOpen',20),'Total Vocab',filtered.length,'kata')+
-    sc('sc-g2',ico('sprout',20),'Minggu Ini',thisWeek,'baru')+
-    sc('sc-g4',ico('tag',20),'Kategori',Object.keys(cats).length,'topik');
+  const cats=renderLangHeroStats();
   mkChart('chartEnglish',{type:'bar',data:{labels:Object.keys(cats),datasets:[{label:'Words',data:Object.values(cats),backgroundColor:PA.slice(0,Object.keys(cats).length),borderColor:P,borderWidth:1,borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#9ca3af'},grid:{display:false}},y:{ticks:{color:'#9ca3af',stepSize:1},grid:{color:'#f3f4f6'}}}}});
   if(!filtered.length){document.getElementById('english-content').innerHTML='<div class="empty"><div class="emoji">📚</div>Belum ada vocab.</div>';return;}
   document.getElementById('english-content').innerHTML='<div class="vocab-grid">'+filtered.slice().reverse().slice(0,30).map(r=>`<div class="vocab-card"><div class="vocab-word">${r.word||''}${vocabLangOf(r)!=='EN'?` <span style="font-size:9px;color:var(--text3);font-weight:600;">${LANG_FLAG[vocabLangOf(r)]||''} ${vocabLangOf(r)}</span>`:''}</div><div class="vocab-trans">${r.translation||''}</div>${r.example?`<div class="vocab-ex">${r.example}</div>`:''}</div>`).join('')+'</div>';
@@ -2477,7 +2521,9 @@ let grammarExpanded=false,mistakesExpanded=false,readingLogExpanded=false;
 function timeAgo(d){
   if(!d)return'-';
   try{
-    const diffDays=Math.floor((new Date().setHours(0,0,0,0)-new Date(d).setHours(0,0,0,0))/86400000);
+    const today=jakartaNow();today.setHours(0,0,0,0);
+    const then=jakartaDateFrom(d);then.setHours(0,0,0,0);
+    const diffDays=Math.floor((today-then)/86400000);
     if(diffDays<=0)return'Hari ini';
     if(diffDays===1)return'Kemarin';
     if(diffDays<14)return diffDays+' hari lalu';
@@ -2518,6 +2564,8 @@ const ICONS={
   package:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><polyline points="3.29 7 12 12 20.71 7"/><path d="m7.5 4.27 9 5.15"/></svg>`,
   chefHat:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="M6 17h12"/></svg>`,
   trendingDown:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 17h6v-6"/><path d="m22 17-8.5-8.5-5 5L2 7"/></svg>`,
+  refreshCw:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>`,
+  trophy:`<svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14.66V17a1 1 0 0 1-1 1 2 2 0 0 0-2 2v2"/><path d="M14 14.66V17a1 1 0 0 0 1 1 2 2 0 0 1 2 2v2"/><path d="M17.916 10H19.5A2.5 2.5 0 0 0 22 7.5V5a1 1 0 0 0-1-1h-3"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6.084 10H4.5A2.5 2.5 0 0 1 2 7.5V5a1 1 0 0 1 1-1h3"/></svg>`,
 };
 function ico(name,px){return (ICONS[name]||'').replace(/width="18"/,'width="'+px+'"').replace(/height="18"/,'height="'+px+'"');}
 function statCard(bg,color,icon,label,val,sub){
@@ -2547,6 +2595,7 @@ async function loadGrammarPoints(){
   }catch{grammarPointsData=[];}
   grammarExpanded=false;
   renderGrammarTracker();
+  renderLangHeroStats();
 }
 function renderGrammarTracker(){
   const el=document.getElementById('grammar-tracker-content');
