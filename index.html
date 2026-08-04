@@ -318,6 +318,17 @@ tr:hover td{background:#f9fafb;}
 .biz-row-sub{font-size:10.5px;color:var(--text3);margin-top:2px;}
 .biz-alert{background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:12px;color:#991b1b;display:flex;align-items:flex-start;gap:10px;}
 .biz-alert svg{flex-shrink:0;margin-top:1px;}
+.biz-ing-row{display:flex;gap:6px;margin-bottom:6px;align-items:center;}
+.biz-ing-row input{padding:7px 9px;border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--text);outline:none;min-width:0;}
+.biz-ing-row input:focus{border-color:var(--indigo);}
+.biz-ing-row .biz-ing-name{flex:1.4;}
+.biz-ing-row .biz-ing-qty{flex:0 0 55px;}
+.biz-ing-row .biz-ing-unit{flex:0 0 55px;}
+.biz-ing-row .biz-ing-cost{flex:0 0 80px;}
+.biz-ing-remove{flex:0 0 auto;width:26px;height:26px;border-radius:8px;border:none;background:#fef2f2;color:#ef4444;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;}
+.biz-ing-remove:hover{background:#fecaca;}
+.biz-warn-box{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 12px;margin-top:14px;font-size:11.5px;color:#92400e;}
+.biz-milestone-status-select{flex-shrink:0;padding:3px 8px;border-radius:20px;font-size:9px;font-weight:600;border:1px solid var(--border);background:#f9fafb;color:var(--text2);cursor:pointer;outline:none;}
 .learn-play-btn{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--indigo);background:var(--indigo-light);border:none;border-radius:20px;padding:6px 12px;cursor:pointer;white-space:nowrap;}
 .learn-play-btn:hover{background:#e0e4fd;}
 .learn-play-btn:disabled{opacity:.6;cursor:default;}
@@ -1414,6 +1425,7 @@ tr:hover td{background:#f9fafb;}
               <div class="sec-badge">1</div>
               <div><div class="sec-hdr-title">Ide Bisnis</div><div class="sec-hdr-sub">Backlog ide sampai yang udah dipromosikan.</div></div>
             </div>
+            <span class="hp-link" onclick="openBizIdeaModal()">＋ Ide Baru</span>
           </div>
           <div id="biz-ideas-list"><div class="loading">Loading...</div></div>
         </div>
@@ -1423,6 +1435,7 @@ tr:hover td{background:#f9fafb;}
               <div class="sec-badge">2</div>
               <div><div class="sec-hdr-title">Milestone</div><div class="sec-hdr-sub">Progress milestone usaha.</div></div>
             </div>
+            <span class="hp-link" onclick="openBizMilestoneModal()">＋ Milestone</span>
           </div>
           <div id="biz-milestones-list"><div class="loading">Loading...</div></div>
         </div>
@@ -1434,13 +1447,14 @@ tr:hover td{background:#f9fafb;}
             <div class="sec-badge">3</div>
             <div><div class="sec-hdr-title">Resep &amp; Pricing</div><div class="sec-hdr-sub">HPP &amp; harga saran per resep — klik buat lihat bahan + riwayat harga.</div></div>
           </div>
+          <span class="hp-link" onclick="openBizRecipeModal()">＋ Resep Baru</span>
         </div>
         <div class="goals-grid" id="biz-recipes-grid"><div class="loading">Loading...</div></div>
       </div>
 
       <div class="grid-21">
         <div class="panel">
-          <div class="panel-header"><span class="panel-title">Produksi Terbaru</span><span class="hp-link" id="biz-batches-toggle" onclick="bizToggleBatches()" style="display:none;">Lihat Semua</span></div>
+          <div class="panel-header"><span class="panel-title">Produksi Terbaru</span><span style="display:flex;align-items:center;gap:10px;"><span class="hp-link" onclick="openBizBatchModal()">＋ Log Produksi</span><span class="hp-link" id="biz-batches-toggle" onclick="bizToggleBatches()" style="display:none;">Lihat Semua</span></span></div>
           <div id="biz-batches-content"><div class="loading">Loading...</div></div>
         </div>
         <div class="panel">
@@ -1451,11 +1465,11 @@ tr:hover td{background:#f9fafb;}
 
       <div class="grid-21">
         <div class="panel">
-          <div class="panel-header"><span class="panel-title">Penjualan Terbaru</span><span class="hp-link" id="biz-sales-toggle" onclick="bizToggleSales()" style="display:none;">Lihat Semua</span></div>
+          <div class="panel-header"><span class="panel-title">Penjualan Terbaru</span><span style="display:flex;align-items:center;gap:10px;"><span class="hp-link" onclick="openBizSaleModal()">＋ Log Sale</span><span class="hp-link" id="biz-sales-toggle" onclick="bizToggleSales()" style="display:none;">Lihat Semua</span></span></div>
           <div id="biz-sales-content"><div class="loading">Loading...</div></div>
         </div>
         <div class="panel">
-          <div class="panel-header"><span class="panel-title">Pengeluaran Terbaru</span><span class="hp-link" id="biz-expenses-toggle" onclick="bizToggleExpenses()" style="display:none;">Lihat Semua</span></div>
+          <div class="panel-header"><span class="panel-title">Pengeluaran Terbaru</span><span style="display:flex;align-items:center;gap:10px;"><span class="hp-link" onclick="openBizExpenseModal()">＋ Log Expense</span><span class="hp-link" id="biz-expenses-toggle" onclick="bizToggleExpenses()" style="display:none;">Lihat Semua</span></span></div>
           <div id="biz-expenses-content"><div class="loading">Loading...</div></div>
         </div>
       </div>
@@ -1564,6 +1578,199 @@ tr:hover td{background:#f9fafb;}
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeGoalModal()">Batal</button>
       <button class="btn-save" id="modal-goal-save-btn" onclick="saveGoalModal()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- BISNIS: ADD IDEA MODAL -->
+<div class="modal-overlay hidden" id="biz-idea-modal" onclick="if(event.target===this)closeBizIdeaModal()">
+  <div class="modal-box">
+    <div class="modal-title">💡 Ide Bisnis Baru</div>
+    <div class="form-group">
+      <label class="form-label">Judul Ide *</label>
+      <input type="text" class="form-input" id="modal-biz-idea-title" placeholder="Contoh: Nastar kemasan premium" maxlength="200">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Deskripsi</label>
+      <input type="text" class="form-input" id="modal-biz-idea-desc" placeholder="Optional" maxlength="500">
+    </div>
+    <div class="form-group" style="margin-bottom:0;">
+      <label class="form-label">Status</label>
+      <select class="form-input" id="modal-biz-idea-status">
+        <option value="backlog" selected>Backlog</option>
+        <option value="in_review">Direview</option>
+        <option value="promoted">Dipromosikan</option>
+        <option value="archived">Diarsipkan</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeBizIdeaModal()">Batal</button>
+      <button class="btn-save" id="modal-biz-idea-save-btn" onclick="saveBizIdeaModal()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- BISNIS: ADD MILESTONE MODAL -->
+<div class="modal-overlay hidden" id="biz-milestone-modal" onclick="if(event.target===this)closeBizMilestoneModal()">
+  <div class="modal-box">
+    <div class="modal-title">🚩 Milestone Baru</div>
+    <div class="form-group">
+      <label class="form-label">Judul Milestone *</label>
+      <input type="text" class="form-input" id="modal-biz-milestone-title" placeholder="Contoh: Legalitas dasar (NIB + halal)" maxlength="200">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Deskripsi</label>
+      <input type="text" class="form-input" id="modal-biz-milestone-desc" placeholder="Optional" maxlength="500">
+    </div>
+    <div class="form-group" style="margin-bottom:0;">
+      <label class="form-label">Target Tanggal</label>
+      <input type="date" class="form-input" id="modal-biz-milestone-date">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeBizMilestoneModal()">Batal</button>
+      <button class="btn-save" id="modal-biz-milestone-save-btn" onclick="saveBizMilestoneModal()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- BISNIS: ADD RECIPE MODAL -->
+<div class="modal-overlay hidden" id="biz-recipe-modal" onclick="if(event.target===this)closeBizRecipeModal()">
+  <div class="modal-box" style="max-width:440px;">
+    <div class="modal-title">🍳 Resep Baru</div>
+    <div class="form-group">
+      <label class="form-label">Nama Resep *</label>
+      <input type="text" class="form-input" id="modal-biz-recipe-name" placeholder="Contoh: Nastar Premium (toples 500g)" maxlength="200">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Yield Qty</label>
+        <input type="number" class="form-input" id="modal-biz-recipe-yieldqty" placeholder="20" min="0" step="any">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Yield Unit</label>
+        <input type="text" class="form-input" id="modal-biz-recipe-yieldunit" placeholder="toples" maxlength="30">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Catatan</label>
+      <input type="text" class="form-input" id="modal-biz-recipe-notes" placeholder="Optional" maxlength="300">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Bahan *</label>
+      <div id="biz-recipe-ing-rows"></div>
+      <button type="button" class="qa-btn" onclick="addBizIngredientRow()" style="margin-top:2px;">+ Tambah Bahan</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeBizRecipeModal()">Batal</button>
+      <button class="btn-save" id="modal-biz-recipe-save-btn" onclick="saveBizRecipeModal()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- BISNIS: LOG PRODUCTION BATCH MODAL -->
+<div class="modal-overlay hidden" id="biz-batch-modal" onclick="if(event.target===this)closeBizBatchModal()">
+  <div class="modal-box">
+    <div class="modal-title">🏭 Log Produksi Batch</div>
+    <div class="form-group">
+      <label class="form-label">Resep *</label>
+      <select class="form-input" id="modal-biz-batch-recipe"></select>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Tanggal</label>
+        <input type="date" class="form-input" id="modal-biz-batch-date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Qty Produced *</label>
+        <input type="number" class="form-input" id="modal-biz-batch-qty" placeholder="20" min="0" step="any">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Qty Unit</label>
+      <input type="text" class="form-input" id="modal-biz-batch-unit" placeholder="toples (default ikut resep)" maxlength="30">
+    </div>
+    <div class="form-group" style="margin-bottom:0;">
+      <label class="form-label">Catatan</label>
+      <input type="text" class="form-input" id="modal-biz-batch-notes" placeholder="Optional" maxlength="300">
+    </div>
+    <div class="biz-warn-box" id="modal-biz-batch-warn" style="display:none;"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeBizBatchModal()">Batal</button>
+      <button class="btn-save" id="modal-biz-batch-save-btn" onclick="saveBizBatchModal()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- BISNIS: LOG SALE MODAL -->
+<div class="modal-overlay hidden" id="biz-sale-modal" onclick="if(event.target===this)closeBizSaleModal()">
+  <div class="modal-box">
+    <div class="modal-title">🛒 Log Penjualan</div>
+    <div class="form-group">
+      <label class="form-label">Nama Produk *</label>
+      <input type="text" class="form-input" id="modal-biz-sale-product" placeholder="Contoh: Nastar Premium" maxlength="200">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Tanggal</label>
+        <input type="date" class="form-input" id="modal-biz-sale-date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Qty *</label>
+        <input type="number" class="form-input" id="modal-biz-sale-qty" placeholder="5" min="0" step="any">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Harga Satuan *</label>
+        <input type="number" class="form-input" id="modal-biz-sale-price" placeholder="85000" min="0" step="any">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Channel</label>
+        <input type="text" class="form-input" id="modal-biz-sale-channel" placeholder="WA pribadi" maxlength="60">
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:0;">
+      <label class="form-label">Catatan</label>
+      <input type="text" class="form-input" id="modal-biz-sale-notes" placeholder="Optional" maxlength="300">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeBizSaleModal()">Batal</button>
+      <button class="btn-save" id="modal-biz-sale-save-btn" onclick="saveBizSaleModal()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- BISNIS: LOG EXPENSE MODAL -->
+<div class="modal-overlay hidden" id="biz-expense-modal" onclick="if(event.target===this)closeBizExpenseModal()">
+  <div class="modal-box">
+    <div class="modal-title">🧾 Log Pengeluaran</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Tanggal</label>
+        <input type="date" class="form-input" id="modal-biz-expense-date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Kategori *</label>
+        <select class="form-input" id="modal-biz-expense-category">
+          <option value="bahan_baku">Bahan Baku</option>
+          <option value="operasional">Operasional</option>
+          <option value="marketing">Marketing</option>
+          <option value="legal">Legal</option>
+          <option value="lainnya">Lainnya</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Jumlah *</label>
+      <input type="number" class="form-input" id="modal-biz-expense-amount" placeholder="80000" min="0" step="any">
+    </div>
+    <div class="form-group" style="margin-bottom:0;">
+      <label class="form-label">Deskripsi</label>
+      <input type="text" class="form-input" id="modal-biz-expense-desc" placeholder="Optional" maxlength="300">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeBizExpenseModal()">Batal</button>
+      <button class="btn-save" id="modal-biz-expense-save-btn" onclick="saveBizExpenseModal()">Simpan</button>
     </div>
   </div>
 </div>
@@ -3055,9 +3262,9 @@ function renderBizMilestones(){
   if(!bizMilestones.length){el.innerHTML='<div class="empty"><div class="emoji">🚩</div>Belum ada milestone.</div>';return;}
   const rows=bizMilestones.slice().sort((a,b)=>(a.item_order||0)-(b.item_order||0)||new Date(a.created_at||0)-new Date(b.created_at||0));
   el.innerHTML=rows.map(m=>{
-    const meta=MILESTONE_STATUS_META[m.status]||MILESTONE_STATUS_META.not_started;
     const dateTxt=(m.status==='done'&&m.completed_at)?('Selesai '+fmtBizDate(m.completed_at)):(m.target_date?('Target '+fmtBizDate(m.target_date)):'Tanpa target');
-    return `<div class="biz-list-row"><div><div class="biz-row-title">${escHtml(m.title||'Tanpa judul')}</div><div class="biz-row-sub">${dateTxt}</div></div><span class="badge ${meta.cls}">${meta.label}</span></div>`;
+    const opts=Object.keys(MILESTONE_STATUS_META).map(k=>`<option value="${k}" ${k===m.status?'selected':''}>${MILESTONE_STATUS_META[k].label}</option>`).join('');
+    return `<div class="biz-list-row"><div><div class="biz-row-title">${escHtml(m.title||'Tanpa judul')}</div><div class="biz-row-sub">${dateTxt}</div></div><select class="biz-milestone-status-select" onchange="setBizMilestoneStatus('${m.id}',this.value)">${opts}</select></div>`;
   }).join('');
 }
 
@@ -3200,6 +3407,230 @@ function renderBizExpenses(){
   if(toggleBtn)toggleBtn.textContent=bizExpensesExpanded?'Sembunyikan':'Lihat Semua';
 }
 function bizToggleExpenses(){bizExpensesExpanded=!bizExpensesExpanded;renderBizExpenses();}
+
+// ── BISNIS TAB — WRITE ACTIONS (dashboard v1 write, backend confirmed live 2026-08-04) ──
+function bizTodayStr(){ return jakartaToday(); }
+
+async function refreshBizSummaries(){
+  const m=await fetchApi('/business/summary?scope=month');
+  if(m)bizMonthSummary=m;
+  renderBizTargetPanel();
+  await loadBizSummary();
+}
+
+// -- Ide Bisnis --
+function openBizIdeaModal(){
+  document.getElementById('modal-biz-idea-title').value='';
+  document.getElementById('modal-biz-idea-desc').value='';
+  document.getElementById('modal-biz-idea-status').value='backlog';
+  document.getElementById('biz-idea-modal').classList.remove('hidden');
+  document.getElementById('modal-biz-idea-title').focus();
+}
+function closeBizIdeaModal(){ document.getElementById('biz-idea-modal').classList.add('hidden'); }
+async function saveBizIdeaModal(){
+  const title=document.getElementById('modal-biz-idea-title').value.trim();
+  if(!title){alert('Judul ide wajib diisi.');return;}
+  const data={
+    title,
+    description:document.getElementById('modal-biz-idea-desc').value.trim()||null,
+    status:document.getElementById('modal-biz-idea-status').value
+  };
+  const btn=document.getElementById('modal-biz-idea-save-btn');btn.disabled=true;
+  const result=await apiWrite('POST','/business/ideas',data);
+  btn.disabled=false;
+  if(!result)return;
+  bizIdeas.unshift(result);
+  closeBizIdeaModal();
+  renderBizIdeas();
+}
+
+// -- Milestone --
+function openBizMilestoneModal(){
+  document.getElementById('modal-biz-milestone-title').value='';
+  document.getElementById('modal-biz-milestone-desc').value='';
+  document.getElementById('modal-biz-milestone-date').value='';
+  document.getElementById('biz-milestone-modal').classList.remove('hidden');
+  document.getElementById('modal-biz-milestone-title').focus();
+}
+function closeBizMilestoneModal(){ document.getElementById('biz-milestone-modal').classList.add('hidden'); }
+async function saveBizMilestoneModal(){
+  const title=document.getElementById('modal-biz-milestone-title').value.trim();
+  if(!title){alert('Judul milestone wajib diisi.');return;}
+  const data={
+    title,
+    description:document.getElementById('modal-biz-milestone-desc').value.trim()||null,
+    target_date:document.getElementById('modal-biz-milestone-date').value||null
+  };
+  const btn=document.getElementById('modal-biz-milestone-save-btn');btn.disabled=true;
+  const result=await apiWrite('POST','/business/milestones',data);
+  btn.disabled=false;
+  if(!result)return;
+  bizMilestones.push(result);
+  closeBizMilestoneModal();
+  renderBizMilestones();
+}
+async function setBizMilestoneStatus(id,status){
+  const result=await apiWrite('PATCH',`/business/milestones/${id}`,{status});
+  if(!result)return;
+  const idx=bizMilestones.findIndex(m=>m.id===id);
+  if(idx>=0)bizMilestones[idx]=result;
+  renderBizMilestones();
+}
+
+// -- Resep --
+function addBizIngredientRow(){
+  const wrap=document.getElementById('biz-recipe-ing-rows');
+  const row=document.createElement('div');
+  row.className='biz-ing-row';
+  row.innerHTML=`<input type="text" class="biz-ing-name" placeholder="Nama bahan" maxlength="100">
+    <input type="number" class="biz-ing-qty" placeholder="Qty" min="0" step="any">
+    <input type="text" class="biz-ing-unit" placeholder="Unit" maxlength="20">
+    <input type="number" class="biz-ing-cost" placeholder="Harga/unit" min="0" step="any">
+    <button type="button" class="biz-ing-remove" onclick="this.parentElement.remove()" title="Hapus bahan">&times;</button>`;
+  wrap.appendChild(row);
+}
+function openBizRecipeModal(){
+  document.getElementById('modal-biz-recipe-name').value='';
+  document.getElementById('modal-biz-recipe-yieldqty').value='';
+  document.getElementById('modal-biz-recipe-yieldunit').value='';
+  document.getElementById('modal-biz-recipe-notes').value='';
+  document.getElementById('biz-recipe-ing-rows').innerHTML='';
+  addBizIngredientRow();addBizIngredientRow();
+  document.getElementById('biz-recipe-modal').classList.remove('hidden');
+  document.getElementById('modal-biz-recipe-name').focus();
+}
+function closeBizRecipeModal(){ document.getElementById('biz-recipe-modal').classList.add('hidden'); }
+async function saveBizRecipeModal(){
+  const name=document.getElementById('modal-biz-recipe-name').value.trim();
+  if(!name){alert('Nama resep wajib diisi.');return;}
+  const ingredients=[];
+  document.querySelectorAll('#biz-recipe-ing-rows .biz-ing-row').forEach(row=>{
+    const iname=row.querySelector('.biz-ing-name').value.trim();
+    const qty=row.querySelector('.biz-ing-qty').value;
+    const unit=row.querySelector('.biz-ing-unit').value.trim();
+    const cost=row.querySelector('.biz-ing-cost').value;
+    if(!iname||!qty||!unit)return;
+    ingredients.push({ingredient_name:iname,qty:parseFloat(qty),unit,unit_cost:cost?parseFloat(cost):null});
+  });
+  if(!ingredients.length){alert('Minimal 1 bahan (nama, qty, unit wajib diisi).');return;}
+  const data={
+    name,
+    yield_qty:document.getElementById('modal-biz-recipe-yieldqty').value?parseFloat(document.getElementById('modal-biz-recipe-yieldqty').value):null,
+    yield_unit:document.getElementById('modal-biz-recipe-yieldunit').value.trim()||null,
+    notes:document.getElementById('modal-biz-recipe-notes').value.trim()||null,
+    ingredients
+  };
+  const btn=document.getElementById('modal-biz-recipe-save-btn');btn.disabled=true;
+  const result=await apiWrite('POST','/business/recipes',data);
+  btn.disabled=false;
+  if(!result)return;
+  bizRecipes.push(result);
+  closeBizRecipeModal();
+  renderBizRecipes();
+}
+
+// -- Log Produksi Batch --
+function openBizBatchModal(){
+  if(!bizRecipes.length){alert('Belum ada resep — bikin resep dulu sebelum log produksi.');return;}
+  const sel=document.getElementById('modal-biz-batch-recipe');
+  sel.innerHTML=bizRecipes.slice().sort((a,b)=>(a.name||'').localeCompare(b.name||'')).map(r=>`<option value="${escHtml(r.id)}">${escHtml(r.name||'Tanpa nama')}</option>`).join('');
+  document.getElementById('modal-biz-batch-date').value=bizTodayStr();
+  document.getElementById('modal-biz-batch-qty').value='';
+  document.getElementById('modal-biz-batch-unit').value='';
+  document.getElementById('modal-biz-batch-notes').value='';
+  document.getElementById('modal-biz-batch-warn').style.display='none';
+  document.getElementById('biz-batch-modal').classList.remove('hidden');
+}
+function closeBizBatchModal(){ document.getElementById('biz-batch-modal').classList.add('hidden'); }
+async function saveBizBatchModal(){
+  const recipeId=document.getElementById('modal-biz-batch-recipe').value;
+  const qty=document.getElementById('modal-biz-batch-qty').value;
+  if(!recipeId||!qty){alert('Resep dan qty produced wajib diisi.');return;}
+  const data={
+    recipe:recipeId,
+    batch_date:document.getElementById('modal-biz-batch-date').value||bizTodayStr(),
+    qty_produced:parseFloat(qty),
+    qty_unit:document.getElementById('modal-biz-batch-unit').value.trim()||undefined,
+    notes:document.getElementById('modal-biz-batch-notes').value.trim()||null
+  };
+  const btn=document.getElementById('modal-biz-batch-save-btn');btn.disabled=true;
+  const result=await apiWrite('POST','/business/production-batches',data);
+  btn.disabled=false;
+  if(!result)return;
+  bizBatches.unshift(result.batch||result);
+  renderBizBatches();
+  const stockR=await fetchApi('/business/ingredient-stock');
+  if(stockR){bizStock=stockR.items||[];renderBizStockAlert();renderBizStock();}
+  await refreshBizSummaries();
+  const warnings=result.stock_warnings||[];
+  closeBizBatchModal();
+  if(warnings.length){
+    alert('⚠️ Batch tersimpan, TAPI stok jadi minus:\n'+warnings.map(w=>`- ${w.ingredient_name}: ${w.qty_on_hand}`).join('\n'));
+  }
+}
+
+// -- Log Penjualan --
+function openBizSaleModal(){
+  document.getElementById('modal-biz-sale-product').value='';
+  document.getElementById('modal-biz-sale-date').value=bizTodayStr();
+  document.getElementById('modal-biz-sale-qty').value='';
+  document.getElementById('modal-biz-sale-price').value='';
+  document.getElementById('modal-biz-sale-channel').value='';
+  document.getElementById('modal-biz-sale-notes').value='';
+  document.getElementById('biz-sale-modal').classList.remove('hidden');
+  document.getElementById('modal-biz-sale-product').focus();
+}
+function closeBizSaleModal(){ document.getElementById('biz-sale-modal').classList.add('hidden'); }
+async function saveBizSaleModal(){
+  const product=document.getElementById('modal-biz-sale-product').value.trim();
+  const qty=document.getElementById('modal-biz-sale-qty').value;
+  const price=document.getElementById('modal-biz-sale-price').value;
+  if(!product||!qty||!price){alert('Nama produk, qty, dan harga satuan wajib diisi.');return;}
+  const data={
+    sale_date:document.getElementById('modal-biz-sale-date').value||bizTodayStr(),
+    product_name:product,
+    qty:parseFloat(qty),
+    unit_price:parseFloat(price),
+    channel:document.getElementById('modal-biz-sale-channel').value.trim()||null,
+    notes:document.getElementById('modal-biz-sale-notes').value.trim()||null
+  };
+  const btn=document.getElementById('modal-biz-sale-save-btn');btn.disabled=true;
+  const result=await apiWrite('POST','/business/sales',data);
+  btn.disabled=false;
+  if(!result)return;
+  bizSales.unshift(result);
+  closeBizSaleModal();
+  renderBizSales();
+  await refreshBizSummaries();
+}
+
+// -- Log Pengeluaran --
+function openBizExpenseModal(){
+  document.getElementById('modal-biz-expense-date').value=bizTodayStr();
+  document.getElementById('modal-biz-expense-category').value='bahan_baku';
+  document.getElementById('modal-biz-expense-amount').value='';
+  document.getElementById('modal-biz-expense-desc').value='';
+  document.getElementById('biz-expense-modal').classList.remove('hidden');
+}
+function closeBizExpenseModal(){ document.getElementById('biz-expense-modal').classList.add('hidden'); }
+async function saveBizExpenseModal(){
+  const amount=document.getElementById('modal-biz-expense-amount').value;
+  if(!amount){alert('Jumlah wajib diisi.');return;}
+  const data={
+    expense_date:document.getElementById('modal-biz-expense-date').value||bizTodayStr(),
+    category:document.getElementById('modal-biz-expense-category').value,
+    description:document.getElementById('modal-biz-expense-desc').value.trim()||null,
+    amount:parseFloat(amount)
+  };
+  const btn=document.getElementById('modal-biz-expense-save-btn');btn.disabled=true;
+  const result=await apiWrite('POST','/business/expenses',data);
+  btn.disabled=false;
+  if(!result)return;
+  bizExpenses.unshift(result);
+  closeBizExpenseModal();
+  renderBizExpenses();
+  await refreshBizSummaries();
+}
 const CONTENT_STATUS_META={
   draft:{label:'Draft',bg:'#f3f4f6',color:'#6b7280'},
   awaiting_media:{label:'Nunggu Media',bg:'#fffbeb',color:'#f59e0b'},
