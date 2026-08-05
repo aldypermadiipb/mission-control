@@ -188,6 +188,70 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   .rw-grid{grid-template-columns:1fr;}
 }
 
+/* Today's Mission (inside AI Briefing) */
+.aib-mission-hdr{font-size:11px;font-weight:700;color:var(--indigo2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.aib-mission-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:7px;}
+.aib-mission-item:last-child{margin-bottom:0;}
+.aib-mission-icon{flex-shrink:0;font-size:14px;}
+
+/* Dashboard 2-col layout: main content + right sidebar */
+.dash-layout{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start;}
+.dash-main{min-width:0;}
+.dash-side{display:flex;flex-direction:column;gap:16px;position:sticky;top:16px;}
+.side-card{padding:18px;}
+
+/* Overall Progress row: ring + score cards */
+.op-row{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:stretch;}
+.op-ring-card{background:#fff;border-radius:14px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+.op-ring-val{font-size:22px;font-weight:800;color:var(--text);line-height:1;}
+.op-ring-sub{font-size:10px;color:var(--text3);}
+.op-ring-label{font-size:11px;font-weight:600;color:var(--text2);margin-top:8px;}
+.op-ring-tip{font-size:10px;color:var(--text3);margin-top:2px;}
+
+/* Today Timeline */
+.tl-item{display:flex;gap:10px;padding:0 0 16px 0;position:relative;}
+.tl-item:last-child{padding-bottom:0;}
+.tl-item::before{content:'';position:absolute;left:33px;top:16px;bottom:0;width:1px;background:var(--border);}
+.tl-item:last-child::before{display:none;}
+.tl-time{width:38px;flex-shrink:0;font-size:10.5px;color:var(--text3);font-weight:600;padding-top:2px;}
+.tl-dot{width:9px;height:9px;border-radius:50%;background:var(--indigo);flex-shrink:0;margin-top:4px;z-index:1;}
+.tl-dot-done{background:#10b981;}
+.tl-dot-now{background:#f59e0b;box-shadow:0 0 0 3px #fef3c7;}
+.tl-label{font-size:12.5px;color:var(--text);font-weight:500;padding-top:1px;}
+.tl-label-done{color:var(--text3);text-decoration:line-through;}
+
+/* Focus Mode card */
+.focus-mode-card{background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:16px;padding:20px;color:#fff;text-align:center;}
+.fm-hdr{text-align:left;margin-bottom:10px;}
+.fm-title{font-size:14px;font-weight:700;}
+.fm-sub{font-size:11px;opacity:.85;margin-top:2px;}
+.fm-timer{font-size:36px;font-weight:800;letter-spacing:1px;margin:6px 0 2px;}
+.fm-state{font-size:11px;opacity:.85;margin-bottom:14px;}
+.fm-controls{display:flex;align-items:center;justify-content:center;gap:14px;}
+.fm-btn{border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .12s;}
+.fm-btn:hover{transform:scale(1.06);}
+.fm-btn-ghost{width:34px;height:34px;background:rgba(255,255,255,.18);color:#fff;font-size:14px;}
+.fm-btn-main{width:52px;height:52px;background:#fff;color:var(--indigo);font-size:18px;}
+
+/* AI Insight card */
+.ai-ins-score-row{display:flex;align-items:center;justify-content:space-between;background:var(--indigo-light);border-radius:10px;padding:9px 12px;margin-bottom:10px;}
+.ai-ins-score-label{font-size:11px;color:var(--indigo2);font-weight:600;}
+.ai-ins-score-val{font-size:15px;color:var(--indigo2);font-weight:800;}
+.ai-ins-item{display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.4;}
+.ai-ins-item:last-child{margin-bottom:10px;}
+.ai-ins-dot{width:5px;height:5px;border-radius:50%;background:var(--indigo);flex-shrink:0;margin-top:5px;}
+
+@media (max-width:1100px){
+  .dash-layout{grid-template-columns:1fr;}
+  .dash-side{position:static;flex-direction:row;flex-wrap:wrap;}
+  .dash-side>*{flex:1 1 260px;}
+  .op-row{grid-template-columns:1fr;}
+  .op-ring-card{flex-direction:row;gap:14px;}
+}
+@media (max-width:640px){
+  .dash-side{flex-direction:column;}
+}
+
 /* ─── OTHER TABS ─── */
 .stat-grid{display:grid;gap:12px;margin-bottom:16px;}
 .sg5{grid-template-columns:repeat(5,1fr);}
@@ -765,6 +829,9 @@ tr:hover td{background:#f9fafb;}
         <div class="period-toggle" id="pt-dashboard"></div>
       </div>
 
+      <div class="dash-layout">
+      <div class="dash-main">
+
       <!-- AI BRIEFING -->
       <div class="ai-briefing">
         <div>
@@ -772,7 +839,10 @@ tr:hover td{background:#f9fafb;}
           <div class="aib-greeting" id="aib-greeting">Selamat pagi, Aldy! 👋</div>
           <div class="aib-sub" id="aib-sub">Memuat data...</div>
         </div>
-        <div id="aib-insights"><div class="loading" style="padding:4px 0">Memuat insight...</div></div>
+        <div>
+          <div class="aib-mission-hdr">Today's Mission</div>
+          <div id="aib-mission"><div class="loading" style="padding:4px 0">Memuat...</div></div>
+        </div>
         <div class="ring-wrap">
           <div style="position:relative;display:inline-block;">
             <svg class="ring-svg" width="110" height="110" viewBox="0 0 110 110">
@@ -907,55 +977,103 @@ tr:hover td{background:#f9fafb;}
               <button class="qa-btn" onclick="switchTab('health',document.querySelector('[onclick*=health]'))">🍽️ <span>Catat Makanan</span></button>
               <button class="qa-btn" onclick="switchTab('finance',document.querySelector('[onclick*=finance]'))">💳 <span>Catat Expense</span></button>
               <button class="qa-btn" onclick="switchTab('english',document.querySelector('[onclick*=english]'))">📖 <span>Tambah Vocab</span></button>
-              <button class="qa-btn">⏱️ <span>Start Focus</span></button>
-              <button class="qa-btn">✨ <span>AI Assistant</span></button>
+              <button class="qa-btn" onclick="document.querySelector('.focus-mode-card')?.scrollIntoView({behavior:'smooth',block:'center'});focusModeToggle()">⏱️ <span>Start Focus</span></button>
+              <button class="qa-btn" onclick="document.querySelector('.btn-ai-outline')?.click()">✨ <span>AI Assistant</span></button>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- RINGKASAN MINGGUAN -->
+      <!-- OVERALL PROGRESS -->
       <div>
         <div class="rw-hdr">
           <div>
-            <div style="font-size:16px;font-weight:700;color:var(--text);">🗓️ Ringkasan Mingguan</div>
-            <div style="font-size:13px;color:var(--text3);margin-top:2px;">Overview 7 hari terakhir</div>
+            <div style="font-size:16px;font-weight:700;color:var(--text);">📊 Overall Progress</div>
+            <div style="font-size:13px;color:var(--text3);margin-top:2px;">Ringkasan performa Anda hari ini</div>
           </div>
-          <a class="card-link" style="font-size:13px;">Lihat detail</a>
+          <a class="card-link" style="font-size:13px;" onclick="switchTab('tracker',document.querySelector('[onclick*=tracker]'))">Lihat analitik lengkap →</a>
         </div>
-        <div class="rw-grid">
-          <div class="rw-card">
-            <div class="rw-label">Health Score</div>
-            <div class="rw-sub">Rata-rata / hari</div>
-            <div class="rw-val" id="rw-cal-val">—</div>
-            <div class="rw-spark"><canvas id="spark-cal"></canvas></div>
+        <div class="op-row">
+          <div class="op-ring-card">
+            <div style="position:relative;display:inline-block;">
+              <svg style="transform:rotate(-90deg);display:block;" width="90" height="90" viewBox="0 0 90 90">
+                <circle cx="45" cy="45" r="36" fill="none" stroke="#ddd6fe" stroke-width="8"/>
+                <circle id="dash-prod-ring-circle" cx="45" cy="45" r="36" fill="none" stroke="#6366f1" stroke-width="8"
+                  stroke-dasharray="226.2" stroke-dashoffset="226.2" stroke-linecap="round"/>
+              </svg>
+              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">
+                <div class="op-ring-val" id="dash-prod-score-val">0</div>
+                <div class="op-ring-sub">/100</div>
+              </div>
+            </div>
+            <div class="op-ring-label">Productivity Score</div>
+            <div class="op-ring-tip" id="dash-prod-tip">—</div>
           </div>
-          <div class="rw-card">
-            <div class="rw-label">Pengeluaran</div>
-            <div class="rw-sub">Rata-rata / hari</div>
-            <div class="rw-val" id="rw-exp-val">—</div>
-            <div class="rw-spark"><canvas id="spark-exp"></canvas></div>
-          </div>
-          <div class="rw-card">
-            <div class="rw-label">Tasks</div>
-            <div class="rw-sub">Completion Rate</div>
-            <div class="rw-val" id="rw-tasks-val">—</div>
-            <div class="rw-spark"><canvas id="spark-tasks"></canvas></div>
-          </div>
-          <div class="rw-card">
-            <div class="rw-label">Vocab</div>
-            <div class="rw-sub">Kata baru / hari</div>
-            <div class="rw-val" id="rw-vocab-val">—</div>
-            <div class="rw-spark"><canvas id="spark-vocab"></canvas></div>
+          <div class="rw-grid">
+            <div class="rw-card">
+              <div class="rw-label">Health Score</div>
+              <div class="rw-sub">Rata-rata / hari</div>
+              <div class="rw-val" id="rw-cal-val">—</div>
+              <div class="rw-spark"><canvas id="spark-cal"></canvas></div>
+            </div>
+            <div class="rw-card">
+              <div class="rw-label">Finance Score</div>
+              <div class="rw-sub">Kepatuhan budget</div>
+              <div class="rw-val" id="rw-fin-val">—</div>
+              <div class="rw-spark"><canvas id="spark-fin"></canvas></div>
+            </div>
+            <div class="rw-card">
+              <div class="rw-label">Learning Score</div>
+              <div class="rw-sub">Vocab + grammar</div>
+              <div class="rw-val" id="rw-learn-val">—</div>
+              <div class="rw-spark"><canvas id="spark-learn"></canvas></div>
+            </div>
+            <div class="rw-card">
+              <div class="rw-label">Focus Time</div>
+              <div class="rw-sub">Total hari ini</div>
+              <div class="rw-val" id="rw-focus-val">—</div>
+              <div class="rw-spark"><canvas id="spark-focus"></canvas></div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- TIPS BAR -->
-      <div class="tips-bar">
-        <div class="tips-left">💡 <span><strong>Tips AI:</strong> <span id="tips-text">Kamu lebih produktif di pagi hari. Coba selesaikan tugas berat sebelum jam 12:00 untuk hasil maksimal.</span></span></div>
-        <div class="tips-right">Berdasarkan analisis 30 hari terakhir <span title="Placeholder — analisis statis">ℹ️</span></div>
-      </div>
+      </div><!-- /dash-main -->
+
+      <aside class="dash-side">
+        <!-- TODAY TIMELINE -->
+        <div class="panel-card-sm side-card">
+          <div class="card-title" style="margin-bottom:12px;">Today Timeline</div>
+          <div id="dash-timeline"><div class="loading">Loading...</div></div>
+        </div>
+
+        <!-- FOCUS MODE -->
+        <div class="focus-mode-card">
+          <div class="fm-hdr">
+            <div class="fm-title">Focus Mode</div>
+            <div class="fm-sub" id="fm-label-sub">Pilih task buat mulai fokus</div>
+          </div>
+          <div class="fm-timer" id="fm-timer">25:00</div>
+          <div class="fm-state" id="fm-state">Pomodoro • Siap</div>
+          <div class="fm-controls">
+            <button class="fm-btn fm-btn-ghost" onclick="focusModeReset()" title="Reset">↺</button>
+            <button class="fm-btn fm-btn-main" id="fm-play-btn" onclick="focusModeToggle()" title="Start/Pause">▶</button>
+            <button class="fm-btn fm-btn-ghost" onclick="focusModeStop()" title="Stop &amp; log">■</button>
+          </div>
+        </div>
+
+        <!-- AI INSIGHT -->
+        <div class="panel-card-sm side-card">
+          <div class="card-title" style="margin-bottom:4px;">✨ AI Insight</div>
+          <div class="ai-ins-score-row">
+            <span class="ai-ins-score-label">Today Productivity Score</span>
+            <span class="ai-ins-score-val" id="ai-ins-score">—%</span>
+          </div>
+          <div class="ai-ins-list" id="ai-ins-list"><div class="loading">Loading...</div></div>
+          <a class="card-link" style="font-size:12px;" onclick="switchTab('tracker',document.querySelector('[onclick*=tracker]'))">Lihat Rekomendasi →</a>
+        </div>
+      </aside>
+      </div><!-- /dash-layout -->
     </div>
 
     <!-- ── CALENDAR ── -->
@@ -4189,6 +4307,133 @@ function buildTrackerAnalytics(){
   }
 }
 
+// ── DASHBOARD v2: Finance/Learning scores, Focus Mode, Today Timeline, AI Insight sidebar ──
+function jakartaHour(d){try{return jakartaDateFrom(d).getHours();}catch{return null;}}
+
+function calcFinanceScore(dateList){
+  const days=dateList||last7();
+  const DAILY_BUDGET=500000;
+  const scores=days.map(d=>{
+    const spent=financeData.filter(r=>r.type==='expense'&&r.date===d).reduce((s,r)=>s+(parseFloat(r.amount)||0),0);
+    return Math.max(0,Math.min(100,Math.round((1-spent/DAILY_BUDGET)*100)));
+  });
+  return scores.length?Math.round(scores.reduce((s,v)=>s+v,0)/scores.length):100;
+}
+function calcLearningScore(){
+  const days=last7();
+  const vocabDays=days.filter(d=>englishData.some(r=>r.date===d)).length;
+  const vocabScore=Math.round(vocabDays/7*100);
+  const total=grammarPointsData.length;
+  const mastered=grammarPointsData.filter(g=>g.status==='mastered').length;
+  const grammarScore=total?Math.round(mastered/total*100):null;
+  return grammarScore==null?vocabScore:Math.round((vocabScore+grammarScore)/2);
+}
+
+// Focus Mode (Pomodoro) — client-side timer, sessions persisted locally per day
+const FM_DURATION=25*60;
+let fmRemaining=FM_DURATION,fmRunning=false,fmInterval=null,fmSessionStart=null;
+function fmFormat(sec){const m=Math.floor(sec/60),s=sec%60;return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
+function fmRender(){
+  const t=document.getElementById('fm-timer');if(t)t.textContent=fmFormat(fmRemaining);
+  const st=document.getElementById('fm-state');
+  if(st)st.textContent=fmRunning?'Pomodoro • Focus':(fmRemaining<FM_DURATION?'Pomodoro • Paused':'Pomodoro • Siap');
+  const pb=document.getElementById('fm-play-btn');if(pb)pb.textContent=fmRunning?'⏸':'▶';
+}
+function getFocusSessionsToday(){
+  try{const all=JSON.parse(localStorage.getItem('mc_focus_sessions')||'[]');return all.filter(s=>s.date===todayStr());}catch{return[];}
+}
+function saveFocusSession(startTime,durationMin){
+  try{
+    const all=JSON.parse(localStorage.getItem('mc_focus_sessions')||'[]');
+    all.push({date:todayStr(),start_time:startTime,duration_min:durationMin});
+    localStorage.setItem('mc_focus_sessions',JSON.stringify(all));
+  }catch{}
+}
+function refreshFocusTimeStat(){
+  const mins=getFocusSessionsToday().reduce((s,x)=>s+(x.duration_min||0),0);
+  const el=document.getElementById('rw-focus-val');
+  if(el)el.textContent=mins?(mins/60).toFixed(1)+' jam':'0 jam';
+}
+function focusModeToggle(){
+  if(fmRunning){clearInterval(fmInterval);fmRunning=false;fmRender();return;}
+  if(!fmSessionStart)fmSessionStart=jakartaNow().toTimeString().slice(0,5);
+  fmRunning=true;
+  fmInterval=setInterval(()=>{
+    fmRemaining--;
+    if(fmRemaining<=0){
+      clearInterval(fmInterval);fmRunning=false;
+      saveFocusSession(fmSessionStart,FM_DURATION/60);
+      fmRemaining=FM_DURATION;fmSessionStart=null;
+      fmRender();
+      const st=document.getElementById('fm-state');if(st)st.textContent='Selesai! 🎉';
+      renderTodayTimeline();refreshFocusTimeStat();renderAIInsightSidebar();
+      return;
+    }
+    fmRender();
+  },1000);
+  fmRender();
+}
+function focusModeReset(){
+  clearInterval(fmInterval);fmRunning=false;fmRemaining=FM_DURATION;fmSessionStart=null;fmRender();
+}
+function focusModeStop(){
+  if(fmSessionStart){
+    const elapsed=FM_DURATION-fmRemaining;
+    if(elapsed>=60)saveFocusSession(fmSessionStart,Math.round(elapsed/60));
+  }
+  clearInterval(fmInterval);fmRunning=false;fmRemaining=FM_DURATION;fmSessionStart=null;fmRender();
+  renderTodayTimeline();refreshFocusTimeStat();renderAIInsightSidebar();
+}
+
+// Today Timeline — merges Calendar events + Focus Mode sessions logged today, sorted by time
+function renderTodayTimeline(){
+  const el=document.getElementById('dash-timeline');
+  if(!el)return;
+  const today=todayStr();
+  const nowT=jakartaNow().toTimeString().slice(0,5);
+  const evItems=calData.filter(e=>e.date===today).map(e=>({time:e.time||'00:00',label:e.title||'Event'}));
+  const focusItems=getFocusSessionsToday().map(s=>({time:s.start_time||'00:00',label:`Focus Session (${s.duration_min} mnt)`}));
+  const items=[...evItems,...focusItems].sort((a,b)=>(a.time||'').localeCompare(b.time||''));
+  if(!items.length){el.innerHTML='<div class="empty" style="padding:10px 0;">Belum ada agenda hari ini.</div>';return;}
+  let nowMarked=false;
+  el.innerHTML=items.map(it=>{
+    const done=it.time<nowT;
+    let dotCls='';
+    if(done)dotCls='tl-dot-done';else if(!nowMarked){dotCls='tl-dot-now';nowMarked=true;}
+    return `<div class="tl-item"><div class="tl-time">${it.time}</div><div class="tl-dot ${dotCls}"></div><div class="tl-label ${done?'tl-label-done':''}">${it.label}</div></div>`;
+  }).join('');
+}
+
+// AI Insight sidebar — rule-based, reuses calcProductivityScore + real activity data (no fabricated text)
+function mostProductiveTimeInsight(){
+  const doneWithTime=tasksData.filter(t=>t.status==='done'&&t.updated_at);
+  if(doneWithTime.length<3)return null;
+  let morning=0,afternoon=0,night=0;
+  doneWithTime.forEach(t=>{const h=jakartaHour(t.updated_at);if(h==null)return;if(h>=5&&h<12)morning++;else if(h>=12&&h<18)afternoon++;else night++;});
+  const max=Math.max(morning,afternoon,night);
+  if(max===0)return null;
+  const label=max===morning?'pagi':max===afternoon?'siang/sore':'malam';
+  return `Kamu paling produktif di ${label} hari — ${max} dari ${doneWithTime.length} task selesai di jam segitu.`;
+}
+function renderAIInsightSidebar(){
+  const scoreEl=document.getElementById('ai-ins-score');
+  const listEl=document.getElementById('ai-ins-list');
+  if(!scoreEl||!listEl)return;
+  const{score}=calcProductivityScore(tasksData);
+  scoreEl.textContent=score+'%';
+  const bullets=[];
+  const mp=mostProductiveTimeInsight();
+  if(mp)bullets.push(mp);
+  const ws=weekStart();
+  const wkVocabCount=englishData.filter(r=>r.date&&r.date>=ws).length;
+  if(wkVocabCount>0)bullets.push(`Vocabulary retention meningkat — ${wkVocabCount} kata baru direview minggu ini.`);
+  let streakDays=0;for(let i=0;i<365;i++){const ds=dayStr(-i);if(englishData.some(r=>r.date===ds))streakDays++;else break;}
+  if(streakDays>=2)bullets.push(`Streak belajar ${streakDays} hari berturut-turut — pertahankan momentumnya.`);
+  const focusMinsToday=getFocusSessionsToday().reduce((s,x)=>s+(x.duration_min||0),0);
+  bullets.push(focusMinsToday>0?`${focusMinsToday} menit fokus tercatat hari ini lewat Focus Mode.`:'Belum ada sesi Focus Mode hari ini — coba mulai satu sesi 25 menit.');
+  listEl.innerHTML=bullets.slice(0,4).map(t=>`<div class="ai-ins-item"><span class="ai-ins-dot"></span><span>${t}</span></div>`).join('');
+}
+
 // ── BUILD DASHBOARD ──
 function buildDashboard(){
   const today=todayStr();
@@ -4262,26 +4507,14 @@ function buildDashboard(){
   document.getElementById('aib-greeting').textContent=`Selamat ${greet}, Aldy! 👋`;
   document.getElementById('aib-sub').textContent=`Kamu memiliki ${active.length} task aktif. Tetap fokus dan selesaikan satu per satu.`;
 
-  // Insights
-  const ins=[];
-  if(todayEv.length){
-    if(nextEv){
-      try{
-        const [nh,nm]=nextEv.time.split(':').map(Number);
-        const [ch,cm]=nowT.split(':').map(Number);
-        const mins=(nh*60+nm)-(ch*60+cm);
-        if(mins>0&&mins<480)ins.push({i:'📅',t:`${nextEv.title} dimulai dalam ${mins} menit`});
-        else ins.push({i:'📅',t:`${nextEv.title} — ${nextEv.time}`});
-      }catch{ins.push({i:'📅',t:`${todayEv.length} jadwal hari ini`});}
-    }else ins.push({i:'📅',t:`${todayEv.length} jadwal hari ini`});
-  }
-  if(calLeft>0)ins.push({i:'🔥',t:`Kalori tersisa ${calLeft.toLocaleString('id-ID')} kkal untuk mencapai target`});
-  if(expChg!==0)ins.push({i:'📈',t:`Pengeluaran minggu ini ${expChg>0?'naik':'turun'} ${Math.abs(expChg)}% vs minggu lalu`});
-  if(wkVocab>0)ins.push({i:'📖',t:`Review ${wkVocab} vocabulary untuk tingkatkan retention`});
-  if(tasksData.length>0){const{score:ps,doneCount:dc,total:tt,overdueTasks:ov}=calcProductivityScore(tasksData);const pIcon=ps>=70?'🚀':ps>=40?'📈':'⚠️';ins.push({i:pIcon,t:`Productivity score ${ps}/100 — ${dc}/${tt} task selesai${ov>0?`, ${ov} terlambat`:''}`});}
-  document.getElementById('aib-insights').innerHTML=ins.length
-    ?ins.map(x=>`<div class="aib-insight"><span class="aib-insight-icon">${x.i}</span><span>${x.t}</span></div>`).join('')
-    :'<div style="color:var(--text3);font-size:13px;">Belum ada data hari ini.</div>';
+  // Today's Mission — real targets computed from actual data (calorie budget, daily vocab target, priority tasks)
+  const dailyVocabTarget=Math.max(1,Math.round(totalVocab*.1/7));
+  const missionItems=[
+    {icon:'🔥',done:calLeft<=0,text:`Kalori tersisa ${calLeft.toLocaleString('id-ID')} kkal`},
+    {icon:'📘',done:wkVocab>=dailyVocabTarget,text:`Review ${dailyVocabTarget} vocabulary baru`},
+    {icon:'✅',done:active.length===0,text:`Selesaikan ${Math.min(3,active.length)} tugas prioritas`},
+  ];
+  document.getElementById('aib-mission').innerHTML=missionItems.map(m=>`<div class="aib-mission-item"><span class="aib-mission-icon">${m.done?'✅':m.icon}</span><span>${m.text}</span></div>`).join('');
 
   // Progress ring — composite Daily Progress: Vocab target + Pengeluaran target + Task/Agenda completion + Health Score
   const vocabDailyPct=Math.min(100,totalVocab?Math.round(wkVocab/Math.max(totalVocab*.1,1)*100):0);
@@ -4370,19 +4603,41 @@ function buildDashboard(){
   $('mini-vocab-val').textContent=`${wkVocab} kata minggu ini`;
   $('mini-vocab-pct').textContent=vocabPct+'%';
 
-  // Ringkasan
+  // Overall Progress — Health/Finance/Learning Score + Focus Time, plus big Productivity ring
+  const thisWkFinScore=calcFinanceScore(l7);
+  const prevWkFinScore=calcFinanceScore(Array.from({length:7},(_,i)=>dayStr(i-14)));
+  const finScoreChg=prevWkFinScore?Math.round((thisWkFinScore-prevWkFinScore)/prevWkFinScore*100):0;
+  const learnScore=calcLearningScore();
+  const dFinScore=l7.map(d=>calcFinanceScore([d]));
+
   $('rw-cal-val').innerHTML=`${thisWkHealthScore} <span class="rw-badge ${healthScoreChg>=0?'rw-badge-green':'rw-badge-red'}">${healthScoreChg>=0?'▲':'▼'} ${Math.abs(healthScoreChg)}%</span>`;
-  $('rw-exp-val').innerHTML=`${fmtRp(avgExp)} <span class="rw-badge ${expChg<=0?'rw-badge-green':'rw-badge-red'}">${expChg>=0?'▲':'▼'} ${Math.abs(expChg)}%</span>`;
-  $('rw-tasks-val').innerHTML=`${completionPct}%`;
-  $('rw-vocab-val').innerHTML=`${wkVocab} kata`;
+  $('rw-fin-val').innerHTML=`${thisWkFinScore} <span class="rw-badge ${finScoreChg>=0?'rw-badge-green':'rw-badge-red'}">${finScoreChg>=0?'▲':'▼'} ${Math.abs(finScoreChg)}%</span>`;
+  $('rw-learn-val').innerHTML=`${learnScore}`;
+  refreshFocusTimeStat();
+
+  const{score:prodScore,doneCount:prodDone,total:prodTotal,overdueTasks:prodOverdue}=calcProductivityScore(tasksData);
+  const CIRC36D=2*Math.PI*36;
+  const prodRingEl=$('dash-prod-ring-circle');
+  if(prodRingEl){
+    prodRingEl.setAttribute('stroke-dasharray',CIRC36D.toFixed(1));
+    prodRingEl.setAttribute('stroke-dashoffset',(CIRC36D*(1-prodScore/100)).toFixed(1));
+    prodRingEl.setAttribute('stroke',prodScore>=70?'#10b981':prodScore>=40?'#f59e0b':'#ef4444');
+  }
+  if($('dash-prod-score-val')){$('dash-prod-score-val').textContent=prodScore;$('dash-prod-score-val').style.color=prodScore>=70?'#10b981':prodScore>=40?'#f59e0b':'#ef4444';}
+  if($('dash-prod-tip'))$('dash-prod-tip').textContent=`${prodDone}/${prodTotal} task${prodOverdue>0?`, ${prodOverdue} telat`:''}`;
+
+  renderTodayTimeline();
+  renderAIInsightSidebar();
+  fmRender();
 
   // Sparklines (slight delay so canvases are rendered)
   setTimeout(()=>{
     const dayLabels=l7.map(d=>new Date(d+'T00:00:00').toLocaleDateString('en',{weekday:'short'}));
     mkSparklineLabeled('spark-cal',dayLabels,dHealthScore,'#10b981','rgba(16,185,129,.1)');
-    mkSparklineLabeled('spark-exp',dayLabels,dExp,'#ec4899','rgba(236,72,153,.1)');
-    mkSparklineLabeled('spark-tasks',dayLabels,dTasks,'#6366f1','rgba(99,102,241,.1)');
-    mkSparklineLabeled('spark-vocab',dayLabels,dVocab,'#3b82f6','rgba(59,130,246,.1)');
+    mkSparklineLabeled('spark-fin',dayLabels,dFinScore,'#ec4899','rgba(236,72,153,.1)');
+    mkSparklineLabeled('spark-learn',dayLabels,dVocab,'#3b82f6','rgba(59,130,246,.1)');
+    const dFocusMin=l7.map(d=>{try{return JSON.parse(localStorage.getItem('mc_focus_sessions')||'[]').filter(s=>s.date===d).reduce((s,x)=>s+(x.duration_min||0),0);}catch{return 0;}});
+    mkSparklineLabeled('spark-focus',dayLabels,dFocusMin,'#f59e0b','rgba(245,158,11,.1)');
     mkSparklineLabeled('spark-mini-exp',dayLabels,dExp,'#ec4899','rgba(236,72,153,.1)');
     // Vocab ring2
     const rc=2*Math.PI*22;
