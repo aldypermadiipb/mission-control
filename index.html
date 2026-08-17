@@ -737,6 +737,15 @@ tr:hover td{background:#f9fafb;}
 .wk-activity-row{display:flex;gap:10px;padding:7px 0;font-size:12px;border-bottom:1px solid #f9fafb;}
 .wk-activity-time{color:var(--text3);flex-shrink:0;white-space:nowrap;}
 .wk-activity-desc{color:var(--text2);}
+
+/* ── AI ASSISTANT (read-only Q&A) ── */
+.ai-msg{margin-bottom:12px;display:flex;}
+.ai-msg.user{justify-content:flex-end;}
+.ai-msg.assistant{justify-content:flex-start;}
+.ai-msg-bubble{max-width:85%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-word;}
+.ai-msg.user .ai-msg-bubble{background:var(--indigo);color:#fff;border-bottom-right-radius:4px;}
+.ai-msg.assistant .ai-msg-bubble{background:#f3f4f6;color:var(--text);border-bottom-left-radius:4px;}
+.ai-msg-empty{color:var(--text3);font-size:12px;text-align:center;padding:30px 14px;line-height:1.6;}
 </style>
 </head>
 <body>
@@ -788,7 +797,7 @@ tr:hover td{background:#f9fafb;}
       </div>
     </div>
     <div class="topbar-right">
-      <button class="btn-ai-outline">✨ AI Assistant</button>
+      <button class="btn-ai-outline" onclick="openAiAssistantModal()">✨ AI Assistant</button>
       <div class="tb-clock-wrap"><span class="tb-clock" id="tb-clock">--:--</span><span class="tb-wib">WIB</span></div>
       <div class="tb-weather">☀️ 28°C Jakarta</div>
       <div class="tb-avatar">AP</div>
@@ -947,7 +956,7 @@ tr:hover td{background:#f9fafb;}
               <button class="qa-btn" onclick="switchTab('finance',document.querySelector('[onclick*=finance]'))">💳 <span>Catat Expense</span></button>
               <button class="qa-btn" onclick="switchTab('english',document.querySelector('[onclick*=english]'))">📖 <span>Tambah Vocab</span></button>
               <button class="qa-btn">⏱️ <span>Start Focus</span></button>
-              <button class="qa-btn">✨ <span>AI Assistant</span></button>
+              <button class="qa-btn" onclick="openAiAssistantModal()">✨ <span>AI Assistant</span></button>
             </div>
           </div>
         </div>
@@ -2087,6 +2096,21 @@ tr:hover td{background:#f9fafb;}
     <div id="wk-detail-body"></div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeWkTaskDetail()">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<!-- AI ASSISTANT MODAL (read-only Q&A over dashboard data) -->
+<div class="modal-overlay hidden" id="ai-assistant-modal" onclick="if(event.target===this)closeAiAssistantModal()">
+  <div class="modal-box" style="max-width:480px;display:flex;flex-direction:column;">
+    <div class="modal-title">✨ AI Assistant</div>
+    <div id="ai-assistant-messages" style="flex:1;overflow-y:auto;margin-bottom:14px;min-height:180px;max-height:50vh;"></div>
+    <div style="display:flex;gap:8px;align-items:flex-start;">
+      <input type="text" class="form-input" id="ai-assistant-input" placeholder="Tanya soal data kamu..." style="margin-bottom:0;" onkeydown="if(event.key==='Enter')sendAiAssistantQuestion()">
+      <button class="btn-save" id="ai-assistant-send-btn" onclick="sendAiAssistantQuestion()" style="flex-shrink:0;">Kirim</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeAiAssistantModal()">Tutup</button>
     </div>
   </div>
 </div>
@@ -4732,6 +4756,41 @@ async function apiWrite(method,path,body){
     if(r.status===204)return true;
     return await r.json();
   }catch(e){alert('Network error: '+e.message);return null;}
+}
+
+// ── AI ASSISTANT (read-only Q&A over dashboard data) ──
+let aiAssistantMessages=[];
+function openAiAssistantModal(){
+  renderAiAssistantMessages();
+  document.getElementById('ai-assistant-modal').classList.remove('hidden');
+  setTimeout(()=>{const el=document.getElementById('ai-assistant-input'); if(el)el.focus();},50);
+}
+function closeAiAssistantModal(){ document.getElementById('ai-assistant-modal').classList.add('hidden'); }
+function renderAiAssistantMessages(){
+  const el=document.getElementById('ai-assistant-messages');
+  if(!el)return;
+  if(!aiAssistantMessages.length){
+    el.innerHTML='<div class="ai-msg-empty">Tanya apa aja soal data kamu — kerjaan, finance, kalender, goals, dll. Jawabannya berdasarkan data asli di dashboard, bukan ngarang.</div>';
+    return;
+  }
+  el.innerHTML=aiAssistantMessages.map(m=>`<div class="ai-msg ${m.role}"><div class="ai-msg-bubble">${escHtml(m.text)}</div></div>`).join('');
+  el.scrollTop=el.scrollHeight;
+}
+async function sendAiAssistantQuestion(){
+  const input=document.getElementById('ai-assistant-input');
+  const question=input.value.trim();
+  if(!question)return;
+  aiAssistantMessages.push({role:'user',text:question});
+  input.value='';
+  aiAssistantMessages.push({role:'assistant',text:'…',pending:true});
+  renderAiAssistantMessages();
+  const btn=document.getElementById('ai-assistant-send-btn');btn.disabled=true;
+  const result=await apiWrite('POST','/assistant/ask',{question,workspace_id:wkWorkspaceId||null});
+  btn.disabled=false;
+  aiAssistantMessages=aiAssistantMessages.filter(m=>!m.pending);
+  aiAssistantMessages.push({role:'assistant',text:(result&&result.answer)?result.answer:'Maaf, gagal dapat jawaban. Coba lagi.'});
+  renderAiAssistantMessages();
+  input.focus();
 }
 
 async function createTask(data){
