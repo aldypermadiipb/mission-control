@@ -980,6 +980,32 @@ tr:hover td{background:var(--bg3);}
             <a class="card-link" onclick="switchTab('english',document.querySelector('[onclick*=english]'))">Review sekarang →</a>
           </div>
 
+          <!-- POMODORO MINI (same timer/state as the full widget on Time Tracker -- both just read/write the same pomo* globals, this is a second view onto it) -->
+          <div class="panel-card-sm">
+            <div class="card-hdr" style="margin-bottom:12px;">
+              <div class="card-title">⏱️ Pomodoro</div>
+              <a class="card-link" onclick="switchTab('tracker',document.querySelector('[onclick*=tracker]'))">Buka penuh →</a>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px;">
+              <div style="position:relative;display:inline-block;flex-shrink:0;">
+                <svg width="64" height="64" viewBox="0 0 64 64">
+                  <circle cx="32" cy="32" r="26" fill="none" stroke="var(--border)" stroke-width="6"/>
+                  <circle id="pomo-mini-ring" cx="32" cy="32" r="26" fill="none" stroke="#6366f1" stroke-width="6"
+                    stroke-dasharray="163.4" stroke-dashoffset="0" stroke-linecap="round"
+                    style="transition:stroke-dashoffset 1s linear,stroke .3s;transform:rotate(-90deg);transform-origin:32px 32px;"/>
+                </svg>
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">
+                  <div id="pomo-mini-time" style="font-size:13px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;">25:00</div>
+                </div>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div id="pomo-mini-mode-label" style="font-size:13px;font-weight:700;color:var(--text);">🎯 Fokus</div>
+                <div id="pomo-mini-session-label" style="font-size:11px;color:var(--text3);margin-top:1px;">Sesi 1 dari 4</div>
+                <button class="btn-save" id="pomo-mini-toggle-btn" onclick="pomodoroToggle()" style="margin-top:8px;padding:6px 14px;font-size:12px;">▶ Mulai</button>
+              </div>
+            </div>
+          </div>
+
           <!-- QUICK ACTIONS -->
           <div class="panel-card-sm">
             <div class="card-title" style="margin-bottom:10px;">Quick Actions</div>
@@ -4893,18 +4919,30 @@ function pomoModeLabel(mode){ return {work:'🎯 Fokus',short_break:'☕ Istirah
 function pomoModeColor(mode){ return {work:'#6366f1',short_break:'#10b981',long_break:'#06b6d4'}[mode]; }
 function pomoFormatTime(s){ const m=Math.floor(s/60),sec=s%60; return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`; }
 
+// Two views onto the same timer state (full widget on Time Tracker, compact
+// one on Dashboard) -- both are always present in the DOM (this is a single-page
+// app, inactive tabs are just display:none, not unmounted), so both get updated
+// every tick regardless of which tab is currently visible.
+const POMO_WIDGETS=[
+  {time:'pomo-time',mode:'pomo-mode-label',session:'pomo-session-label',ring:'pomo-ring',toggle:'pomo-toggle-btn',ringCirc:POMO_RING_CIRC},
+  {time:'pomo-mini-time',mode:'pomo-mini-mode-label',session:'pomo-mini-session-label',ring:'pomo-mini-ring',toggle:'pomo-mini-toggle-btn',ringCirc:2*Math.PI*26},
+];
 function renderPomodoro(){
-  const timeEl=document.getElementById('pomo-time');
-  if(!timeEl)return; // not on Time Tracker tab yet -- harmless no-op, timer keeps running in background
-  document.getElementById('pomo-mode-label').textContent=pomoModeLabel(pomoMode);
-  document.getElementById('pomo-session-label').textContent=pomoMode==='work' ? `Sesi ${pomoSessionCount} dari 4` : 'Istirahat sebentar dulu';
-  timeEl.textContent=pomoFormatTime(pomoSecondsLeft);
-  const ring=document.getElementById('pomo-ring');
   const pct=pomoSecondsLeft/POMO_DURATIONS[pomoMode];
-  ring.style.stroke=pomoModeColor(pomoMode);
-  ring.setAttribute('stroke-dashoffset',(POMO_RING_CIRC*(1-pct)).toFixed(1));
-  const btn=document.getElementById('pomo-toggle-btn');
-  if(btn)btn.textContent=pomoRunning?'⏸ Jeda':'▶ Mulai';
+  const sessionText=pomoMode==='work' ? `Sesi ${pomoSessionCount} dari 4` : 'Istirahat sebentar dulu';
+  const toggleText=pomoRunning?'⏸ Jeda':'▶ Mulai';
+  POMO_WIDGETS.forEach(w=>{
+    const timeEl=document.getElementById(w.time);
+    if(!timeEl)return; // widget not in DOM (shouldn't happen, but harmless no-op if it's ever removed)
+    timeEl.textContent=pomoFormatTime(pomoSecondsLeft);
+    document.getElementById(w.mode).textContent=pomoModeLabel(pomoMode);
+    document.getElementById(w.session).textContent=sessionText;
+    const ring=document.getElementById(w.ring);
+    ring.style.stroke=pomoModeColor(pomoMode);
+    ring.setAttribute('stroke-dashoffset',(w.ringCirc*(1-pct)).toFixed(1));
+    const btn=document.getElementById(w.toggle);
+    if(btn)btn.textContent=toggleText;
+  });
 }
 
 function pomoGetAudioCtx(){
