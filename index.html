@@ -702,6 +702,41 @@ tr:hover td{background:#f9fafb;}
   .fin-target-label{font-size:12px;}
   .fin-target-amount{font-size:13px;}
 }
+
+/* ── TRACKING KERJAAN ── */
+.sg6{grid-template-columns:repeat(6,1fr);}
+@media (max-width:1100px){ .sg6{grid-template-columns:repeat(3,1fr);row-gap:12px;} }
+@media (max-width:640px){ .sg6{grid-template-columns:repeat(2,1fr);} }
+.wk-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+.wk-toolbar-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.wk-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid #f3f4f6;cursor:pointer;}
+.wk-row:last-child{border-bottom:none;}
+.wk-row:hover{background:#fafafa;}
+.wk-row-main{min-width:0;flex:1;}
+.wk-row-title{font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.wk-row-meta{font-size:11px;color:var(--text3);margin-top:2px;}
+.wk-row-right{display:flex;align-items:center;gap:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;}
+.wk-row-deadline{font-size:11px;color:var(--text3);white-space:nowrap;}
+.wk-pagination{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:12px;}
+.wk-cat-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f3f4f6;}
+.wk-cat-row:last-child{border-bottom:none;}
+.wk-cat-swatch{width:14px;height:14px;border-radius:4px;flex-shrink:0;}
+.wk-cat-icon{flex-shrink:0;}
+.wk-cat-name{flex:1;font-size:13px;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.wk-cat-del{background:none;border:none;cursor:pointer;font-size:13px;opacity:.55;padding:2px 4px;flex-shrink:0;}
+.wk-cat-del:hover{opacity:1;}
+.wk-detail-badges{display:flex;gap:6px;margin-bottom:14px;}
+.wk-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;font-size:12px;}
+.wk-detail-grid b{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:3px;font-weight:600;}
+.wk-detail-grid div div{color:var(--text);}
+.wk-detail-desc{margin-bottom:14px;font-size:12px;}
+.wk-detail-desc b{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:3px;font-weight:600;}
+.wk-detail-desc p{color:var(--text2);line-height:1.5;word-break:break-word;}
+.wk-detail-actions{display:flex;gap:10px;margin-bottom:16px;}
+.wk-detail-activity-hdr{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);border-top:1px solid var(--border);padding-top:12px;margin-bottom:8px;}
+.wk-activity-row{display:flex;gap:10px;padding:7px 0;font-size:12px;border-bottom:1px solid #f9fafb;}
+.wk-activity-time{color:var(--text3);flex-shrink:0;white-space:nowrap;}
+.wk-activity-desc{color:var(--text2);}
 </style>
 </head>
 <body>
@@ -715,6 +750,10 @@ tr:hover td{background:#f9fafb;}
     <div class="nav-item active" onclick="switchTab('dashboard',this)"><span class="nav-icon">🏠</span> Dashboard</div>
     <div class="nav-item" onclick="switchTab('calendar',this)"><span class="nav-icon">📅</span> Calendar</div>
     <div class="nav-item" onclick="switchTab('tracker',this)"><span class="nav-icon">⏱️</span> Time Tracker</div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">WORK</div>
+    <div class="nav-item" onclick="switchTab('kerjaan',this)"><span class="nav-icon">🗂️</span> Tracking Kerjaan</div>
   </div>
   <div class="nav-group">
     <div class="nav-label">LIFE</div>
@@ -1496,6 +1535,104 @@ tr:hover td{background:#f9fafb;}
       </div>
     </div>
 
+    <!-- ── TRACKING KERJAAN (Workspace -> Project -> Task, dynamic categories) ── -->
+    <div id="tab-kerjaan" class="section">
+      <div class="wk-toolbar">
+        <div class="wk-toolbar-left">
+          <select class="fin-chart-dropdown" id="wk-workspace-select" onchange="setWkWorkspace(this.value)"></select>
+          <span class="hp-link" onclick="openWkWorkspaceModal()">＋ Workspace</span>
+          <select class="fin-chart-dropdown" id="wk-category-select" onchange="setWkCategoryFilter(this.value)"></select>
+          <span class="hp-link" onclick="openWkCategoryModal()">Kelola Kategori</span>
+        </div>
+        <span class="hp-link" onclick="openWkTaskModal()" style="font-weight:700;">＋ Kerjaan Baru</span>
+      </div>
+
+      <div class="stat-grid sg6" id="wk-summary-stats"></div>
+
+      <div class="grid-21">
+        <div class="panel">
+          <div class="sec-hdr">
+            <div style="display:flex;gap:10px;">
+              <div class="sec-badge">1</div>
+              <div><div class="sec-hdr-title">Prioritas Hari Ini</div><div class="sec-hdr-sub">Overdue &amp; prioritas tinggi duluan, lalu deadline terdekat.</div></div>
+            </div>
+          </div>
+          <div id="wk-priority-list"><div class="loading">Loading...</div></div>
+        </div>
+        <div class="panel">
+          <div class="sec-hdr">
+            <div style="display:flex;gap:10px;">
+              <div class="sec-badge">2</div>
+              <div><div class="sec-hdr-title">Timeline Hari Ini</div><div class="sec-hdr-sub">Kerjaan &amp; project dengan deadline hari ini.</div></div>
+            </div>
+          </div>
+          <div id="wk-timeline"><div class="loading">Loading...</div></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="sec-hdr">
+          <div style="display:flex;gap:10px;">
+            <div class="sec-badge">3</div>
+            <div><div class="sec-hdr-title">Category Analytics</div><div class="sec-hdr-sub">Distribusi kerjaan per kategori workspace ini.</div></div>
+          </div>
+        </div>
+        <div class="hp-chart-wrap-md" style="height:240px;"><canvas id="wk-category-chart"></canvas></div>
+        <div id="wk-category-chart-empty" style="display:none;" class="loading">Belum ada kategori/kerjaan buat dianalisis.</div>
+      </div>
+
+      <div class="panel">
+        <div class="sec-hdr">
+          <div style="display:flex;gap:10px;">
+            <div class="sec-badge">4</div>
+            <div><div class="sec-hdr-title">Semua Kerjaan</div><div class="sec-hdr-sub">Pantau dan kelola semua pekerjaan di kantor.</div></div>
+          </div>
+          <input type="text" class="form-input" id="wk-search-input" placeholder="Cari kerjaan..." style="max-width:220px;" oninput="setWkSearch(this.value)">
+        </div>
+        <div class="type-filter" id="wk-table-filter"></div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr>
+              <th style="cursor:pointer;" onclick="wkSetSort('title')">Pekerjaan</th>
+              <th>Category</th><th>Project</th>
+              <th style="cursor:pointer;" onclick="wkSetSort('deadline')">Deadline</th>
+              <th style="cursor:pointer;" onclick="wkSetSort('priority')">Priority</th>
+              <th style="cursor:pointer;" onclick="wkSetSort('status')">Status</th>
+            </tr></thead>
+            <tbody id="wk-table-body"><tr><td colspan="6" style="text-align:center;padding:20px;">Loading...</td></tr></tbody>
+          </table>
+        </div>
+        <div class="wk-pagination">
+          <button class="btn-cancel" onclick="wkPrevPage()">← Prev</button>
+          <span id="wk-table-info" style="font-size:12px;color:var(--text3);"></span>
+          <button class="btn-cancel" onclick="wkNextPage()">Next →</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="sec-hdr">
+          <div style="display:flex;gap:10px;">
+            <div class="sec-badge">5</div>
+            <div><div class="sec-hdr-title">Project Aktif</div><div class="sec-hdr-sub">Progress dihitung otomatis dari task, bukan diisi manual.</div></div>
+          </div>
+          <span class="hp-link" onclick="openWkProjectModal()">＋ Project Baru</span>
+        </div>
+        <div class="goals-grid" id="wk-projects-grid"><div class="loading">Loading...</div></div>
+      </div>
+
+      <div class="panel">
+        <div class="sec-hdr">
+          <div style="display:flex;gap:10px;">
+            <div class="sec-badge">6</div>
+            <div><div class="sec-hdr-title">Produktivitas</div><div class="sec-hdr-sub">Task selesai dari waktu ke waktu.</div></div>
+          </div>
+          <div class="type-filter" id="wk-prod-period" style="margin-bottom:0;"></div>
+        </div>
+        <div class="stat-grid sg4" id="wk-productivity-stats" style="margin-bottom:16px;"></div>
+        <div class="hp-chart-wrap-md" style="height:220px;"><canvas id="wk-productivity-chart"></canvas></div>
+      </div>
+    </div>
+
   </div><!-- /content -->
 </div><!-- /main -->
 
@@ -1792,6 +1929,164 @@ tr:hover td{background:#f9fafb;}
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeBizExpenseModal()">Batal</button>
       <button class="btn-save" id="modal-biz-expense-save-btn" onclick="saveBizExpenseModal()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRACKING KERJAAN: WORKSPACE MODAL -->
+<div class="modal-overlay hidden" id="wk-workspace-modal" onclick="if(event.target===this)closeWkWorkspaceModal()">
+  <div class="modal-box">
+    <div class="modal-title">🗂️ Workspace Baru</div>
+    <div class="form-group" style="margin-bottom:0;">
+      <label class="form-label">Nama Workspace *</label>
+      <input type="text" class="form-input" id="wk-workspace-name-input" placeholder="Contoh: Manufaktur, Finance, Marketing" maxlength="100">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeWkWorkspaceModal()">Batal</button>
+      <button class="btn-save" id="wk-workspace-save-btn" onclick="saveWkWorkspaceModal()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRACKING KERJAAN: CATEGORY MANAGEMENT MODAL -->
+<div class="modal-overlay hidden" id="wk-category-modal" onclick="if(event.target===this)closeWkCategoryModal()">
+  <div class="modal-box">
+    <div class="modal-title">🏷️ Kelola Kategori</div>
+    <div id="wk-category-manage-list" style="margin-bottom:14px;max-height:240px;overflow-y:auto;"></div>
+    <div class="form-row" style="grid-template-columns:2fr 1fr 1fr;">
+      <div class="form-group">
+        <label class="form-label">Nama Kategori</label>
+        <input type="text" class="form-input" id="wk-cat-name-input" placeholder="Contoh: Logistik" maxlength="60">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Icon (emoji)</label>
+        <input type="text" class="form-input" id="wk-cat-icon-input" placeholder="🚚" maxlength="4">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Warna</label>
+        <input type="color" class="form-input" id="wk-cat-color-input" value="#6366f1" style="padding:4px;height:38px;">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeWkCategoryModal()">Tutup</button>
+      <button class="btn-save" id="wk-cat-save-btn" onclick="submitWkCategory()">＋ Tambah Kategori</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRACKING KERJAAN: PROJECT MODAL -->
+<div class="modal-overlay hidden" id="wk-project-modal" onclick="if(event.target===this)closeWkProjectModal()">
+  <div class="modal-box">
+    <div class="modal-title">📁 Project Baru</div>
+    <div class="form-group">
+      <label class="form-label">Nama Project *</label>
+      <input type="text" class="form-input" id="wk-project-name" placeholder="Contoh: Optimasi Rute Pengiriman" maxlength="200">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Deskripsi</label>
+      <input type="text" class="form-input" id="wk-project-desc" placeholder="Optional" maxlength="500">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="form-input" id="wk-project-category"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Priority</label>
+        <select class="form-input" id="wk-project-priority">
+          <option value="tinggi">Tinggi</option>
+          <option value="sedang" selected>Sedang</option>
+          <option value="rendah">Rendah</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:0;">
+      <label class="form-label">Deadline</label>
+      <input type="datetime-local" class="form-input" id="wk-project-deadline">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeWkProjectModal()">Batal</button>
+      <button class="btn-save" id="wk-project-save-btn" onclick="saveWkProjectModal()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRACKING KERJAAN: TASK CREATE/EDIT MODAL -->
+<div class="modal-overlay hidden" id="wk-task-modal" onclick="if(event.target===this)closeWkTaskModal()">
+  <div class="modal-box" style="max-width:520px;">
+    <div class="modal-title" id="wk-task-modal-title">＋ Kerjaan Baru</div>
+    <div class="form-group">
+      <label class="form-label">Judul Kerjaan *</label>
+      <input type="text" class="form-input" id="wk-task-title" placeholder="Contoh: Follow up vendor packaging" maxlength="200">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Deskripsi</label>
+      <input type="text" class="form-input" id="wk-task-desc" placeholder="Optional" maxlength="500">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="form-input" id="wk-task-category"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Project</label>
+        <select class="form-input" id="wk-task-project"></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Priority</label>
+        <select class="form-input" id="wk-task-priority">
+          <option value="tinggi">🔴 Tinggi</option>
+          <option value="sedang" selected>🟡 Sedang</option>
+          <option value="rendah">⚫ Rendah</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-input" id="wk-task-status">
+          <option value="belum_mulai" selected>Belum Mulai</option>
+          <option value="dalam_proses">Dalam Proses</option>
+          <option value="selesai">Selesai</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Deadline</label>
+        <input type="datetime-local" class="form-input" id="wk-task-deadline">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tanggal Mulai</label>
+        <input type="date" class="form-input" id="wk-task-start">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Catatan</label>
+      <input type="text" class="form-input" id="wk-task-notes" placeholder="Optional" maxlength="500">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Link Lampiran</label>
+      <input type="text" class="form-input" id="wk-task-attachment" placeholder="https://..." maxlength="500">
+    </div>
+    <div class="form-group" style="margin-bottom:0;">
+      <label class="form-label">Tags (pisah koma)</label>
+      <input type="text" class="form-input" id="wk-task-tags" placeholder="urgent, vendor">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeWkTaskModal()">Batal</button>
+      <button class="btn-save" id="wk-task-save-btn" onclick="saveWkTaskModal()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRACKING KERJAAN: TASK DETAIL MODAL -->
+<div class="modal-overlay hidden" id="wk-detail-modal" onclick="if(event.target===this)closeWkTaskDetail()">
+  <div class="modal-box" style="max-width:560px;max-height:82vh;overflow-y:auto;">
+    <div class="modal-title" id="wk-detail-title">Detail Kerjaan</div>
+    <div id="wk-detail-body"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeWkTaskDetail()">Tutup</button>
     </div>
   </div>
 </div>
@@ -3188,6 +3483,568 @@ function escHtml(s){
   return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+// ── TRACKING KERJAAN (Workspace -> Project -> Task, dynamic categories) ──
+// Separate system from `tasks` (Time Tracker, tab-tracker) -- backed by
+// /workspaces, /work-categories, /work-projects, /work-tasks. Categories are
+// pure data (work_categories), never hardcoded here. Overdue is never stored,
+// always derived client-side the same way the API derives it server-side
+// (status != 'selesai' AND deadline < now) -- see wkIsOverdue().
+let wkWorkspaces=[],wkCategories=[],wkProjects=[],wkTasks=[];
+let wkWorkspaceId=localStorage.getItem('mc_workspace_id')||'';
+let wkCategoryFilter='';
+let wkTableFilter='all',wkSearch='',wkSortKey='deadline',wkSortDir='asc',wkPage=1;
+const WK_PAGE_SIZE=10;
+let wkProdPeriod=localStorage.getItem('mc_wk_prod_period')||'week';
+let wkModalEditId=null;
+
+const WK_STATUS_META={
+  belum_mulai:{label:'Belum Mulai',cls:'bgray'},
+  dalam_proses:{label:'Dalam Proses',cls:'bblue'},
+  selesai:{label:'Selesai',cls:'bgreen'}
+};
+const WK_PRIORITY_META={
+  tinggi:{label:'Tinggi',cls:'bred'},
+  sedang:{label:'Sedang',cls:'byellow'},
+  rendah:{label:'Rendah',cls:'bgray'}
+};
+const WK_TABLE_FILTERS=[
+  {key:'all',label:'Semua'},{key:'today',label:'Hari Ini'},{key:'week',label:'Minggu Ini'},
+  {key:'overdue',label:'Overdue'},{key:'done',label:'Selesai'}
+];
+
+function wkIsOverdue(t){ return t.status!=='selesai' && !!t.deadline && new Date(t.deadline)<new Date(); }
+function wkPriorityRank(p){ return {tinggi:0,sedang:1,rendah:2}[p]??3; }
+function wkCategoryName(id){ const c=wkCategories.find(c=>c.id===id); return c?((c.icon?c.icon+' ':'')+c.name):'Tanpa Kategori'; }
+function wkProjectName(id){ const p=wkProjects.find(p=>p.id===id); return p?p.name:''; }
+function wkFmtDeadline(d){
+  if(!d)return'Tanpa deadline';
+  try{
+    const dt=jakartaDateFrom(d);
+    return dt.toLocaleDateString('id-ID',{day:'numeric',month:'short'})+' '+dt.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+  }catch{return d;}
+}
+function wkIsoToLocalInput(iso){
+  try{
+    const d=new Date(iso);const pad=n=>String(n).padStart(2,'0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }catch{return'';}
+}
+function wkLocalInputToIso(v){ return v?new Date(v).toISOString():null; }
+
+// ── LOAD ──
+async function loadKerjaanWorkspaces(){
+  const r=await fetchApi('/workspaces');
+  wkWorkspaces=r?(r.items||[]):[];
+}
+async function loadKerjaanData(){
+  const qs=wkWorkspaceId?('?workspace_id='+wkWorkspaceId):'';
+  const [catR,projR,taskR]=await Promise.all([
+    fetchApi('/work-categories'+qs), fetchApi('/work-projects'+qs), fetchApi('/work-tasks'+qs)
+  ]);
+  wkCategories=catR?(catR.items||[]):[];
+  wkProjects=projR?(projR.items||[]):[];
+  wkTasks=taskR?(taskR.items||[]):[];
+}
+async function loadKerjaan(){
+  await loadKerjaanWorkspaces();
+  await loadKerjaanData();
+  renderKerjaanTab();
+}
+async function setWkWorkspace(id){
+  wkWorkspaceId=id;
+  localStorage.setItem('mc_workspace_id',id);
+  wkCategoryFilter='';wkPage=1;
+  await loadKerjaanData();
+  renderKerjaanTab();
+}
+function setWkCategoryFilter(v){ wkCategoryFilter=v; wkPage=1; renderKerjaanTab(); }
+
+function renderKerjaanTab(){
+  renderWkWorkspaceSelector();
+  renderWkCategoryFilterDropdown();
+  renderWkSummary();
+  renderWkPriorityList();
+  renderWkTimeline();
+  renderWkCategoryChart();
+  renderWkTable();
+  renderWkProjects();
+  renderWkProductivityPeriodToggle();
+  renderWkProductivity();
+}
+
+function wkScopedTasks(){
+  let list=wkTasks;
+  if(wkCategoryFilter) list=list.filter(t=>t.category_id===wkCategoryFilter);
+  return list;
+}
+
+// ── HEADER CONTROLS ──
+function renderWkWorkspaceSelector(){
+  const el=document.getElementById('wk-workspace-select');
+  if(!el)return;
+  el.innerHTML='<option value="">Semua Workspace</option>'+wkWorkspaces.map(w=>`<option value="${w.id}">${escHtml(w.name)}</option>`).join('');
+  el.value=wkWorkspaceId;
+}
+function renderWkCategoryFilterDropdown(){
+  const el=document.getElementById('wk-category-select');
+  if(!el)return;
+  el.innerHTML='<option value="">Semua Kategori</option>'+wkCategories.map(c=>`<option value="${c.id}">${escHtml((c.icon?c.icon+' ':'')+c.name)}</option>`).join('');
+  el.value=wkCategoryFilter;
+}
+
+// ── SUMMARY CARDS ──
+function renderWkSummary(){
+  const el=document.getElementById('wk-summary-stats');
+  if(!el)return;
+  const list=wkScopedTasks();
+  const total=list.length;
+  const done=list.filter(t=>t.status==='selesai').length;
+  const inProgress=list.filter(t=>t.status==='dalam_proses').length;
+  const notStarted=list.filter(t=>t.status==='belum_mulai').length;
+  const overdue=list.filter(wkIsOverdue).length;
+  const today=jakartaToday();
+  const dueToday=list.filter(t=>t.deadline&&ymd(jakartaDateFrom(t.deadline))===today);
+  const doneToday=dueToday.filter(t=>t.status==='selesai').length;
+  const progressToday=dueToday.length?Math.round(doneToday/dueToday.length*100):0;
+  let html='';
+  html+=statCard('var(--indigo-light)','var(--indigo)',ico('checkCircle',20),'Total Kerjaan',total,'');
+  html+=statCard('#f0fdf4','#10b981',ico('check',20),'Selesai',done,total?Math.round(done/total*100)+'%':'');
+  html+=statCard('#eff6ff','#3b82f6',ico('refreshCw',20),'Dalam Proses',inProgress,'');
+  html+=statCard('#f3f4f6','#6b7280',ico('target',20),'Belum Mulai',notStarted,'');
+  html+=statCard('#fef2f2','#ef4444',ico('trendingDown',20),'Overdue',overdue,'');
+  html+=statCard('#fffbeb','#f59e0b',ico('trendingUp',20),'Progress Hari Ini',progressToday+'%',dueToday.length?(doneToday+'/'+dueToday.length+' selesai'):'tidak ada deadline');
+  el.innerHTML=html;
+}
+
+// ── PRIORITAS HARI INI: overdue -> priority tinggi -> deadline terdekat -> sedang -> rendah ──
+function wkPriorityListSort(list){
+  return list.slice().sort((a,b)=>{
+    const at=wkIsOverdue(a)?0:(wkPriorityRank(a.priority)+1);
+    const bt=wkIsOverdue(b)?0:(wkPriorityRank(b.priority)+1);
+    if(at!==bt)return at-bt;
+    const ad=a.deadline?new Date(a.deadline).getTime():Infinity;
+    const bd=b.deadline?new Date(b.deadline).getTime():Infinity;
+    return ad-bd;
+  });
+}
+function wkTaskRowHtml(t){
+  const st=WK_STATUS_META[t.status]||WK_STATUS_META.belum_mulai;
+  const pr=WK_PRIORITY_META[t.priority]||WK_PRIORITY_META.sedang;
+  const overdue=wkIsOverdue(t);
+  const projName=wkProjectName(t.project_id);
+  return `<div class="wk-row" onclick="openWkTaskDetail('${t.id}')">
+    <div class="wk-row-main">
+      <div class="wk-row-title">${escHtml(t.title)}</div>
+      <div class="wk-row-meta">${escHtml(wkCategoryName(t.category_id))}${projName?' · '+escHtml(projName):''}</div>
+    </div>
+    <div class="wk-row-right">
+      ${overdue?'<span class="badge bred">Overdue</span>':''}
+      <span class="badge ${pr.cls}">${pr.label}</span>
+      <span class="badge ${st.cls}">${st.label}</span>
+      <span class="wk-row-deadline">${wkFmtDeadline(t.deadline)}</span>
+    </div>
+  </div>`;
+}
+function renderWkPriorityList(){
+  const el=document.getElementById('wk-priority-list');
+  if(!el)return;
+  const list=wkPriorityListSort(wkScopedTasks().filter(t=>t.status!=='selesai')).slice(0,8);
+  el.innerHTML=list.length?list.map(wkTaskRowHtml).join(''):'<div class="loading">Tidak ada kerjaan aktif.</div>';
+}
+
+// ── TIMELINE HARI INI: task & project dengan deadline hari ini, urut jam ──
+function renderWkTimeline(){
+  const el=document.getElementById('wk-timeline');
+  if(!el)return;
+  const today=jakartaToday();
+  const items=[];
+  wkScopedTasks().forEach(t=>{ if(t.deadline&&ymd(jakartaDateFrom(t.deadline))===today) items.push({kind:'task',name:t.title,deadline:t.deadline}); });
+  wkProjects.forEach(p=>{ if(p.deadline&&ymd(jakartaDateFrom(p.deadline))===today) items.push({kind:'project',name:p.name,deadline:p.deadline}); });
+  items.sort((a,b)=>new Date(a.deadline)-new Date(b.deadline));
+  if(!items.length){ el.innerHTML='<div class="loading">Tidak ada deadline hari ini.</div>'; return; }
+  el.innerHTML=items.map(it=>{
+    const time=jakartaDateFrom(it.deadline).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+    const label=(it.kind==='project'?'📁 ':'')+it.name;
+    return `<div class="hp-timeline-item">
+      <span class="hp-timeline-time">${time}</span>
+      <span class="hp-timeline-dot"></span>
+      <span class="hp-timeline-name">${escHtml(label)}</span>
+    </div>`;
+  }).join('');
+}
+
+// ── CATEGORY ANALYTICS (donut, category = data from work_categories) ──
+function renderWkCategoryChart(){
+  const wrap=document.getElementById('wk-category-chart-empty');
+  const counts={},colorMap={};
+  wkTasks.forEach(t=>{
+    const cat=wkCategories.find(c=>c.id===t.category_id);
+    const label=cat?cat.name:'Tanpa Kategori';
+    counts[label]=(counts[label]||0)+1;
+    if(cat&&cat.color)colorMap[label]=cat.color;
+  });
+  const labels=Object.keys(counts);
+  if(!labels.length){
+    if(charts['wk-category-chart']){charts['wk-category-chart'].destroy();delete charts['wk-category-chart'];}
+    if(wrap)wrap.style.display='block';
+    return;
+  }
+  if(wrap)wrap.style.display='none';
+  const data=labels.map(l=>counts[l]);
+  const colors=labels.map((l,i)=>colorMap[l]||P[i%P.length]);
+  mkChart('wk-category-chart',{
+    type:'doughnut',
+    data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:10}}}}}
+  });
+}
+
+// ── SEMUA KERJAAN: search + filter chips + sort + pagination ──
+function renderWkTableFilter(){
+  const el=document.getElementById('wk-table-filter');
+  if(!el)return;
+  el.innerHTML=WK_TABLE_FILTERS.map(f=>`<button class="type-chip ${f.key===wkTableFilter?'active':''}" onclick="setWkTableFilter('${f.key}')">${f.label}</button>`).join('');
+}
+function setWkTableFilter(k){ wkTableFilter=k; wkPage=1; renderWkTable(); }
+function setWkSearch(v){ wkSearch=v; wkPage=1; renderWkTable(); }
+function wkSetSort(key){
+  if(wkSortKey===key) wkSortDir=wkSortDir==='asc'?'desc':'asc';
+  else { wkSortKey=key; wkSortDir='asc'; }
+  renderWkTable();
+}
+function wkTableRows(){
+  let list=wkScopedTasks();
+  const today=jakartaToday();
+  if(wkTableFilter==='today') list=list.filter(t=>t.deadline&&ymd(jakartaDateFrom(t.deadline))===today);
+  else if(wkTableFilter==='week'){ const r=periodRange('week'); list=list.filter(t=>{ if(!t.deadline)return false; const d=ymd(jakartaDateFrom(t.deadline)); return d>=r.start&&d<=r.end; }); }
+  else if(wkTableFilter==='overdue') list=list.filter(wkIsOverdue);
+  else if(wkTableFilter==='done') list=list.filter(t=>t.status==='selesai');
+  if(wkSearch.trim()){
+    const q=wkSearch.trim().toLowerCase();
+    list=list.filter(t=>(t.title||'').toLowerCase().includes(q)||(t.description||'').toLowerCase().includes(q));
+  }
+  list=list.slice().sort((a,b)=>{
+    let av,bv;
+    if(wkSortKey==='deadline'){ av=a.deadline?new Date(a.deadline).getTime():Infinity; bv=b.deadline?new Date(b.deadline).getTime():Infinity; }
+    else if(wkSortKey==='priority'){ av=wkPriorityRank(a.priority); bv=wkPriorityRank(b.priority); }
+    else if(wkSortKey==='status'){ av=a.status||''; bv=b.status||''; }
+    else { av=(a.title||'').toLowerCase(); bv=(b.title||'').toLowerCase(); }
+    if(av<bv)return wkSortDir==='asc'?-1:1;
+    if(av>bv)return wkSortDir==='asc'?1:-1;
+    return 0;
+  });
+  return list;
+}
+function renderWkTable(){
+  renderWkTableFilter();
+  const rows=wkTableRows();
+  const totalPages=Math.max(1,Math.ceil(rows.length/WK_PAGE_SIZE));
+  if(wkPage>totalPages)wkPage=totalPages;
+  const pageRows=rows.slice((wkPage-1)*WK_PAGE_SIZE,wkPage*WK_PAGE_SIZE);
+  const body=document.getElementById('wk-table-body');
+  const info=document.getElementById('wk-table-info');
+  if(body){
+    if(!pageRows.length){
+      body.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;">Tidak ada kerjaan.</td></tr>';
+    }else{
+      body.innerHTML=pageRows.map(t=>{
+        const st=WK_STATUS_META[t.status]||WK_STATUS_META.belum_mulai;
+        const pr=WK_PRIORITY_META[t.priority]||WK_PRIORITY_META.sedang;
+        const overdue=wkIsOverdue(t);
+        return `<tr style="cursor:pointer;" onclick="openWkTaskDetail('${t.id}')">
+          <td>${escHtml(t.title)}</td>
+          <td>${escHtml(wkCategoryName(t.category_id))}</td>
+          <td>${escHtml(wkProjectName(t.project_id)||'-')}</td>
+          <td>${wkFmtDeadline(t.deadline)}${overdue?' <span class="badge bred">Overdue</span>':''}</td>
+          <td><span class="badge ${pr.cls}">${pr.label}</span></td>
+          <td><span class="badge ${st.cls}">${st.label}</span></td>
+        </tr>`;
+      }).join('');
+    }
+  }
+  if(info)info.textContent=`Halaman ${wkPage}/${totalPages} (${rows.length} kerjaan)`;
+}
+function wkPrevPage(){ if(wkPage>1){wkPage--;renderWkTable();} }
+function wkNextPage(){ const rows=wkTableRows();const totalPages=Math.max(1,Math.ceil(rows.length/WK_PAGE_SIZE)); if(wkPage<totalPages){wkPage++;renderWkTable();} }
+
+// ── PROJECT AKTIF: progress selalu computed dari task oleh backend, bukan input manual ──
+function renderWkProjects(){
+  const el=document.getElementById('wk-projects-grid');
+  if(!el)return;
+  let list=wkProjects.filter(p=>p.status!=='selesai');
+  if(wkCategoryFilter) list=list.filter(p=>p.category_id===wkCategoryFilter);
+  if(!list.length){ el.innerHTML='<div class="loading">Belum ada project berjalan.</div>'; return; }
+  el.innerHTML=list.map(p=>{
+    const pct=Math.round(p.progress_pct||0);
+    const st=WK_STATUS_META[p.status]||WK_STATUS_META.belum_mulai;
+    return `<div class="goal-card">
+      <div class="goal-card-top">
+        <div>
+          <div class="goal-title">${escHtml(p.name)}</div>
+          <div class="goal-meta"><span>${ico('calendar',12)}${wkFmtDeadline(p.deadline)}</span><span>${p.completed_tasks||0}/${p.total_tasks||0} task</span></div>
+        </div>
+        <span class="badge ${st.cls}">${st.label}</span>
+      </div>
+      <div class="goal-progress-row">
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:var(--indigo);"></div></div>
+        <span class="goal-progress-pct">${pct}%</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── PRODUKTIVITAS ──
+function renderWkProductivityPeriodToggle(){
+  const el=document.getElementById('wk-prod-period');
+  if(!el)return;
+  const opts=[{k:'week',l:'Minggu'},{k:'month',l:'Bulan'}];
+  el.innerHTML=opts.map(o=>`<button class="type-chip ${o.k===wkProdPeriod?'active':''}" onclick="setWkProdPeriod('${o.k}')">${o.l}</button>`).join('');
+}
+function setWkProdPeriod(p){ wkProdPeriod=p; localStorage.setItem('mc_wk_prod_period',p); renderWkProductivityPeriodToggle(); renderWkProductivity(); }
+function renderWkProductivity(){
+  const list=wkScopedTasks();
+  const total=list.length;
+  const done=list.filter(t=>t.status==='selesai').length;
+  const completionRate=total?Math.round(done/total*100):0;
+  const overdue=list.filter(wkIsOverdue).length;
+  const overdueRate=total?Math.round(overdue/total*100):0;
+  const doneWithDate=list.filter(t=>t.status==='selesai'&&t.completed_date);
+  let taskPerDay='0';
+  if(doneWithDate.length){
+    const times=doneWithDate.map(t=>new Date(t.completed_date).getTime());
+    const spanDays=Math.max(1,Math.round((Math.max(...times)-Math.min(...times))/86400000)+1);
+    taskPerDay=(doneWithDate.length/spanDays).toFixed(1);
+  }
+  const el=document.getElementById('wk-productivity-stats');
+  if(el){
+    el.innerHTML=
+      statCard('var(--indigo-light)','var(--indigo)',ico('checkCircle',20),'Total Task',total,'')+
+      statCard('#f0fdf4','#10b981',ico('check',20),'Selesai',done,completionRate+'% completion')+
+      statCard('#eff6ff','#3b82f6',ico('trendingUp',20),'Task/Hari',taskPerDay,'')+
+      statCard('#fef2f2','#ef4444',ico('trendingDown',20),'Overdue Rate',overdueRate+'%','');
+  }
+  const range=periodRange(wkProdPeriod);
+  const days=dateRangeToList(range);
+  const counts=days.map(d=>doneWithDate.filter(t=>ymd(jakartaDateFrom(t.completed_date))===d).length);
+  const labels=days.map(d=>new Date(d+'T00:00:00').toLocaleDateString('id-ID',{day:'numeric',month:'short'}));
+  mkChart('wk-productivity-chart',{
+    type:'bar',
+    data:{labels,datasets:[{data:counts,backgroundColor:'#6366f1',borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}
+  });
+}
+
+// ── WORKSPACE MODAL ──
+function openWkWorkspaceModal(){
+  document.getElementById('wk-workspace-name-input').value='';
+  document.getElementById('wk-workspace-modal').classList.remove('hidden');
+}
+function closeWkWorkspaceModal(){ document.getElementById('wk-workspace-modal').classList.add('hidden'); }
+async function saveWkWorkspaceModal(){
+  const name=document.getElementById('wk-workspace-name-input').value.trim();
+  if(!name){ alert('Nama workspace wajib diisi.'); return; }
+  const btn=document.getElementById('wk-workspace-save-btn');btn.disabled=true;
+  const result=await apiWrite('POST','/workspaces',{name});
+  btn.disabled=false;
+  if(!result)return;
+  wkWorkspaces.push(result);
+  wkWorkspaceId=result.id;
+  localStorage.setItem('mc_workspace_id',wkWorkspaceId);
+  closeWkWorkspaceModal();
+  await loadKerjaanData();
+  renderKerjaanTab();
+}
+
+// ── CATEGORY MANAGEMENT MODAL ──
+function openWkCategoryModal(){
+  renderWkCategoryManageList();
+  document.getElementById('wk-category-modal').classList.remove('hidden');
+}
+function closeWkCategoryModal(){ document.getElementById('wk-category-modal').classList.add('hidden'); }
+function renderWkCategoryManageList(){
+  const el=document.getElementById('wk-category-manage-list');
+  if(!el)return;
+  if(!wkWorkspaceId){ el.innerHTML='<div class="loading">Pilih 1 workspace dulu (bukan "Semua Workspace") buat kelola kategori.</div>'; return; }
+  if(!wkCategories.length){ el.innerHTML='<div class="loading">Belum ada kategori di workspace ini.</div>'; return; }
+  el.innerHTML=wkCategories.map(c=>`
+    <div class="wk-cat-row">
+      <span class="wk-cat-swatch" style="background:${c.color||'#6366f1'};"></span>
+      <span class="wk-cat-icon">${c.icon||''}</span>
+      <span class="wk-cat-name">${escHtml(c.name)}</span>
+      <button class="wk-cat-del" onclick="deleteWkCategory('${c.id}')" title="Hapus kategori">🗑️</button>
+    </div>`).join('');
+}
+async function submitWkCategory(){
+  if(!wkWorkspaceId){ alert('Pilih 1 workspace dulu (bukan "Semua Workspace") buat nambah kategori.'); return; }
+  const name=document.getElementById('wk-cat-name-input').value.trim();
+  if(!name){ alert('Nama kategori wajib diisi.'); return; }
+  const icon=document.getElementById('wk-cat-icon-input').value.trim();
+  const color=document.getElementById('wk-cat-color-input').value;
+  const btn=document.getElementById('wk-cat-save-btn');btn.disabled=true;
+  const result=await apiWrite('POST','/work-categories',{workspace_id:wkWorkspaceId,name,icon,color});
+  btn.disabled=false;
+  if(!result)return;
+  wkCategories.push(result);
+  document.getElementById('wk-cat-name-input').value='';
+  document.getElementById('wk-cat-icon-input').value='';
+  renderWkCategoryManageList();
+  renderWkCategoryFilterDropdown();
+  renderWkCategoryChart();
+}
+async function deleteWkCategory(id){
+  if(!confirm('Hapus kategori ini? Task/project yang pakai kategori ini jadi tanpa kategori (tidak ikut terhapus).'))return;
+  const ok=await apiWrite('DELETE','/work-categories/'+id);
+  if(!ok)return;
+  await loadKerjaanData();
+  renderWkCategoryManageList();
+  renderKerjaanTab();
+}
+
+// ── PROJECT MODAL (create only -- edit/delete stays out of v1 scope) ──
+function populateWkProjectFormDropdowns(){
+  document.getElementById('wk-project-category').innerHTML='<option value="">Tanpa kategori</option>'+wkCategories.map(c=>`<option value="${c.id}">${escHtml(c.name)}</option>`).join('');
+}
+function openWkProjectModal(){
+  if(!wkWorkspaceId){ alert('Pilih 1 workspace dulu (bukan "Semua Workspace") buat nambah project.'); return; }
+  populateWkProjectFormDropdowns();
+  document.getElementById('wk-project-name').value='';
+  document.getElementById('wk-project-desc').value='';
+  document.getElementById('wk-project-priority').value='sedang';
+  document.getElementById('wk-project-category').value='';
+  document.getElementById('wk-project-deadline').value='';
+  document.getElementById('wk-project-modal').classList.remove('hidden');
+}
+function closeWkProjectModal(){ document.getElementById('wk-project-modal').classList.add('hidden'); }
+async function saveWkProjectModal(){
+  const name=document.getElementById('wk-project-name').value.trim();
+  if(!name){ alert('Nama project wajib diisi.'); return; }
+  const data={
+    workspace_id:wkWorkspaceId, name,
+    description:document.getElementById('wk-project-desc').value.trim()||null,
+    priority:document.getElementById('wk-project-priority').value,
+    category_id:document.getElementById('wk-project-category').value||null,
+    deadline:wkLocalInputToIso(document.getElementById('wk-project-deadline').value)
+  };
+  const btn=document.getElementById('wk-project-save-btn');btn.disabled=true;
+  const result=await apiWrite('POST','/work-projects',data);
+  btn.disabled=false;
+  if(!result)return;
+  wkProjects.unshift(result);
+  closeWkProjectModal();
+  renderWkProjects();
+}
+
+// ── TASK CREATE/EDIT MODAL ──
+function populateWkTaskFormDropdowns(){
+  document.getElementById('wk-task-category').innerHTML='<option value="">Tanpa kategori</option>'+wkCategories.map(c=>`<option value="${c.id}">${escHtml(c.name)}</option>`).join('');
+  document.getElementById('wk-task-project').innerHTML='<option value="">Tanpa project</option>'+wkProjects.map(p=>`<option value="${p.id}">${escHtml(p.name)}</option>`).join('');
+}
+function openWkTaskModal(taskId){
+  if(!wkWorkspaceId){ alert('Pilih 1 workspace dulu (bukan "Semua Workspace") buat nambah/edit kerjaan.'); return; }
+  wkModalEditId=taskId||null;
+  const t=taskId?wkTasks.find(x=>x.id===taskId):null;
+  document.getElementById('wk-task-modal-title').textContent=t?'Edit Kerjaan':'＋ Kerjaan Baru';
+  populateWkTaskFormDropdowns();
+  document.getElementById('wk-task-title').value=t?.title||'';
+  document.getElementById('wk-task-desc').value=t?.description||'';
+  document.getElementById('wk-task-status').value=t?.status||'belum_mulai';
+  document.getElementById('wk-task-priority').value=t?.priority||'sedang';
+  document.getElementById('wk-task-category').value=t?.category_id||'';
+  document.getElementById('wk-task-project').value=t?.project_id||'';
+  document.getElementById('wk-task-deadline').value=t?.deadline?wkIsoToLocalInput(t.deadline):'';
+  document.getElementById('wk-task-start').value=t?.start_date||'';
+  document.getElementById('wk-task-notes').value=t?.notes||'';
+  document.getElementById('wk-task-attachment').value=t?.attachment_url||'';
+  document.getElementById('wk-task-tags').value=(t?.tags||[]).join(', ');
+  document.getElementById('wk-task-modal').classList.remove('hidden');
+}
+function closeWkTaskModal(){ document.getElementById('wk-task-modal').classList.add('hidden'); }
+async function saveWkTaskModal(){
+  const title=document.getElementById('wk-task-title').value.trim();
+  if(!title){ alert('Judul kerjaan wajib diisi.'); return; }
+  const tagsRaw=document.getElementById('wk-task-tags').value.trim();
+  const data={
+    workspace_id:wkWorkspaceId,
+    title,
+    description:document.getElementById('wk-task-desc').value.trim()||null,
+    status:document.getElementById('wk-task-status').value,
+    priority:document.getElementById('wk-task-priority').value,
+    category_id:document.getElementById('wk-task-category').value||null,
+    project_id:document.getElementById('wk-task-project').value||null,
+    deadline:wkLocalInputToIso(document.getElementById('wk-task-deadline').value),
+    start_date:document.getElementById('wk-task-start').value||null,
+    notes:document.getElementById('wk-task-notes').value.trim()||null,
+    attachment_url:document.getElementById('wk-task-attachment').value.trim()||null,
+    tags:tagsRaw?tagsRaw.split(',').map(s=>s.trim()).filter(Boolean):[]
+  };
+  const btn=document.getElementById('wk-task-save-btn');btn.disabled=true;
+  let result;
+  if(wkModalEditId){
+    delete data.workspace_id;
+    result=await apiWrite('PATCH','/work-tasks/'+wkModalEditId,data);
+  }else{
+    result=await apiWrite('POST','/work-tasks',data);
+  }
+  btn.disabled=false;
+  if(!result)return;
+  closeWkTaskModal();
+  await loadKerjaanData();
+  renderKerjaanTab();
+}
+
+// ── TASK DETAIL MODAL + ACTIVITY HISTORY ──
+async function openWkTaskDetail(taskId){
+  const t=wkTasks.find(x=>x.id===taskId);
+  if(!t)return;
+  const st=WK_STATUS_META[t.status]||WK_STATUS_META.belum_mulai;
+  const pr=WK_PRIORITY_META[t.priority]||WK_PRIORITY_META.sedang;
+  document.getElementById('wk-detail-title').textContent=t.title;
+  document.getElementById('wk-detail-body').innerHTML=`
+    <div class="wk-detail-badges">
+      <span class="badge ${st.cls}">${st.label}</span>
+      <span class="badge ${pr.cls}">${pr.label}</span>
+      ${wkIsOverdue(t)?'<span class="badge bred">Overdue</span>':''}
+    </div>
+    <div class="wk-detail-grid">
+      <div><b>Category</b><div>${escHtml(wkCategoryName(t.category_id))}</div></div>
+      <div><b>Project</b><div>${escHtml(wkProjectName(t.project_id)||'-')}</div></div>
+      <div><b>Deadline</b><div>${wkFmtDeadline(t.deadline)}</div></div>
+      <div><b>Tanggal Mulai</b><div>${t.start_date||'-'}</div></div>
+      <div><b>Selesai Pada</b><div>${t.completed_date?wkFmtDeadline(t.completed_date):'-'}</div></div>
+      <div><b>Tags</b><div>${(t.tags&&t.tags.length)?t.tags.map(tag=>`<span class="badge bgray">${escHtml(tag)}</span>`).join(' '):'-'}</div></div>
+    </div>
+    ${t.description?`<div class="wk-detail-desc"><b>Deskripsi</b><p>${escHtml(t.description)}</p></div>`:''}
+    ${t.notes?`<div class="wk-detail-desc"><b>Catatan</b><p>${escHtml(t.notes)}</p></div>`:''}
+    ${t.attachment_url?`<div class="wk-detail-desc"><b>Lampiran</b><p><a href="${escHtml(t.attachment_url)}" target="_blank" rel="noopener">${escHtml(t.attachment_url)}</a></p></div>`:''}
+    <div class="wk-detail-actions">
+      <button class="btn-cancel" onclick="closeWkTaskDetail();openWkTaskModal('${t.id}')">Edit</button>
+      <button class="btn-cancel" style="color:#ef4444;" onclick="deleteWkTask('${t.id}')">Hapus</button>
+    </div>
+    <div class="wk-detail-activity-hdr">Activity History</div>
+    <div id="wk-detail-activity"><div class="loading">Loading...</div></div>
+  `;
+  document.getElementById('wk-detail-modal').classList.remove('hidden');
+  const actEl=document.getElementById('wk-detail-activity');
+  try{
+    const r=await fetch(API_BASE+'/work-tasks/'+taskId+'/activity');
+    const j=r.ok?await r.json():{items:[]};
+    if(actEl){
+      actEl.innerHTML=(j.items&&j.items.length)
+        ? j.items.map(a=>`<div class="wk-activity-row"><span class="wk-activity-time">${new Date(a.created_at).toLocaleString('id-ID',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</span><span class="wk-activity-desc">${escHtml(a.description||a.event_type)}</span></div>`).join('')
+        : '<div class="loading">Belum ada activity.</div>';
+    }
+  }catch{ if(actEl)actEl.innerHTML='<div class="loading">Gagal memuat activity.</div>'; }
+}
+function closeWkTaskDetail(){ document.getElementById('wk-detail-modal').classList.add('hidden'); }
+async function deleteWkTask(id){
+  if(!confirm('Hapus kerjaan ini?'))return;
+  const ok=await apiWrite('DELETE','/work-tasks/'+id);
+  if(!ok)return;
+  closeWkTaskDetail();
+  await loadKerjaanData();
+  renderKerjaanTab();
+}
+
 // ── BISNIS TAB (PRD-0007 Bisnis Tracker — Usaha Kuliner, dashboard v1 read-only) ──
 let bizIdeas=[],bizMilestones=[],bizRecipes=[],bizBatches=[],bizStock=[],bizSales=[],bizExpenses=[],bizTargetsData=[];
 let bizPricingCache={},bizExpandedRecipes=new Set();
@@ -4397,7 +5254,7 @@ function buildDashActivity(){} // legacy, kept for compat
 // ── TAB SWITCHING ──
 const pageMeta={
   dashboard:'Dashboard',calendar:'Calendar',tracker:'Time Tracker',
-  health:'Health',finance:'Finance',english:'Language',investment:'Investment',content:'Content',learning:'Learning',goals:'Goals',business:'Bisnis'
+  health:'Health',finance:'Finance',english:'Language',investment:'Investment',content:'Content',learning:'Learning',goals:'Goals',business:'Bisnis',kerjaan:'Tracking Kerjaan'
 };
 
 function switchTab(name,btn){
@@ -4422,7 +5279,7 @@ function closeSidebar(){
 // ── LOAD ALL ──
 async function loadAll(){
   renderAllPeriodToggles();
-  await Promise.all([loadTasks(),loadHealth(),loadFinance(),loadEnglish(),loadInvestment(),loadCalendar(),loadContent(),loadLearningDocuments(),loadGoals(),loadBusiness()]);
+  await Promise.all([loadTasks(),loadHealth(),loadFinance(),loadEnglish(),loadInvestment(),loadCalendar(),loadContent(),loadLearningDocuments(),loadGoals(),loadBusiness(),loadKerjaan()]);
   buildDashboard();
   renderTracker();
 }
