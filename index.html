@@ -32,11 +32,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .nav-item.active{background:var(--indigo-light);color:var(--indigo);font-weight:600;}
 .nav-icon{width:20px;text-align:center;font-size:15px;flex-shrink:0;}
 .nav-spacer{flex:1;}
-.sidebar-footer{padding:14px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;}
-.avatar{width:36px;height:36px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;position:relative;}
-.avatar-dot{position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;background:#10b981;border-radius:50%;border:2px solid #fff;}
-.footer-name{font-size:13px;font-weight:600;color:var(--text);}
-.footer-role{font-size:11px;color:var(--text2);}
 
 /* MAIN */
 .main{flex:1;display:flex;flex-direction:column;overflow-x:hidden;min-width:0;}
@@ -778,10 +773,7 @@ tr:hover td{background:#f9fafb;}
     <div class="nav-item" onclick="switchTab('business',this)"><span class="nav-icon">🏪</span> Bisnis</div>
   </div>
   <div class="nav-spacer"></div>
-  <div class="sidebar-footer">
-    <div class="avatar">AP<div class="avatar-dot"></div></div>
-    <div><div class="footer-name">Aldy Permadi</div><div class="footer-role">S&D Section Head</div></div>
-  </div>
+
 </aside>
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 
