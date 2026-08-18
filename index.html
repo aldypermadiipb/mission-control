@@ -1001,7 +1001,10 @@ tr:hover td{background:var(--bg3);}
               <div style="flex:1;min-width:0;">
                 <div id="pomo-mini-mode-label" style="font-size:13px;font-weight:700;color:var(--text);">🎯 Fokus</div>
                 <div id="pomo-mini-session-label" style="font-size:11px;color:var(--text3);margin-top:1px;">Sesi 1 dari 4</div>
-                <button class="btn-save" id="pomo-mini-toggle-btn" onclick="pomodoroToggle()" style="margin-top:8px;padding:6px 14px;font-size:12px;">▶ Mulai</button>
+                <div style="display:flex;gap:6px;margin-top:8px;">
+                  <button class="btn-save" id="pomo-mini-toggle-btn" onclick="pomodoroToggle()" style="padding:6px 14px;font-size:12px;">▶ Mulai</button>
+                  <button class="btn-cancel" onclick="openPomoSettingsModal()" style="padding:6px 10px;font-size:12px;" title="Atur durasi">⚙️</button>
+                </div>
               </div>
             </div>
           </div>
@@ -1139,6 +1142,7 @@ tr:hover td{background:var(--bg3);}
           <button class="btn-save" id="pomo-toggle-btn" onclick="pomodoroToggle()">▶ Mulai</button>
           <button class="btn-cancel" onclick="pomodoroReset()">↺ Reset</button>
           <button class="btn-cancel" onclick="pomodoroSkip()">⏭ Lewati</button>
+          <button class="btn-cancel" onclick="openPomoSettingsModal()" title="Atur durasi">⚙️</button>
         </div>
       </div>
 
@@ -2199,6 +2203,38 @@ tr:hover td{background:var(--bg3);}
     </div>
   </div>
 </div>
+
+<!-- POMODORO SETTINGS MODAL -->
+<div class="modal-overlay hidden" id="pomo-settings-modal" onclick="if(event.target===this)closePomoSettingsModal()">
+  <div class="modal-box" style="max-width:360px;">
+    <div class="modal-title">⚙️ Atur Durasi Pomodoro</div>
+    <div class="form-group">
+      <label class="form-label">Fokus (menit)</label>
+      <input type="number" class="form-input" id="pomo-set-work" min="1" max="180" value="25">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Istirahat Pendek (menit)</label>
+        <input type="number" class="form-input" id="pomo-set-short" min="1" max="60" value="5">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Istirahat Panjang (menit)</label>
+        <input type="number" class="form-input" id="pomo-set-long" min="1" max="120" value="15">
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">Simpan otomatis me-reset timer ke awal (Fokus, Sesi 1).</div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closePomoSettingsModal()">Batal</button>
+      <button class="btn-save" onclick="savePomoSettings()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Alarm Pomodoro -- file MP3 asli (bukan file pendek, jadi diputar loop sampai
+     dimatiin manual, bukan sekali putus, dan gak di-embed base64 ke HTML biar
+     file dashboard-nya gak bengkak 700KB+ tiap kali dibuka). Perlu ikut ke-upload
+     ke folder yang sama kayak index.html di GitHub. -->
+<audio id="pomo-alarm-audio" src="Sakedik_Deui.mp3" preload="auto"></audio>
 
 <script>
 const API_BASE='https://api.aldypermadi.com';
@@ -4910,10 +4946,18 @@ async function sendAiAssistantQuestion(){
   input.focus();
 }
 
-// ── POMODORO TIMER (Time Tracker tab) ──
-const POMO_DURATIONS={work:25*60,short_break:5*60,long_break:15*60};
+// ── POMODORO TIMER (Time Tracker tab + Dashboard mini widget) ──
+let POMO_DURATIONS={work:25*60,short_break:5*60,long_break:15*60};
+(function pomoLoadDurations(){
+  const saved=localStorage.getItem('mc_pomo_durations');
+  if(!saved)return;
+  try{
+    const d=JSON.parse(saved);
+    if(d.work>0&&d.short_break>0&&d.long_break>0)POMO_DURATIONS={work:d.work,short_break:d.short_break,long_break:d.long_break};
+  }catch(e){}
+})();
 const POMO_RING_CIRC=2*Math.PI*40; // matches r=40 in the markup
-let pomoMode='work',pomoSecondsLeft=POMO_DURATIONS.work,pomoRunning=false,pomoInterval=null,pomoSessionCount=1,pomoAudioCtx=null;
+let pomoMode='work',pomoSecondsLeft=POMO_DURATIONS.work,pomoRunning=false,pomoInterval=null,pomoSessionCount=1,pomoAlarmTriggeredThisPhase=false;
 
 function pomoModeLabel(mode){ return {work:'🎯 Fokus',short_break:'☕ Istirahat',long_break:'🛋️ Istirahat Panjang'}[mode]; }
 function pomoModeColor(mode){ return {work:'#6366f1',short_break:'#10b981',long_break:'#06b6d4'}[mode]; }
@@ -4930,7 +4974,7 @@ const POMO_WIDGETS=[
 function renderPomodoro(){
   const pct=pomoSecondsLeft/POMO_DURATIONS[pomoMode];
   const sessionText=pomoMode==='work' ? `Sesi ${pomoSessionCount} dari 4` : 'Istirahat sebentar dulu';
-  const toggleText=pomoRunning?'⏸ Jeda':'▶ Mulai';
+  const toggleText=pomoAlarmPlaying?'🔇 Matikan Alarm':(pomoRunning?'⏸ Jeda':'▶ Mulai');
   POMO_WIDGETS.forEach(w=>{
     const timeEl=document.getElementById(w.time);
     if(!timeEl)return; // widget not in DOM (shouldn't happen, but harmless no-op if it's ever removed)
@@ -4941,50 +4985,57 @@ function renderPomodoro(){
     ring.style.stroke=pomoModeColor(pomoMode);
     ring.setAttribute('stroke-dashoffset',(w.ringCirc*(1-pct)).toFixed(1));
     const btn=document.getElementById(w.toggle);
-    if(btn)btn.textContent=toggleText;
+    if(btn){
+      btn.textContent=toggleText;
+      btn.style.background=pomoAlarmPlaying?'var(--red)':'';
+    }
   });
 }
 
-function pomoGetAudioCtx(){
-  // Created lazily on first Start click (a real user gesture) and reused for the
-  // alarm later -- browsers block AudioContext playback without a prior user
-  // gesture, and the alarm itself fires from a setInterval callback, not a click.
-  if(!pomoAudioCtx)pomoAudioCtx=new (window.AudioContext||window.webkitAudioContext)();
-  if(pomoAudioCtx.state==='suspended')pomoAudioCtx.resume();
-  return pomoAudioCtx;
-}
+// Alarm (file MP3 asli, bukan synthesized beep) mulai bunyi otomatis begitu sisa
+// waktu fase nyampe 30 detik -- BUKAN nunggu fase bener-bener abis di detik 0 --
+// dan terus LOOP nembus pergantian fase sampai dimatiin manual (tombol toggle
+// berubah jadi "Matikan Alarm" selama ini true), persis kayak alarm HP beneran.
+// Ada safety timeout 2 menit biar gak bunyi selamanya kalau kelupaan dimatiin.
+let pomoAlarmPlaying=false,pomoAlarmSafetyTimeout=null;
 function pomoPlayAlarm(){
+  const audio=document.getElementById('pomo-alarm-audio');
+  if(!audio)return;
   try{
-    const ctx=pomoGetAudioCtx();
-    const beep=(t,freq,dur)=>{
-      const osc=ctx.createOscillator(),gain=ctx.createGain();
-      osc.type='sine';osc.frequency.value=freq;
-      gain.gain.setValueAtTime(0.0001,t);
-      gain.gain.exponentialRampToValueAtTime(0.3,t+0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001,t+dur);
-      osc.connect(gain);gain.connect(ctx.destination);
-      osc.start(t);osc.stop(t+dur+0.02);
-    };
-    const now=ctx.currentTime;
-    beep(now,880,0.18); beep(now+0.25,880,0.18); beep(now+0.5,1046,0.32);
+    audio.currentTime=0;
+    audio.loop=true;
+    audio.play().catch(e=>console.warn('Pomodoro alarm gagal diputar:',e));
+    pomoAlarmPlaying=true;
+    clearTimeout(pomoAlarmSafetyTimeout);
+    pomoAlarmSafetyTimeout=setTimeout(pomoStopAlarm,120000);
+    renderPomodoro();
   }catch(e){ console.warn('Pomodoro alarm gagal main:',e); }
 }
-
-function pomodoroToggle(){ pomoRunning?pomodoroPause():pomodoroStart(); }
+function pomoStopAlarm(){
+  const audio=document.getElementById('pomo-alarm-audio');
+  if(audio){ audio.pause(); audio.currentTime=0; audio.loop=false; }
+  pomoAlarmPlaying=false;
+  clearTimeout(pomoAlarmSafetyTimeout);
+  renderPomodoro();
+}
+function pomodoroToggle(){
+  if(pomoAlarmPlaying){ pomoStopAlarm(); return; } // klik pertama pas alarm bunyi cuma matiin alarm, gak sekalian toggle timer
+  pomoRunning?pomodoroPause():pomodoroStart();
+}
 function pomodoroStart(){
   if(pomoRunning)return;
-  pomoGetAudioCtx(); // create/resume within this click's user-gesture context
   pomoRunning=true;
   pomoInterval=setInterval(()=>{
     pomoSecondsLeft--;
-    if(pomoSecondsLeft<=0){ pomoPlayAlarm(); pomodoroAdvancePhase(); }
+    if(pomoSecondsLeft<=30&&!pomoAlarmTriggeredThisPhase){ pomoAlarmTriggeredThisPhase=true; pomoPlayAlarm(); }
+    if(pomoSecondsLeft<=0)pomodoroAdvancePhase();
     renderPomodoro();
   },1000);
   renderPomodoro();
 }
 function pomodoroPause(){ pomoRunning=false; clearInterval(pomoInterval); renderPomodoro(); }
-function pomodoroReset(){ pomodoroPause(); pomoMode='work'; pomoSessionCount=1; pomoSecondsLeft=POMO_DURATIONS.work; renderPomodoro(); }
-function pomodoroSkip(){ pomodoroAdvancePhase(); renderPomodoro(); }
+function pomodoroReset(){ pomoStopAlarm(); pomodoroPause(); pomoMode='work'; pomoSessionCount=1; pomoSecondsLeft=POMO_DURATIONS.work; pomoAlarmTriggeredThisPhase=false; renderPomodoro(); }
+function pomodoroSkip(){ pomoStopAlarm(); pomodoroAdvancePhase(); renderPomodoro(); }
 function pomodoroAdvancePhase(){
   const wasRunning=pomoRunning;
   pomodoroPause();
@@ -4995,7 +5046,27 @@ function pomodoroAdvancePhase(){
     pomoMode='work';
   }
   pomoSecondsLeft=POMO_DURATIONS[pomoMode];
+  pomoAlarmTriggeredThisPhase=false;
   if(wasRunning)pomodoroStart();
+}
+
+// ── POMODORO SETTINGS (durasi custom, kesimpen ke localStorage) ──
+function openPomoSettingsModal(){
+  document.getElementById('pomo-set-work').value=POMO_DURATIONS.work/60;
+  document.getElementById('pomo-set-short').value=POMO_DURATIONS.short_break/60;
+  document.getElementById('pomo-set-long').value=POMO_DURATIONS.long_break/60;
+  document.getElementById('pomo-settings-modal').classList.remove('hidden');
+}
+function closePomoSettingsModal(){ document.getElementById('pomo-settings-modal').classList.add('hidden'); }
+function savePomoSettings(){
+  const work=parseInt(document.getElementById('pomo-set-work').value,10);
+  const short=parseInt(document.getElementById('pomo-set-short').value,10);
+  const long=parseInt(document.getElementById('pomo-set-long').value,10);
+  if(!(work>0)||!(short>0)||!(long>0)){ alert('Durasi harus angka positif (menit).'); return; }
+  POMO_DURATIONS={work:work*60,short_break:short*60,long_break:long*60};
+  localStorage.setItem('mc_pomo_durations',JSON.stringify(POMO_DURATIONS));
+  closePomoSettingsModal();
+  pomodoroReset(); // safest way to apply new durations -- full reset back to work/session 1
 }
 
 async function createTask(data){
@@ -5151,7 +5222,12 @@ function renderTracker(){
 
   // Kanban columns
   ['draft','in_progress','review','done'].forEach(status=>{
-    const ct=tasks.filter(t=>t.status===status);
+    let ct=tasks.filter(t=>t.status===status);
+    // Done tasks tetap kesimpen (dipakai buat productivity score, weekly chart, dst)
+    // tapi gak perlu numpuk keliatan di board selamanya -- kolom Done cuma nampilin
+    // yang selesai dalam periode aktif (toggle Today/Week/Month/Year di atas), sama
+    // persis kayak filter yang udah dipakai stat "Done (period)".
+    if(status==='done')ct=ct.filter(t=>(t.updated_at||'').slice(0,10)>=pRange.start&&(t.updated_at||'').slice(0,10)<=pRange.end);
     const cntEl=$('cnt-'+status);if(cntEl)cntEl.textContent=ct.length;
     const container=$('cards-'+status);if(!container)return;
     container.innerHTML=ct.map(t=>{
