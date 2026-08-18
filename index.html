@@ -4999,10 +4999,11 @@ function renderPomodoro(){
 }
 
 // Alarm (file MP3 asli, bukan synthesized beep) mulai bunyi otomatis begitu sisa
-// waktu fase nyampe 30 detik -- BUKAN nunggu fase bener-bener abis di detik 0 --
-// dan terus LOOP nembus pergantian fase sampai dimatiin manual (tombol toggle
-// berubah jadi "Matikan Alarm" selama ini true), persis kayak alarm HP beneran.
-// Ada safety timeout 2 menit biar gak bunyi selamanya kalau kelupaan dimatiin.
+// waktu fase FOKUS nyampe 30 detik terakhir -- loop terus SAMPAI 30 detik itu abis
+// (fase pindah ke istirahat), lalu berhenti sendiri -- BUKAN nunggu dimatiin manual.
+// Tombol "Matikan Alarm" (toggle button berubah teks selama ini true) tetap ada
+// buat matiin lebih awal kalau mau. Safety timeout 2 menit tetap dipasang sebagai
+// jaga-jaga kalau interval-nya kenapa-kenapa dan gagal auto-stop di detik 0.
 let pomoAlarmPlaying=false,pomoAlarmSafetyTimeout=null;
 function pomoPlayAlarm(){
   const audio=document.getElementById('pomo-alarm-audio');
@@ -5033,8 +5034,10 @@ function pomodoroStart(){
   pomoRunning=true;
   pomoInterval=setInterval(()=>{
     pomoSecondsLeft--;
-    if(pomoSecondsLeft<=30&&!pomoAlarmTriggeredThisPhase){ pomoAlarmTriggeredThisPhase=true; pomoPlayAlarm(); }
-    if(pomoSecondsLeft<=0)pomodoroAdvancePhase();
+    // Alarm cuma buat fase FOKUS (nandain waktu kerja mepet abis) -- pas istirahat
+    // sengaja gak dibunyiin, namanya juga istirahat, gak perlu diganggu alarm.
+    if(pomoMode==='work'&&pomoSecondsLeft<=30&&!pomoAlarmTriggeredThisPhase){ pomoAlarmTriggeredThisPhase=true; pomoPlayAlarm(); }
+    if(pomoSecondsLeft<=0){ pomoStopAlarm(); pomodoroAdvancePhase(); }
     renderPomodoro();
   },1000);
   renderPomodoro();
