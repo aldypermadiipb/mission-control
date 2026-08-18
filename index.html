@@ -2949,9 +2949,15 @@ function renderEnglishView(){
   }
   const filtered=filteredVocab();
   const cats=renderLangHeroStats();
-  mkChart('chartEnglish',{type:'bar',data:{labels:Object.keys(cats),datasets:[{label:'Words',data:Object.values(cats),backgroundColor:PA.slice(0,Object.keys(cats).length),borderColor:P,borderWidth:1,borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:CHART_TICK_COLOR},grid:{display:false}},y:{ticks:{color:CHART_TICK_COLOR,stepSize:1},grid:{color:CHART_GRID_COLOR}}}}});
+  // Chart cuma nampilin 8 kategori terbanyak biar gak numpuk/ganggu kalau kategori vocab
+  // udah banyak -- stat "Kategori" di atas (renderLangHeroStats) tetap ngitung SEMUA kategori,
+  // cuma chart-nya yang di-cap.
+  const catsTop=Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  mkChart('chartEnglish',{type:'bar',data:{labels:catsTop.map(c=>c[0]),datasets:[{label:'Words',data:catsTop.map(c=>c[1]),backgroundColor:PA.slice(0,catsTop.length),borderColor:P,borderWidth:1,borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:CHART_TICK_COLOR},grid:{display:false}},y:{ticks:{color:CHART_TICK_COLOR,stepSize:1},grid:{color:CHART_GRID_COLOR}}}}});
   if(!filtered.length){document.getElementById('english-content').innerHTML='<div class="empty"><div class="emoji">📚</div>Belum ada vocab.</div>';return;}
-  document.getElementById('english-content').innerHTML='<div class="vocab-grid">'+filtered.slice().reverse().slice(0,30).map(r=>`<div class="vocab-card"><div class="vocab-word">${r.word||''}${vocabLangOf(r)!=='EN'?` <span style="font-size:9px;color:var(--text3);font-weight:600;">${LANG_FLAG[vocabLangOf(r)]||''} ${vocabLangOf(r)}</span>`:''}</div><div class="vocab-trans">${r.translation||''}</div>${r.example?`<div class="vocab-ex">${r.example}</div>`:''}</div>`).join('')+'</div>';
+  // Vocab Bank di-cap 12 kata terbaru (dulunya 30 -- kebanyakan, numpuk & ganggu). Export
+  // Excel di atas tetap ngambil SEMUA vocab (gak kena cap ini), cap-nya cuma buat tampilan.
+  document.getElementById('english-content').innerHTML='<div class="vocab-grid">'+filtered.slice().reverse().slice(0,12).map(r=>`<div class="vocab-card"><div class="vocab-word">${r.word||''}${vocabLangOf(r)!=='EN'?` <span style="font-size:9px;color:var(--text3);font-weight:600;">${LANG_FLAG[vocabLangOf(r)]||''} ${vocabLangOf(r)}</span>`:''}</div><div class="vocab-trans">${r.translation||''}</div>${r.example?`<div class="vocab-ex">${r.example}</div>`:''}</div>`).join('')+'</div>';
 }
 function setVocabLangFilter(l){
   currentVocabLangFilter=l;
@@ -5223,13 +5229,17 @@ function renderTracker(){
   // Kanban columns
   ['draft','in_progress','review','done'].forEach(status=>{
     let ct=tasks.filter(t=>t.status===status);
-    // Done tasks tetap kesimpen (dipakai buat productivity score, weekly chart, dst)
-    // tapi gak perlu numpuk keliatan di board selamanya -- kolom Done cuma nampilin
-    // yang selesai dalam periode aktif (toggle Today/Week/Month/Year di atas), sama
-    // persis kayak filter yang udah dipakai stat "Done (period)".
+    // Done tasks tetap kesimpen penuh di DB (dipakai buat productivity score, weekly
+    // chart, stat "Done (period)", dst) -- tapi kartunya sengaja GAK ditampilin satu-satu
+    // di board (numpuk & ganggu). Badge count di header kolom tetap nunjukin jumlah
+    // (di-scope ke periode aktif Today/Week/Month/Year), body kolomnya sendiri dikosongin.
     if(status==='done')ct=ct.filter(t=>(t.updated_at||'').slice(0,10)>=pRange.start&&(t.updated_at||'').slice(0,10)<=pRange.end);
     const cntEl=$('cnt-'+status);if(cntEl)cntEl.textContent=ct.length;
     const container=$('cards-'+status);if(!container)return;
+    if(status==='done'){
+      container.innerHTML=ct.length?`<div class="empty" style="padding:16px 8px;font-size:12px;">✅ ${ct.length} task selesai (${PERIOD_LABELS[globalPeriod]}) — lihat di Productivity Analytics ↓</div>`:'';
+      return;
+    }
     container.innerHTML=ct.map(t=>{
       const est=t.estimated_minutes?`<div class="kc-est">⏱ ${t.estimated_minutes} mnt</div>`:'';
       const cat=t.category?`<span class="cat-badge">${t.category}</span>`:'';
