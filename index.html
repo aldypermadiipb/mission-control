@@ -1225,8 +1225,9 @@ tr:hover td{background:var(--bg3);}
           </div>
           <div class="panel">
             <div class="panel-header"><span class="panel-title">Estimasi by Category</span></div>
-            <div style="display:flex;align-items:center;justify-content:center;height:210px;">
-              <canvas id="chartTrackerDonut" style="max-height:200px;max-width:200px;"></canvas>
+            <div style="display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;">
+              <div style="height:180px;width:180px;flex-shrink:0;"><canvas id="chartTrackerDonut"></canvas></div>
+              <div id="tracker-donut-legend" style="flex:1;min-width:140px;"></div>
             </div>
           </div>
         </div>
@@ -2797,6 +2798,7 @@ function finWeekStartStr(){
   return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
 }
 let finTxnExpanded=false;
+let ttDoneExpanded=false;
 
 async function loadFinance(){
   [financeData,targetsData]=await Promise.all([fetchSheet('Finance'),fetchSheet('Targets')]);
@@ -5230,40 +5232,44 @@ function renderTracker(){
   if(ttProgressEl)ttProgressEl.textContent=scaledTaskTarget?`${donePeriod.length} / ${scaledTaskTarget}`:'belum diset';
 
   // Kanban columns
+  const cardHtml=t=>{
+    const est=t.estimated_minutes?`<div class="kc-est">⏱ ${t.estimated_minutes} mnt</div>`:'';
+    const cat=t.category?`<span class="cat-badge">${t.category}</span>`:'';
+    const dl=fmtDeadline(t.deadline);
+    const borderCol=t.priority==='high'?'#ef4444':t.priority==='low'?'var(--text3)':'#3b82f6';
+    return`<div class="kcard" style="border-left-color:${borderCol}"
+        draggable="true"
+        ondragstart="draggedTaskId=${t.id};this.classList.add('dragging')"
+        ondragend="this.classList.remove('dragging')">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:4px;margin-bottom:4px;">
+        <div class="kc-title" style="flex:1;">${t.title||'—'}</div>
+        ${priBadge(t.priority)}
+      </div>
+      ${cat?`<div style="margin-bottom:3px;">${cat}</div>`:''}
+      ${est}${dl}
+      <div class="kc-actions" style="margin-top:6px;">
+        <button class="kc-btn kc-next" onclick="openTaskModal(${t.id},null)" style="background:#eef2ff;color:#6366f1;">✏️ Edit</button>
+        <button class="kc-btn kc-del" onclick="deleteTask(${t.id})">✕ Del</button>
+      </div>
+    </div>`;
+  };
   ['draft','in_progress','review','done'].forEach(status=>{
     let ct=tasks.filter(t=>t.status===status);
     // Done tasks tetap kesimpen penuh di DB (dipakai buat productivity score, weekly
-    // chart, stat "Done (period)", dst) -- tapi kartunya sengaja GAK ditampilin satu-satu
-    // di board (numpuk & ganggu). Badge count di header kolom tetap nunjukin jumlah
-    // (di-scope ke periode aktif Today/Week/Month/Year), body kolomnya sendiri dikosongin.
+    // chart, stat "Done (period)", dst) -- tapi defaultnya GAK ditampilin satu-satu di
+    // board (numpuk & ganggu). Badge count di header kolom tetap nunjukin jumlah (di-scope
+    // ke periode aktif Today/Week/Month/Year); klik ringkasannya buat buka/tutup daftar
+    // lengkapnya kapan pun butuh liat detail-nya (state `ttDoneExpanded`).
     if(status==='done')ct=ct.filter(t=>(t.updated_at||'').slice(0,10)>=pRange.start&&(t.updated_at||'').slice(0,10)<=pRange.end);
     const cntEl=$('cnt-'+status);if(cntEl)cntEl.textContent=ct.length;
     const container=$('cards-'+status);if(!container)return;
     if(status==='done'){
-      container.innerHTML=ct.length?`<div class="empty" style="padding:16px 8px;font-size:12px;">✅ ${ct.length} task selesai (${PERIOD_LABELS[globalPeriod]}) — lihat di Productivity Analytics ↓</div>`:'';
+      if(!ct.length){container.innerHTML='';return;}
+      const summary=`<div class="empty" style="padding:12px 8px;font-size:12px;cursor:pointer;" onclick="ttDoneExpanded=!ttDoneExpanded;renderTracker();">✅ ${ct.length} task selesai (${PERIOD_LABELS[globalPeriod]}) — ${ttDoneExpanded?'sembunyikan ▲':'lihat daftar ▾'}</div>`;
+      container.innerHTML=summary+(ttDoneExpanded?ct.map(cardHtml).join(''):'');
       return;
     }
-    container.innerHTML=ct.map(t=>{
-      const est=t.estimated_minutes?`<div class="kc-est">⏱ ${t.estimated_minutes} mnt</div>`:'';
-      const cat=t.category?`<span class="cat-badge">${t.category}</span>`:'';
-      const dl=fmtDeadline(t.deadline);
-      const borderCol=t.priority==='high'?'#ef4444':t.priority==='low'?'var(--text3)':'#3b82f6';
-      return`<div class="kcard" style="border-left-color:${borderCol}"
-          draggable="true"
-          ondragstart="draggedTaskId=${t.id};this.classList.add('dragging')"
-          ondragend="this.classList.remove('dragging')">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:4px;margin-bottom:4px;">
-          <div class="kc-title" style="flex:1;">${t.title||'—'}</div>
-          ${priBadge(t.priority)}
-        </div>
-        ${cat?`<div style="margin-bottom:3px;">${cat}</div>`:''}
-        ${est}${dl}
-        <div class="kc-actions" style="margin-top:6px;">
-          <button class="kc-btn kc-next" onclick="openTaskModal(${t.id},null)" style="background:#eef2ff;color:#6366f1;">✏️ Edit</button>
-          <button class="kc-btn kc-del" onclick="deleteTask(${t.id})">✕ Del</button>
-        </div>
-      </div>`;
-    }).join('');
+    container.innerHTML=ct.map(cardHtml).join('');
   });
 
   buildTrackerAnalytics();
@@ -5370,17 +5376,30 @@ function buildTrackerAnalytics(){
       plugins:{legend:{position:'top',labels:{color:CHART_LEGEND_COLOR,font:{size:10},boxWidth:10}}},
       scales:{x:{stacked:true,ticks:{color:CHART_TICK_COLOR},grid:{display:false}},y:{stacked:true,ticks:{color:CHART_TICK_COLOR,stepSize:1},grid:{color:CHART_GRID_COLOR}}}}});
 
-  // Donut by category (estimated_minutes)
+  // Donut by category (estimated_minutes) -- angka/persentase ditulis langsung di legend
+  // custom di sebelahnya (bukan cuma keliatan pas hover), soalnya itu yang paling kepake.
   const catEst={};
   tasksData.forEach(t=>{const c=t.category||'General';catEst[c]=(catEst[c]||0)+(parseInt(t.estimated_minutes)||0);});
   const catEntries=Object.entries(catEst).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+  const donutLegendEl=document.getElementById('tracker-donut-legend');
   if(catEntries.length){
+    const catColors=P.slice(0,catEntries.length);
     mkChart('chartTrackerDonut',{type:'doughnut',
-      data:{labels:catEntries.map(([c])=>c),datasets:[{data:catEntries.map(([,v])=>v),backgroundColor:P.slice(0,catEntries.length),borderColor:CHART_CARD_BG,borderWidth:2}]},
-      options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{color:CHART_LEGEND_COLOR,font:{size:10}}}}}});
+      data:{labels:catEntries.map(([c])=>c),datasets:[{data:catEntries.map(([,v])=>v),backgroundColor:catColors,borderColor:CHART_CARD_BG,borderWidth:2}]},
+      options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false}}}});
+    const totalMin=catEntries.reduce((s,[,v])=>s+v,0);
+    if(donutLegendEl)donutLegendEl.innerHTML=catEntries.map(([c,v],i)=>{
+      const pct=totalMin?Math.round(v/totalMin*100):0;
+      const mnTxt=v>=60?Math.floor(v/60)+'j '+(v%60)+'m':v+'m';
+      return`<div style="display:flex;align-items:center;gap:6px;font-size:11px;margin-bottom:6px;">
+        <span style="width:9px;height:9px;border-radius:50%;background:${catColors[i]};flex-shrink:0;"></span>
+        <span style="flex:1;color:var(--text);">${c}</span>
+        <span style="color:var(--text2);font-weight:600;">${mnTxt} · ${pct}%</span>
+      </div>`;
+    }).join('');
   }else{
     const dc=document.getElementById('chartTrackerDonut');
-    if(dc)dc.parentElement.innerHTML='<div class="empty"><div class="emoji">📊</div>Belum ada estimasi.</div>';
+    if(dc)dc.parentElement.parentElement.innerHTML='<div class="empty"><div class="emoji">📊</div>Belum ada estimasi.</div>';
   }
 
   // Top activities
