@@ -798,6 +798,7 @@ tr:hover td{background:var(--bg3);}
   <div class="nav-group">
     <div class="nav-label">WORK</div>
     <div class="nav-item" onclick="switchTab('kerjaan',this)"><span class="nav-icon">🗂️</span> Tracking Kerjaan</div>
+    <div class="nav-item" onclick="switchTab('schedule',this)"><span class="nav-icon">⏰</span> Jadwal Harian</div>
   </div>
   <div class="nav-group">
     <div class="nav-label">GROWTH</div>
@@ -1789,6 +1790,33 @@ tr:hover td{background:var(--bg3);}
           </div>
           <div id="growth-reflection-log"><div class="loading">Loading...</div></div>
         </div>
+      </div>
+    </div>
+
+    <div id="tab-schedule" class="section">
+      <div class="panel">
+        <div class="sec-hdr">
+          <div><div class="sec-hdr-title">Jadwal Harian</div><div class="sec-hdr-sub">Habit 3 — atur blok waktu buat tanggal yang dipilih (default: besok).</div></div>
+          <input type="date" class="form-input" id="ds-date-input" style="width:160px;" onchange="setDsDate(this.value)">
+        </div>
+
+        <div id="ds-suggestions-wrap" style="margin-bottom:12px;"></div>
+
+        <div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;align-items:flex-end;">
+          <div>
+            <label class="form-label" style="font-size:11px;">Mulai</label>
+            <input type="time" class="form-input" id="ds-start-input" style="width:110px;">
+          </div>
+          <div>
+            <label class="form-label" style="font-size:11px;">Selesai</label>
+            <input type="time" class="form-input" id="ds-end-input" style="width:110px;">
+          </div>
+          <input type="text" class="form-input" id="ds-title-input" placeholder="Kegiatan..." style="flex:1;min-width:160px;">
+          <button class="btn-save" id="ds-submit-btn" onclick="submitDsBlock()">+ Tambah</button>
+          <span class="hp-link" id="ds-cancel-edit" style="display:none;" onclick="cancelDsEdit()">Batal edit</span>
+        </div>
+
+        <div id="ds-blocks-list"><div class="loading">Loading...</div></div>
       </div>
     </div>
 
@@ -3975,6 +4003,122 @@ function renderGrowthReflectionLogCard(){
     <div style="font-size:13px;">${escHtml(r.question||'(pertanyaan tidak diketahui)')}</div>
   </div>`).join('');
 }
+
+// ── JADWAL HARIAN (Habit 3 execution: time-blocked plan for one day) ──
+// Separate from `calendar` (appointments/events, gcal-synced) -- this is a
+// self-directed day plan, no recurrence, no sync. Suggestions are just a
+// convenience prefill for the add-form; nothing is auto-added without an
+// explicit click + Tambah.
+let dsDate=null, dsBlocks=[], dsSuggestions=[];
+let dsEditingId=null, dsPendingSource='manual', dsPendingSourceId=null;
+
+function dsTomorrowStr(){
+  const d=new Date(); d.setDate(d.getDate()+1);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+async function loadDailySchedule(){
+  if(!dsDate)dsDate=dsTomorrowStr();
+  const dateInput=document.getElementById('ds-date-input');
+  if(dateInput)dateInput.value=dsDate;
+  await refreshDsData();
+}
+async function refreshDsData(){
+  const [bR,sR]=await Promise.all([fetchApi('/daily-schedule?date='+dsDate),fetchApi('/daily-schedule/suggestions?date='+dsDate)]);
+  dsBlocks=bR?(bR.items||[]):[];
+  dsSuggestions=sR?(sR.items||[]):[];
+  renderDsTab();
+}
+async function setDsDate(v){
+  dsDate=v;
+  cancelDsEdit();
+  await refreshDsData();
+}
+
+function renderDsTab(){
+  renderDsSuggestions();
+  renderDsBlocksList();
+}
+
+function renderDsSuggestions(){
+  const el=document.getElementById('ds-suggestions-wrap');
+  if(!el)return;
+  if(!dsSuggestions.length){el.innerHTML='';return;}
+  el.innerHTML=`<div style="font-size:12px;color:var(--text3);margin-bottom:6px;">Saran dari Big Rocks &amp; kerjaan yang deadline-nya tanggal ini:</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">`+
+    dsSuggestions.map((s,i)=>`<button class="type-chip" onclick="pickDsSuggestion(${i})">${s.source==='big_rock'?'🪨':'🗂️'} ${escHtml(s.title)}</button>`).join('')+
+    `</div>`;
+}
+function pickDsSuggestion(i){
+  const s=dsSuggestions[i];
+  if(!s)return;
+  document.getElementById('ds-title-input').value=s.title;
+  dsPendingSource=s.source;dsPendingSourceId=s.source_id;
+  document.getElementById('ds-start-input').focus();
+}
+
+function renderDsBlocksList(){
+  const el=document.getElementById('ds-blocks-list');
+  if(!el)return;
+  if(!dsBlocks.length){el.innerHTML=`<div class="loading">Belum ada blok waktu buat tanggal ini.</div>`;return;}
+  el.innerHTML=dsBlocks.map(b=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--border2);">
+    <input type="checkbox" ${b.is_done?'checked':''} onchange="toggleDsDone('${b.id}',this.checked)">
+    <div style="flex:1;min-width:0;${b.is_done?'opacity:.5;text-decoration:line-through;':''}">
+      <div style="font-size:13px;font-weight:600;">${b.start_time.slice(0,5)}–${b.end_time.slice(0,5)} ${escHtml(b.title)}</div>
+      ${b.source!=='manual'?`<div style="font-size:11px;color:var(--text3);">${b.source==='big_rock'?'🪨 Big Rock':'🗂️ Tracking Kerjaan'}</div>`:''}
+    </div>
+    <span class="hp-link" onclick="startDsEdit('${b.id}')">Edit</span>
+    <span class="hp-link" style="color:var(--red);" onclick="deleteDsBlock('${b.id}')">Hapus</span>
+  </div>`).join('');
+}
+
+function startDsEdit(id){
+  const b=dsBlocks.find(x=>x.id===id);
+  if(!b)return;
+  dsEditingId=id;
+  document.getElementById('ds-start-input').value=b.start_time.slice(0,5);
+  document.getElementById('ds-end-input').value=b.end_time.slice(0,5);
+  document.getElementById('ds-title-input').value=b.title;
+  document.getElementById('ds-submit-btn').textContent='Update';
+  document.getElementById('ds-cancel-edit').style.display='inline';
+}
+function cancelDsEdit(){
+  dsEditingId=null;
+  dsPendingSource='manual';dsPendingSourceId=null;
+  document.getElementById('ds-start-input').value='';
+  document.getElementById('ds-end-input').value='';
+  document.getElementById('ds-title-input').value='';
+  document.getElementById('ds-submit-btn').textContent='+ Tambah';
+  document.getElementById('ds-cancel-edit').style.display='none';
+}
+async function submitDsBlock(){
+  const start=document.getElementById('ds-start-input').value;
+  const end=document.getElementById('ds-end-input').value;
+  const title=document.getElementById('ds-title-input').value.trim();
+  if(!start||!end||!title)return;
+  let r;
+  if(dsEditingId){
+    r=await apiWrite('PATCH','/daily-schedule/'+dsEditingId,{start_time:start,end_time:end,title});
+  }else{
+    r=await apiWrite('POST','/daily-schedule',{schedule_date:dsDate,start_time:start,end_time:end,title,source:dsPendingSource,source_id:dsPendingSourceId});
+  }
+  if(!r)return;
+  cancelDsEdit();
+  await refreshDsData();
+}
+async function toggleDsDone(id,val){
+  const r=await apiWrite('PATCH','/daily-schedule/'+id,{is_done:val});
+  if(!r)return;
+  const b=dsBlocks.find(x=>x.id===id);
+  if(b)b.is_done=val;
+  renderDsBlocksList();
+}
+async function deleteDsBlock(id){
+  const r=await apiWrite('DELETE','/daily-schedule/'+id);
+  if(!r)return;
+  await refreshDsData();
+}
+
 async function setWkWorkspace(id){
   wkWorkspaceId=id;
   localStorage.setItem('mc_workspace_id',id);
@@ -5866,7 +6010,7 @@ function buildDashActivity(){} // legacy, kept for compat
 // ── TAB SWITCHING ──
 const pageMeta={
   dashboard:'Dashboard',calendar:'Calendar',tracker:'Time Tracker',
-  health:'Health',finance:'Finance',english:'Language',investment:'Investment',content:'Content',learning:'Learning',goals:'Goals',business:'Bisnis',kerjaan:'Tracking Kerjaan',growth:'Growth'
+  health:'Health',finance:'Finance',english:'Language',investment:'Investment',content:'Content',learning:'Learning',goals:'Goals',business:'Bisnis',kerjaan:'Tracking Kerjaan',growth:'Growth',schedule:'Jadwal Harian'
 };
 
 function switchTab(name,btn){
@@ -5894,7 +6038,7 @@ async function loadAll(){
   const themeBtn=document.getElementById('theme-toggle-btn');
   if(themeBtn)themeBtn.textContent=isDarkTheme()?'☀️':'🌙';
   renderAllPeriodToggles();
-  await Promise.all([loadTasks(),loadHealth(),loadFinance(),loadEnglish(),loadInvestment(),loadCalendar(),loadContent(),loadLearningDocuments(),loadGoals(),loadBusiness(),loadKerjaan(),loadGrowth()]);
+  await Promise.all([loadTasks(),loadHealth(),loadFinance(),loadEnglish(),loadInvestment(),loadCalendar(),loadContent(),loadLearningDocuments(),loadGoals(),loadBusiness(),loadKerjaan(),loadGrowth(),loadDailySchedule()]);
   buildDashboard();
   renderTracker();
 }
