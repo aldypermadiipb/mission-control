@@ -799,6 +799,7 @@ tr:hover td{background:var(--bg3);}
     <div class="nav-label">WORK</div>
     <div class="nav-item" onclick="switchTab('kerjaan',this)"><span class="nav-icon">🗂️</span> Tracking Kerjaan</div>
     <div class="nav-item" onclick="switchTab('schedule',this)"><span class="nav-icon">⏰</span> Jadwal Harian</div>
+    <div class="nav-item" onclick="switchTab('networking',this)"><span class="nav-icon">🤝</span> Networking</div>
   </div>
   <div class="nav-group">
     <div class="nav-label">GROWTH</div>
@@ -1265,6 +1266,17 @@ tr:hover td{background:var(--bg3);}
           <div class="hp-total-progress"><span class="hp-total-pct" id="hp-total-pct">—</span><span class="hp-total-label">Total Progress</span></div>
         </div>
         <div class="hp-metrics-row" id="hp-metrics-row"></div>
+      </div>
+
+      <!-- Energy quick-log (1-tap, correlated in GROWTH Sharpen the Saw) -->
+      <div class="hp-card" style="margin-top:16px;">
+        <div class="hp-card-header">
+          <span class="hp-card-title">⚡ Energi Hari Ini</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <div style="display:flex;gap:6px;" id="energy-tap-buttons"></div>
+          <span id="energy-today-status" style="font-size:12px;color:var(--text3);"></span>
+        </div>
       </div>
 
       <!-- Row 2: Weight Tracker | Monthly Goals | Hermes Insight -->
@@ -1776,10 +1788,10 @@ tr:hover td{background:var(--bg3);}
           <div class="sec-hdr">
             <div style="display:flex;gap:10px;">
               <div class="sec-badge">3</div>
-              <div><div class="sec-hdr-title">Sharpen the Saw</div><div class="sec-hdr-sub">Habit 7 — fisik &amp; mental, rata-rata 7 hari terakhir.</div></div>
+              <div><div class="sec-hdr-title">Sharpen the Saw</div><div class="sec-hdr-sub">Habit 7 — fisik, mental &amp; energi, rata-rata 7 hari terakhir.</div></div>
             </div>
           </div>
-          <div class="stat-grid" id="growth-renewal-stats" style="grid-template-columns:repeat(2,1fr);"></div>
+          <div class="stat-grid" id="growth-renewal-stats" style="grid-template-columns:repeat(3,1fr);"></div>
         </div>
         <div class="panel">
           <div class="sec-hdr">
@@ -1790,6 +1802,23 @@ tr:hover td{background:var(--bg3);}
           </div>
           <div id="growth-reflection-log"><div class="loading">Loading...</div></div>
         </div>
+      </div>
+
+      <div class="panel">
+        <div class="sec-hdr">
+          <div><div class="sec-hdr-title">Skill Gap — Career Pivot</div><div class="sec-hdr-sub">Habit 2 lanjutan — level sekarang vs target buat role tujuan.</div></div>
+          <div id="skills-overall-pct" style="font-size:13px;color:var(--text2);"></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:flex-end;">
+          <input type="text" class="form-input" id="skill-name-input" placeholder="Skill (SQL, Python...)" style="flex:1;min-width:140px;">
+          <input type="text" class="form-input" id="skill-role-input" placeholder="Target role" value="Data Analyst" style="width:150px;">
+          <div>
+            <label class="form-label" style="font-size:11px;">Level sekarang (1-5)</label>
+            <input type="number" class="form-input" id="skill-current-input" min="1" max="5" value="1" style="width:90px;">
+          </div>
+          <button class="btn-save" onclick="addSkill()">+ Tambah</button>
+        </div>
+        <div id="skills-list"><div class="loading">Loading...</div></div>
       </div>
     </div>
 
@@ -1834,6 +1863,33 @@ tr:hover td{background:var(--bg3);}
         <div id="ds-month-panel" style="display:none;">
           <div id="ds-month-grid"><div class="loading">Loading...</div></div>
         </div>
+      </div>
+    </div>
+
+    <div id="tab-networking" class="section">
+      <div class="panel">
+        <div class="sec-hdr">
+          <div><div class="sec-hdr-title">Networking</div><div class="sec-hdr-sub">Siapa kenal siapa, kerja dimana, dan kalau butuh apa larinya kemana.</div></div>
+          <div id="networking-followup-badge" style="font-size:13px;color:var(--red);font-weight:600;"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;">
+          <input type="text" class="form-input" id="ct-name-input" placeholder="Nama *">
+          <input type="text" class="form-input" id="ct-company-input" placeholder="Kerja dimana">
+          <input type="text" class="form-input" id="ct-role-input" placeholder="Posisi/jabatan">
+          <input type="text" class="form-input" id="ct-met-where-input" placeholder="Ketemu dimana">
+          <input type="date" class="form-input" id="ct-met-date-input">
+          <input type="text" class="form-input" id="ct-expertise-input" placeholder="Ahli di / kalau butuh apa larinya sini">
+          <select class="form-input" id="ct-type-input">
+            <option value="networking">Networking</option>
+            <option value="mentor">Mentor</option>
+            <option value="business">Business</option>
+            <option value="client">Client</option>
+            <option value="friend">Teman</option>
+          </select>
+          <input type="date" class="form-input" id="ct-followup-input" title="Follow-up berikutnya">
+          <button class="btn-save" onclick="addContact()">+ Tambah Kontak</button>
+        </div>
+        <div id="networking-list"><div class="loading">Loading...</div></div>
       </div>
     </div>
 
@@ -3879,19 +3935,22 @@ const GROWTH_QUADRANT_META={
 let growthQuadrantData={items:[],total:0,counts:{I:0,II:0,III:0,IV:0},pct:{I:0,II:0,III:0,IV:0}};
 let growthGoalLinkageData={total_projects:0,linked_projects:0,unlinked_projects:[]};
 let growthLifeGoals=[];
-let growthRenewalScore={fisik_pct:0,learning_days:0};
+let growthRenewalScore={fisik_pct:0,learning_days:0,avg_energy:null};
 let growthReflectionLog=[];
+let growthSkills=[];
 
 async function loadGrowth(){
-  const [qR,glR,lgR,rsR,rlR]=await Promise.all([
+  const [qR,glR,lgR,rsR,rlR,skR]=await Promise.all([
     fetchApi('/work-tasks/quadrants'), fetchApi('/work-projects/goal-linkage'),
-    fetchApi('/life-goals'), fetchApi('/habit-coaching/renewal-score'), fetchApi('/habit-coaching/reflection-log')
+    fetchApi('/life-goals'), fetchApi('/habit-coaching/renewal-score'), fetchApi('/habit-coaching/reflection-log'),
+    fetchApi('/skills')
   ]);
   if(qR)growthQuadrantData=qR;
   if(glR)growthGoalLinkageData=glR;
   if(lgR)growthLifeGoals=lgR.items||[];
   if(rsR)growthRenewalScore=rsR;
   if(rlR)growthReflectionLog=rlR.items||[];
+  if(skR)growthSkills=skR.items||[];
   renderGrowthTab();
 }
 
@@ -3900,6 +3959,7 @@ function renderGrowthTab(){
   renderGrowthGoalsCard();
   renderGrowthRenewalCard();
   renderGrowthReflectionLogCard();
+  renderSkillsList();
 }
 
 function growthQuadrantIComment(pctI){
@@ -4002,10 +4062,11 @@ async function toggleGrowthBigRock(goalId,flagOn){
 function renderGrowthRenewalCard(){
   const el=document.getElementById('growth-renewal-stats');
   if(!el)return;
-  const {fisik_pct,learning_days}=growthRenewalScore;
+  const {fisik_pct,learning_days,avg_energy}=growthRenewalScore;
   el.innerHTML=
     statCard('var(--green-wash)','var(--green)','💪','Fisik (7 hari)',`${fisik_pct}%`,'Rata² capaian target kalori/protein/air/tidur')+
-    statCard('var(--blue-wash)','var(--blue)','🧠','Mental (7 hari)',`${learning_days}/7 hari`,'Ada activity log Learning');
+    statCard('var(--blue-wash)','var(--blue)','🧠','Mental (7 hari)',`${learning_days}/7 hari`,'Ada activity log Learning')+
+    statCard('var(--amber-wash)','var(--amber-text)','⚡','Energi (7 hari)',avg_energy!=null?`${avg_energy}/5`:'—','Rata² dari log energi harian');
 }
 
 function renderGrowthReflectionLogCard(){
@@ -4019,6 +4080,190 @@ function renderGrowthReflectionLogCard(){
     <div style="font-size:11px;color:var(--text3);">${escHtml(r.week)}</div>
     <div style="font-size:13px;">${escHtml(r.question||'(pertanyaan tidak diketahui)')}</div>
   </div>`).join('');
+}
+
+// ── SKILL GAP TRACKER (career pivot) -- rating matrix, separate from the
+// Learning Goals Tracker's curriculum/checklist shape. Progress = current/target level.
+function renderSkillsList(){
+  const el=document.getElementById('skills-list');
+  const overallEl=document.getElementById('skills-overall-pct');
+  if(overallEl){
+    overallEl.textContent=growthSkills.length
+      ? `${Math.round(growthSkills.reduce((s,x)=>s+x.progress_pct,0)/growthSkills.length)}% overall`
+      : '';
+  }
+  if(!el)return;
+  if(!growthSkills.length){
+    el.innerHTML=`<div class="loading">Belum ada skill. Tambah di atas buat mulai ngukur gap ke target role.</div>`;
+    return;
+  }
+  const byRole={};
+  growthSkills.forEach(s=>{(byRole[s.target_role]=byRole[s.target_role]||[]).push(s);});
+  el.innerHTML=Object.keys(byRole).sort().map(role=>{
+    const skills=byRole[role];
+    const avgPct=Math.round(skills.reduce((sum,s)=>sum+s.progress_pct,0)/skills.length);
+    return `<div style="margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;">${escHtml(role)}</div>
+        <div style="font-size:12px;color:var(--text2);">${avgPct}% rata²</div>
+      </div>
+      ${skills.map(s=>`<div style="padding:8px 0;border-top:1px solid var(--border2);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <div style="font-size:13px;font-weight:600;">${escHtml(s.name)}</div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:11px;color:var(--text3);">Lv ${s.current_level}/${s.target_level}</span>
+            <button class="type-chip" onclick="bumpSkillLevel('${s.id}',1)" ${s.current_level>=s.target_level?'disabled':''}>+1</button>
+            <span class="hp-link" style="color:var(--red);" onclick="removeSkill('${s.id}')">Hapus</span>
+          </div>
+        </div>
+        <div style="height:6px;background:var(--border2);border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:${s.progress_pct}%;background:var(--indigo);"></div>
+        </div>
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+async function addSkill(){
+  const nameEl=document.getElementById('skill-name-input');
+  const roleEl=document.getElementById('skill-role-input');
+  const curEl=document.getElementById('skill-current-input');
+  const name=nameEl.value.trim();
+  const target_role=roleEl.value.trim()||'Data Analyst';
+  const current_level=parseInt(curEl.value,10)||1;
+  if(!name)return;
+  const r=await apiWrite('POST','/skills',{name,target_role,current_level});
+  if(!r)return;
+  nameEl.value='';curEl.value='1';
+  const skR=await fetchApi('/skills');
+  growthSkills=skR?(skR.items||[]):growthSkills;
+  renderSkillsList();
+}
+async function bumpSkillLevel(id,delta){
+  const s=growthSkills.find(x=>x.id===id);
+  if(!s)return;
+  const newLevel=Math.min(s.current_level+delta,s.target_level);
+  const r=await apiWrite('PATCH','/skills/'+id,{current_level:newLevel});
+  if(!r)return;
+  Object.assign(s,r);
+  renderSkillsList();
+}
+async function removeSkill(id){
+  const r=await apiWrite('DELETE','/skills/'+id);
+  if(!r)return;
+  growthSkills=growthSkills.filter(x=>x.id!==id);
+  renderSkillsList();
+}
+
+// ── NETWORKING (personal CRM) -- last_interaction_date is derived from
+// contact_interactions server-side, never stored redundantly on the contact row.
+let networkingContacts=[];
+const CT_TYPE_LABEL={networking:'Networking',mentor:'Mentor',business:'Business',client:'Client',friend:'Teman'};
+
+async function loadNetworking(){
+  const r=await fetchApi('/contacts');
+  networkingContacts=r?(r.items||[]):[];
+  renderNetworkingList();
+}
+
+function ctFollowUpUrgency(c){
+  if(!c.next_follow_up_date)return 2;
+  const today=dsFmtDate(new Date());
+  return c.next_follow_up_date<today?0:(c.next_follow_up_date===today?1:2);
+}
+
+function renderNetworkingList(){
+  const el=document.getElementById('networking-list');
+  const badgeEl=document.getElementById('networking-followup-badge');
+  if(badgeEl){
+    const overdueCount=networkingContacts.filter(c=>ctFollowUpUrgency(c)===0).length;
+    badgeEl.textContent=overdueCount?`⚠️ ${overdueCount} follow-up kelewat`:'';
+  }
+  if(!el)return;
+  if(!networkingContacts.length){
+    el.innerHTML=`<div class="loading">Belum ada kontak. Tambah di atas.</div>`;
+    return;
+  }
+  const sorted=[...networkingContacts].sort((a,b)=>{
+    const ua=ctFollowUpUrgency(a),ub=ctFollowUpUrgency(b);
+    if(ua!==ub)return ua-ub;
+    return (a.next_follow_up_date||'9999').localeCompare(b.next_follow_up_date||'9999');
+  });
+  el.innerHTML=sorted.map(c=>{
+    const urgency=ctFollowUpUrgency(c);
+    const followUpColor=urgency===0?'var(--red)':(urgency===1?'var(--yellow)':'var(--text3)');
+    const metLine=[c.met_where,c.met_date?fmtGoalDeadline(c.met_date):null].filter(Boolean).join(' — ');
+    return `<div style="padding:10px 0;border-top:1px solid var(--border2);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+        <div style="min-width:0;">
+          <div style="font-size:13.5px;font-weight:700;">${escHtml(c.name)} <span class="badge bgray" style="font-size:10px;">${CT_TYPE_LABEL[c.relationship_type]||c.relationship_type}</span></div>
+          <div style="font-size:12px;color:var(--text2);">${escHtml([c.role,c.company].filter(Boolean).join(' @ ')||'')}</div>
+          ${c.expertise?`<div style="font-size:12px;color:var(--indigo);margin-top:2px;">🎯 ${escHtml(c.expertise)}</div>`:''}
+          ${metLine?`<div style="font-size:11px;color:var(--text3);margin-top:2px;">Ketemu: ${escHtml(metLine)}</div>`:''}
+          <div style="font-size:11px;color:var(--text3);margin-top:2px;">Terakhir kontak: ${c.last_interaction_date?fmtGoalDeadline(c.last_interaction_date):'belum pernah'}</div>
+          ${c.next_follow_up_date?`<div style="font-size:11px;color:${followUpColor};font-weight:600;margin-top:2px;">Follow-up: ${fmtGoalDeadline(c.next_follow_up_date)}</div>`:''}
+        </div>
+        <div style="display:flex;gap:8px;flex-shrink:0;">
+          <span class="hp-link" onclick="logContactInteraction('${c.id}')">Log kontak</span>
+          <span class="hp-link" style="color:var(--red);" onclick="removeContact('${c.id}')">Hapus</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function addContact(){
+  const name=document.getElementById('ct-name-input').value.trim();
+  if(!name)return;
+  const body={
+    name,
+    relationship_type:document.getElementById('ct-type-input').value,
+    company:document.getElementById('ct-company-input').value.trim()||null,
+    role:document.getElementById('ct-role-input').value.trim()||null,
+    met_where:document.getElementById('ct-met-where-input').value.trim()||null,
+    met_date:document.getElementById('ct-met-date-input').value||null,
+    expertise:document.getElementById('ct-expertise-input').value.trim()||null,
+    next_follow_up_date:document.getElementById('ct-followup-input').value||null
+  };
+  const r=await apiWrite('POST','/contacts',body);
+  if(!r)return;
+  ['ct-name-input','ct-company-input','ct-role-input','ct-met-where-input','ct-expertise-input'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ct-met-date-input').value='';
+  document.getElementById('ct-followup-input').value='';
+  await loadNetworking();
+}
+async function logContactInteraction(id){
+  const r=await apiWrite('POST',`/contacts/${id}/interactions`,{});
+  if(!r)return;
+  await loadNetworking();
+}
+async function removeContact(id){
+  const r=await apiWrite('DELETE','/contacts/'+id);
+  if(!r)return;
+  networkingContacts=networkingContacts.filter(x=>x.id!==id);
+  renderNetworkingList();
+}
+
+// ── ENERGY QUICK-LOG (Health tab widget, independent of loadHealth()'s
+// fetchSheet-based pipeline so this doesn't touch that already-working code) ──
+let energyToday=null;
+async function loadEnergyWidget(){
+  const r=await fetchApi('/health/energy?days=1');
+  const items=r?(r.items||[]):[];
+  const todayStr=dsFmtDate(new Date());
+  energyToday=items.find(i=>i.date===todayStr)||null;
+  renderEnergyWidget();
+}
+function renderEnergyWidget(){
+  const btnEl=document.getElementById('energy-tap-buttons');
+  const statusEl=document.getElementById('energy-today-status');
+  if(!btnEl)return;
+  btnEl.innerHTML=[1,2,3,4,5].map(v=>`<button class="type-chip ${energyToday&&energyToday.value===v?'active':''}" onclick="logEnergyToday(${v})">${v}</button>`).join('');
+  if(statusEl)statusEl.textContent=energyToday?`Udah dicatat hari ini: ${energyToday.value}/5`:'Belum dicatat hari ini';
+}
+async function logEnergyToday(value){
+  const r=await apiWrite('POST','/health/energy',{value});
+  if(!r)return;
+  await loadEnergyWidget();
 }
 
 // ── JADWAL HARIAN (Habit 3 execution: time-blocked plan for one day) ──
@@ -6116,7 +6361,7 @@ function buildDashActivity(){} // legacy, kept for compat
 // ── TAB SWITCHING ──
 const pageMeta={
   dashboard:'Dashboard',calendar:'Calendar',tracker:'Time Tracker',
-  health:'Health',finance:'Finance',english:'Language',investment:'Investment',content:'Content',learning:'Learning',goals:'Goals',business:'Bisnis',kerjaan:'Tracking Kerjaan',growth:'Growth',schedule:'Jadwal Harian'
+  health:'Health',finance:'Finance',english:'Language',investment:'Investment',content:'Content',learning:'Learning',goals:'Goals',business:'Bisnis',kerjaan:'Tracking Kerjaan',growth:'Growth',schedule:'Jadwal Harian',networking:'Networking'
 };
 
 function switchTab(name,btn){
@@ -6144,7 +6389,7 @@ async function loadAll(){
   const themeBtn=document.getElementById('theme-toggle-btn');
   if(themeBtn)themeBtn.textContent=isDarkTheme()?'☀️':'🌙';
   renderAllPeriodToggles();
-  await Promise.all([loadTasks(),loadHealth(),loadFinance(),loadEnglish(),loadInvestment(),loadCalendar(),loadContent(),loadLearningDocuments(),loadGoals(),loadBusiness(),loadKerjaan(),loadGrowth(),loadDailySchedule()]);
+  await Promise.all([loadTasks(),loadHealth(),loadFinance(),loadEnglish(),loadInvestment(),loadCalendar(),loadContent(),loadLearningDocuments(),loadGoals(),loadBusiness(),loadKerjaan(),loadGrowth(),loadDailySchedule(),loadNetworking(),loadEnergyWidget()]);
   buildDashboard();
   renderTracker();
 }
