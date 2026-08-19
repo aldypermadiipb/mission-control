@@ -3316,6 +3316,7 @@ function learnCardHtml(doc){
   // against real schema sample from Claude Code) — audio_file_path (or an
   // explicit has_audio flag) is the only reliable signal a file is playable.
   const hasAudio=!!(doc.has_audio||doc.audio_file_path);
+  const hasFile=!!(doc.has_file||doc.original_file_path);
   const tags=Array.isArray(doc.tags)?doc.tags:[];
   const summary=doc.summary_notes||doc.summary||'';
   return `<div class="learn-card">
@@ -3328,6 +3329,7 @@ function learnCardHtml(doc){
     <div class="learn-card-foot">
       <span class="learn-date">${timeAgo(doc.created_at)}</span>
       ${hasAudio?`<button class="learn-play-btn" id="learn-playbtn-${id}" onclick="learnTogglePlay('${id}',this)">${ico('play',13)} Play</button>`:''}
+      ${hasFile?`<button class="learn-play-btn" onclick="learnDownloadFile('${id}',this)">${ico('download',13)} Download</button>`:''}
     </div>
     ${hasAudio?`<div class="learn-player" id="learn-player-${id}" style="display:none;">
       <div class="learn-player-track" onclick="learnSeek('${id}',event)"><div class="learn-player-fill" id="learn-fill-${id}"></div></div>
@@ -3382,6 +3384,27 @@ async function learnTogglePlay(id,btnEl){
   }else{
     state.audioEl.pause();
     learnSetPlaying(id,false);
+  }
+}
+async function learnDownloadFile(id,btnEl){
+  const orig=btnEl.innerHTML;
+  btnEl.disabled=true;btnEl.textContent='Loading...';
+  try{
+    const r=await fetch(API_BASE+'/learning/file/'+id);
+    if(!r.ok)throw new Error('status '+r.status);
+    const cd=r.headers.get('Content-Disposition')||'';
+    const m=cd.match(/filename="?([^"]+)"?/);
+    const filename=m?m[1]:'download';
+    const blob=await r.blob();
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=filename;
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }catch(e){
+    alert('Gagal download file: '+e.message);
+  }finally{
+    btnEl.disabled=false;btnEl.innerHTML=orig;
   }
 }
 function learnSetPlaying(id,playing){
