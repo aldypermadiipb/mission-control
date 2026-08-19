@@ -800,6 +800,10 @@ tr:hover td{background:var(--bg3);}
     <div class="nav-item" onclick="switchTab('kerjaan',this)"><span class="nav-icon">🗂️</span> Tracking Kerjaan</div>
   </div>
   <div class="nav-group">
+    <div class="nav-label">GROWTH</div>
+    <div class="nav-item" onclick="switchTab('growth',this)"><span class="nav-icon">🧭</span> Growth</div>
+  </div>
+  <div class="nav-group">
     <div class="nav-label">LIFE</div>
     <div class="nav-item" onclick="switchTab('health',this)"><span class="nav-icon">💚</span> Health</div>
     <div class="nav-item" onclick="switchTab('finance',this)"><span class="nav-icon">📊</span> Finance</div>
@@ -1729,6 +1733,62 @@ tr:hover td{background:var(--bg3);}
         </div>
         <div class="stat-grid sg4" id="wk-productivity-stats" style="margin-bottom:16px;"></div>
         <div class="hp-chart-wrap-md" style="height:220px;"><canvas id="wk-productivity-chart"></canvas></div>
+      </div>
+    </div>
+
+    <div id="tab-growth" class="section">
+      <div class="grid-21">
+        <div class="panel">
+          <div class="sec-hdr">
+            <div style="display:flex;gap:10px;">
+              <div class="sec-badge">1</div>
+              <div><div class="sec-hdr-title">Kuadran Waktu</div><div class="sec-hdr-sub">Habit 1 &amp; 3 — Proactive &amp; Put First Things First. Semua kerjaan belum selesai, diklasifikasi live tiap load.</div></div>
+            </div>
+          </div>
+          <div class="hp-chart-wrap-md" style="height:220px;"><canvas id="growth-quadrant-chart"></canvas></div>
+          <div id="growth-quadrant-empty" style="display:none;" class="loading">Gak ada kerjaan yang belum selesai.</div>
+          <div id="growth-quadrant-legend" style="margin-top:14px;display:flex;flex-direction:column;gap:8px;"></div>
+          <div id="growth-proactive-note" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border2);font-size:12.5px;color:var(--text2);"></div>
+        </div>
+        <div class="panel">
+          <div class="sec-hdr">
+            <div style="display:flex;gap:10px;">
+              <div class="sec-badge">2</div>
+              <div><div class="sec-hdr-title">Goals &amp; Big Rocks</div><div class="sec-hdr-sub">Habit 2 — Begin with the End in Mind. Goal per role + fokus minggu ini (Covey's "Big Rocks").</div></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+            <input type="text" class="form-input" id="growth-goal-title" placeholder="Goal baru..." style="flex:1;min-width:140px;">
+            <input type="text" class="form-input" id="growth-goal-role" placeholder="Role (Karier, Kesehatan...)" style="width:170px;" list="growth-role-suggestions">
+            <datalist id="growth-role-suggestions">
+              <option value="Karier"><option value="Kesehatan"><option value="Keluarga"><option value="Sosial"><option value="Keuangan"><option value="Personal Growth">
+            </datalist>
+            <button class="btn-save" onclick="addGrowthLifeGoal()">+ Tambah</button>
+          </div>
+          <div id="growth-goals-list"><div class="loading">Loading...</div></div>
+          <div id="growth-goal-linkage-note" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border2);font-size:12px;color:var(--text3);"></div>
+        </div>
+      </div>
+
+      <div class="grid-21">
+        <div class="panel">
+          <div class="sec-hdr">
+            <div style="display:flex;gap:10px;">
+              <div class="sec-badge">3</div>
+              <div><div class="sec-hdr-title">Sharpen the Saw</div><div class="sec-hdr-sub">Habit 7 — fisik &amp; mental, rata-rata 7 hari terakhir.</div></div>
+            </div>
+          </div>
+          <div class="stat-grid" id="growth-renewal-stats" style="grid-template-columns:repeat(2,1fr);"></div>
+        </div>
+        <div class="panel">
+          <div class="sec-hdr">
+            <div style="display:flex;gap:10px;">
+              <div class="sec-badge">4</div>
+              <div><div class="sec-hdr-title">Reflection Log</div><div class="sec-hdr-sub">Habit 4/5/6 — Win-Win, Seek First to Understand, Synergize. Riwayat pertanyaan reflektif mingguan dari Ana.</div></div>
+            </div>
+          </div>
+          <div id="growth-reflection-log"><div class="loading">Loading...</div></div>
+        </div>
       </div>
     </div>
 
@@ -3758,6 +3818,163 @@ async function loadKerjaan(){
   await loadKerjaanData();
   renderKerjaanTab();
 }
+
+// ── GROWTH TAB: 4 cards, one per Habit cluster it can actually monitor with
+// real data (1&3 share the quadrant data, 2 is life_goals, 7 is the same
+// fisik/mental math as the weekly Telegram check, 4/5/6 have no objective
+// data so it's a log of what Ana already asked, not a metric). Everything
+// here is computed live from the API -- nothing is stored client-side beyond
+// the current page load, same "derive don't store" convention as is_overdue.
+const GROWTH_QUADRANT_META={
+  I:{label:'Kuadran I — Krisis',sub:'Overdue, atau prioritas tinggi & deadline < 24 jam',color:'#ef4444'},
+  II:{label:'Kuadran II — Fokus',sub:'Prioritas tinggi, masih ada waktu (≥24 jam / tanpa deadline)',color:'#10b981'},
+  III:{label:'Kuadran III — Gangguan',sub:'Bukan prioritas tinggi, tapi deadline < 24 jam',color:'#f59e0b'},
+  IV:{label:'Kuadran IV — Buang Waktu',sub:'Bukan prioritas tinggi, deadline jauh atau kosong',color:'#9ca3af'}
+};
+let growthQuadrantData={items:[],total:0,counts:{I:0,II:0,III:0,IV:0},pct:{I:0,II:0,III:0,IV:0}};
+let growthGoalLinkageData={total_projects:0,linked_projects:0,unlinked_projects:[]};
+let growthLifeGoals=[];
+let growthRenewalScore={fisik_pct:0,learning_days:0};
+let growthReflectionLog=[];
+
+async function loadGrowth(){
+  const [qR,glR,lgR,rsR,rlR]=await Promise.all([
+    fetchApi('/work-tasks/quadrants'), fetchApi('/work-projects/goal-linkage'),
+    fetchApi('/life-goals'), fetchApi('/habit-coaching/renewal-score'), fetchApi('/habit-coaching/reflection-log')
+  ]);
+  if(qR)growthQuadrantData=qR;
+  if(glR)growthGoalLinkageData=glR;
+  if(lgR)growthLifeGoals=lgR.items||[];
+  if(rsR)growthRenewalScore=rsR;
+  if(rlR)growthReflectionLog=rlR.items||[];
+  renderGrowthTab();
+}
+
+function renderGrowthTab(){
+  renderGrowthQuadrantCard();
+  renderGrowthGoalsCard();
+  renderGrowthRenewalCard();
+  renderGrowthReflectionLogCard();
+}
+
+function growthQuadrantIComment(pctI){
+  if(pctI>=60)return'mode pemadam kebakaran, banyak yang reaktif';
+  if(pctI>=30)return'mulai numpuk urgensi, worth dicek ulang';
+  return'relatif terkendali';
+}
+
+function renderGrowthQuadrantCard(){
+  const {counts,pct,total}=growthQuadrantData;
+  const emptyEl=document.getElementById('growth-quadrant-empty');
+  const legendEl=document.getElementById('growth-quadrant-legend');
+  const noteEl=document.getElementById('growth-proactive-note');
+  if(!total){
+    if(charts['growth-quadrant-chart']){charts['growth-quadrant-chart'].destroy();delete charts['growth-quadrant-chart'];}
+    if(emptyEl)emptyEl.style.display='block';
+    if(legendEl)legendEl.innerHTML='';
+    if(noteEl)noteEl.innerHTML='';
+    return;
+  }
+  if(emptyEl)emptyEl.style.display='none';
+  const order=['I','II','III','IV'];
+  mkChart('growth-quadrant-chart',{
+    type:'doughnut',
+    data:{labels:order.map(q=>GROWTH_QUADRANT_META[q].label),datasets:[{data:order.map(q=>counts[q]),backgroundColor:order.map(q=>GROWTH_QUADRANT_META[q].color),borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.raw} (${pct[order[c.dataIndex]]}%)`}}}}
+  });
+  if(legendEl){
+    legendEl.innerHTML=order.map(q=>{
+      const m=GROWTH_QUADRANT_META[q];
+      return `<div style="display:flex;align-items:center;gap:10px;">
+        <span style="width:10px;height:10px;border-radius:50%;background:${m.color};flex-shrink:0;"></span>
+        <div style="flex:1;min-width:0;"><div style="font-size:12.5px;font-weight:600;">${m.label}</div><div style="font-size:11px;color:var(--text3);">${m.sub}</div></div>
+        <div style="font-size:13px;font-weight:700;white-space:nowrap;">${counts[q]} <span style="color:var(--text3);font-weight:400;">(${pct[q]}%)</span></div>
+      </div>`;
+    }).join('');
+  }
+  if(noteEl){
+    noteEl.innerHTML=`<strong>Habit 1 check:</strong> Kuadran I ${pct.I}% dari total kerjaan open — ${growthQuadrantIComment(pct.I)}.`;
+  }
+}
+
+function renderGrowthGoalsCard(){
+  const listEl=document.getElementById('growth-goals-list');
+  const noteEl=document.getElementById('growth-goal-linkage-note');
+  if(listEl){
+    if(!growthLifeGoals.length){
+      listEl.innerHTML=`<div class="loading">Belum ada goal. Tambah di atas, dikelompokkan per role.</div>`;
+    }else{
+      const byRole={};
+      growthLifeGoals.forEach(g=>{(byRole[g.role]=byRole[g.role]||[]).push(g);});
+      listEl.innerHTML=Object.keys(byRole).sort().map(role=>{
+        const goals=byRole[role];
+        return `<div style="margin-bottom:12px;">
+          <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;">${escHtml(role)}</div>
+          ${goals.map(g=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--border2);">
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:13px;${g.status==='done'?'text-decoration:line-through;color:var(--text3);':''}">${escHtml(g.title)}</div>
+              ${g.target_deadline?`<div style="font-size:11px;color:var(--text3);">${fmtGoalDeadline(g.target_deadline)}</div>`:''}
+            </div>
+            <button class="type-chip ${g.is_big_rock_this_week?'active':''}" onclick="toggleGrowthBigRock('${g.id}',${!g.is_big_rock_this_week})">🪨 Big Rock</button>
+          </div>`).join('')}
+        </div>`;
+      }).join('');
+    }
+  }
+  if(noteEl){
+    const {total_projects,linked_projects,unlinked_projects}=growthGoalLinkageData;
+    let html=total_projects
+      ? `${linked_projects} dari ${total_projects} project Tracking Kerjaan nyambung ke goal.`
+      : 'Belum ada project di Tracking Kerjaan.';
+    if(unlinked_projects&&unlinked_projects.length){
+      html+=`<div style="margin-top:6px;">Belum nyambung: ${unlinked_projects.map(p=>escHtml(p.name)).join(', ')}</div>`;
+    }
+    noteEl.innerHTML=html;
+  }
+}
+
+async function addGrowthLifeGoal(){
+  const titleEl=document.getElementById('growth-goal-title');
+  const roleEl=document.getElementById('growth-goal-role');
+  const title=titleEl.value.trim();
+  const role=roleEl.value.trim();
+  if(!title||!role)return;
+  const r=await apiWrite('POST','/life-goals',{title,role});
+  if(!r)return;
+  titleEl.value='';roleEl.value='';
+  const lgR=await fetchApi('/life-goals');
+  growthLifeGoals=lgR?(lgR.items||[]):growthLifeGoals;
+  renderGrowthGoalsCard();
+}
+async function toggleGrowthBigRock(goalId,flagOn){
+  const r=await apiWrite(flagOn?'POST':'DELETE',`/life-goals/${goalId}/big-rock`);
+  if(!r)return;
+  const g=growthLifeGoals.find(x=>x.id===goalId);
+  if(g)g.is_big_rock_this_week=flagOn;
+  renderGrowthGoalsCard();
+}
+
+function renderGrowthRenewalCard(){
+  const el=document.getElementById('growth-renewal-stats');
+  if(!el)return;
+  const {fisik_pct,learning_days}=growthRenewalScore;
+  el.innerHTML=
+    statCard('var(--green-wash)','var(--green)','💪','Fisik (7 hari)',`${fisik_pct}%`,'Rata² capaian target kalori/protein/air/tidur')+
+    statCard('var(--blue-wash)','var(--blue)','🧠','Mental (7 hari)',`${learning_days}/7 hari`,'Ada activity log Learning');
+}
+
+function renderGrowthReflectionLogCard(){
+  const el=document.getElementById('growth-reflection-log');
+  if(!el)return;
+  if(!growthReflectionLog.length){
+    el.innerHTML=`<div class="loading">Belum ada riwayat — pertanyaan reflektif pertama dikirim Ana tiap Minggu jam 19:00.</div>`;
+    return;
+  }
+  el.innerHTML=growthReflectionLog.map(r=>`<div style="padding:8px 0;border-top:1px solid var(--border2);">
+    <div style="font-size:11px;color:var(--text3);">${escHtml(r.week)}</div>
+    <div style="font-size:13px;">${escHtml(r.question||'(pertanyaan tidak diketahui)')}</div>
+  </div>`).join('');
+}
 async function setWkWorkspace(id){
   wkWorkspaceId=id;
   localStorage.setItem('mc_workspace_id',id);
@@ -5649,7 +5866,7 @@ function buildDashActivity(){} // legacy, kept for compat
 // ── TAB SWITCHING ──
 const pageMeta={
   dashboard:'Dashboard',calendar:'Calendar',tracker:'Time Tracker',
-  health:'Health',finance:'Finance',english:'Language',investment:'Investment',content:'Content',learning:'Learning',goals:'Goals',business:'Bisnis',kerjaan:'Tracking Kerjaan'
+  health:'Health',finance:'Finance',english:'Language',investment:'Investment',content:'Content',learning:'Learning',goals:'Goals',business:'Bisnis',kerjaan:'Tracking Kerjaan',growth:'Growth'
 };
 
 function switchTab(name,btn){
@@ -5677,7 +5894,7 @@ async function loadAll(){
   const themeBtn=document.getElementById('theme-toggle-btn');
   if(themeBtn)themeBtn.textContent=isDarkTheme()?'☀️':'🌙';
   renderAllPeriodToggles();
-  await Promise.all([loadTasks(),loadHealth(),loadFinance(),loadEnglish(),loadInvestment(),loadCalendar(),loadContent(),loadLearningDocuments(),loadGoals(),loadBusiness(),loadKerjaan()]);
+  await Promise.all([loadTasks(),loadHealth(),loadFinance(),loadEnglish(),loadInvestment(),loadCalendar(),loadContent(),loadLearningDocuments(),loadGoals(),loadBusiness(),loadKerjaan(),loadGrowth()]);
   buildDashboard();
   renderTracker();
 }
