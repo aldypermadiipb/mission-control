@@ -789,6 +789,8 @@ tr:hover td{background:var(--bg3);}
     <div class="nav-item" onclick="switchTab('kerjaan',this)"><span class="nav-icon">🗂️</span> Tracking Kerjaan</div>
     <div class="nav-item" onclick="switchTab('schedule',this)"><span class="nav-icon">⏰</span> Jadwal Harian</div>
     <div class="nav-item" onclick="switchTab('networking',this)"><span class="nav-icon">🤝</span> Networking</div>
+    <div class="nav-item" onclick="switchTab('jobhunt',this)"><span class="nav-icon">🎯</span> Job Hunt</div>
+    <div class="nav-item" onclick="switchTab('shipments',this)"><span class="nav-icon">📦</span> Shipment OTD</div>
   </div>
   <div class="nav-group">
     <div class="nav-label">GROWTH</div>
@@ -1879,6 +1881,43 @@ tr:hover td{background:var(--bg3);}
           <button class="btn-save" onclick="addContact()">+ Tambah Kontak</button>
         </div>
         <div id="networking-list"><div class="loading">Loading...</div></div>
+      </div>
+    </div>
+
+    <div id="tab-jobhunt" class="section">
+      <div class="panel">
+        <div class="sec-hdr">
+          <div><div class="sec-hdr-title">Job Hunt</div><div class="sec-hdr-sub">Pipeline lamaran kerja buat pivot ke Data Analyst/Marketing.</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;">
+          <input type="text" class="form-input" id="jh-company-input" placeholder="Perusahaan *">
+          <input type="text" class="form-input" id="jh-role-input" placeholder="Posisi *">
+          <input type="text" class="form-input" id="jh-url-input" placeholder="Link lowongan">
+          <input type="text" class="form-input" id="jh-recruiter-input" placeholder="Kontak recruiter">
+          <input type="text" class="form-input" id="jh-next-action-input" placeholder="Next action (misal: follow up)">
+          <input type="date" class="form-input" id="jh-next-date-input" title="Tanggal next action">
+          <button class="btn-save" onclick="addJobApp()" style="grid-column:span 3;">+ Tambah Lamaran</button>
+        </div>
+        <div id="jobhunt-list"><div class="loading">Loading...</div></div>
+      </div>
+    </div>
+
+    <div id="tab-shipments" class="section">
+      <div class="panel">
+        <div class="sec-hdr">
+          <div><div class="sec-hdr-title">Shipment OTD</div><div class="sec-hdr-sub">On-Time Delivery tracker buat kerjaan Shipment &amp; Delivery — datanya kepisah dari Tracking Kerjaan biar OTD % bisa dihitung.</div></div>
+        </div>
+        <div class="stat-grid" id="shipment-otd-stats" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px;"></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;">
+          <input type="text" class="form-input" id="sh-customer-input" placeholder="Customer *">
+          <input type="text" class="form-input" id="sh-carrier-input" placeholder="Carrier/ekspedisi">
+          <input type="text" class="form-input" id="sh-ref-input" placeholder="No. resi/referensi">
+          <input type="text" class="form-input" id="sh-origin-input" placeholder="Asal">
+          <input type="text" class="form-input" id="sh-dest-input" placeholder="Tujuan">
+          <input type="date" class="form-input" id="sh-expected-input" title="Target tanggal terkirim *">
+          <button class="btn-save" onclick="addShipment()" style="grid-column:span 3;">+ Tambah Shipment</button>
+        </div>
+        <div id="shipments-list"><div class="loading">Loading...</div></div>
       </div>
     </div>
 
@@ -4240,6 +4279,162 @@ async function removeContact(id){
   renderNetworkingList();
 }
 
+// ── JOB HUNT (career pivot pipeline -- separate from Skill Gap Tracker,
+// which is readiness, not the actual application pipeline). Stage set kept
+// short per job-tracker research: over-complex statuses are why people
+// abandon these, so anything more granular belongs in free-text notes.
+let jobApps=[];
+const JH_STAGE_LABEL={saved:'Saved',applied:'Applied',interview:'Interview',offer:'Offer',rejected:'Rejected',accepted:'Accepted'};
+const JH_STAGE_ORDER=['offer','interview','applied','saved','accepted','rejected'];
+const JH_NEXT_STAGE={saved:'applied',applied:'interview',interview:'offer',offer:'accepted'};
+
+async function loadJobHunt(){
+  const r=await fetchApi('/job-applications');
+  jobApps=r?(r.items||[]):[];
+  renderJobHuntList();
+}
+function renderJobHuntList(){
+  const el=document.getElementById('jobhunt-list');
+  if(!el)return;
+  if(!jobApps.length){el.innerHTML=`<div class="loading">Belum ada lamaran. Tambah di atas.</div>`;return;}
+  const byStage={};
+  jobApps.forEach(a=>{(byStage[a.stage]=byStage[a.stage]||[]).push(a);});
+  el.innerHTML=JH_STAGE_ORDER.filter(s=>byStage[s]).map(stage=>{
+    const apps=byStage[stage];
+    return `<div style="margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;">${JH_STAGE_LABEL[stage]} (${apps.length})</div>
+      ${apps.map(a=>{
+        const nextStage=JH_NEXT_STAGE[a.stage];
+        return `<div style="padding:9px 0;border-top:1px solid var(--border2);">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+            <div style="min-width:0;">
+              <div style="font-size:13.5px;font-weight:700;">${escHtml(a.company)}</div>
+              <div style="font-size:12px;color:var(--text2);">${escHtml(a.role)}</div>
+              ${a.recruiter_contact?`<div style="font-size:11px;color:var(--text3);">Recruiter: ${escHtml(a.recruiter_contact)}</div>`:''}
+              ${a.url?`<a href="${escHtml(a.url)}" target="_blank" style="font-size:11px;color:var(--indigo);">Link lowongan</a>`:''}
+              ${a.next_action?`<div style="font-size:11.5px;color:var(--amber-text);margin-top:2px;">${escHtml(a.next_action)}${a.next_action_date?' — '+fmtGoalDeadline(a.next_action_date):''}</div>`:''}
+            </div>
+            <div style="display:flex;gap:8px;flex-shrink:0;">
+              ${nextStage?`<span class="hp-link" onclick="advanceJobApp('${a.id}','${nextStage}')">→ ${JH_STAGE_LABEL[nextStage]}</span>`:''}
+              ${(a.stage!=='rejected'&&a.stage!=='accepted')?`<span class="hp-link" style="color:var(--red);" onclick="advanceJobApp('${a.id}','rejected')">Reject</span>`:''}
+              <span class="hp-link" style="color:var(--red);" onclick="removeJobApp('${a.id}')">Hapus</span>
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+async function addJobApp(){
+  const company=document.getElementById('jh-company-input').value.trim();
+  const role=document.getElementById('jh-role-input').value.trim();
+  if(!company||!role)return;
+  const body={
+    company,role,
+    url:document.getElementById('jh-url-input').value.trim()||null,
+    recruiter_contact:document.getElementById('jh-recruiter-input').value.trim()||null,
+    next_action:document.getElementById('jh-next-action-input').value.trim()||null,
+    next_action_date:document.getElementById('jh-next-date-input').value||null
+  };
+  const r=await apiWrite('POST','/job-applications',body);
+  if(!r)return;
+  ['jh-company-input','jh-role-input','jh-url-input','jh-recruiter-input','jh-next-action-input'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('jh-next-date-input').value='';
+  await loadJobHunt();
+}
+async function advanceJobApp(id,stage){
+  const r=await apiWrite('PATCH','/job-applications/'+id,{stage});
+  if(!r)return;
+  await loadJobHunt();
+}
+async function removeJobApp(id){
+  const r=await apiWrite('DELETE','/job-applications/'+id);
+  if(!r)return;
+  jobApps=jobApps.filter(x=>x.id!==id);
+  renderJobHuntList();
+}
+
+// ── SHIPMENT OTD (Aldy's actual day job -- Shipment & Delivery Section Head.
+// Separate table from work_tasks so On-Time Delivery % is computable; a
+// shipment can optionally cross-reference its work_tasks row via work_task_id
+// rather than duplicating that workflow, though the UI here doesn't surface
+// that link yet -- can be added once real usage shows it's wanted.) ──
+let shipmentsList=[];
+let shipmentOtd={total_delivered:0,on_time:0,overdue_open:0,otd_pct:null,days:30};
+
+async function loadShipments(){
+  const [sR,oR]=await Promise.all([fetchApi('/shipments'),fetchApi('/shipments/otd')]);
+  shipmentsList=sR?(sR.items||[]):[];
+  if(oR)shipmentOtd=oR;
+  renderShipmentsTab();
+}
+function renderShipmentsTab(){
+  renderShipmentOtdStats();
+  renderShipmentsList();
+}
+function renderShipmentOtdStats(){
+  const el=document.getElementById('shipment-otd-stats');
+  if(!el)return;
+  const {otd_pct,total_delivered,overdue_open}=shipmentOtd;
+  el.innerHTML=
+    statCard('var(--green-wash)','var(--green)','✅','OTD % (30 hari)',otd_pct!=null?`${otd_pct}%`:'—',`${total_delivered} shipment terkirim`)+
+    statCard('var(--red-wash)','var(--red)','⚠️','Overdue',overdue_open,'belum terkirim, lewat target')+
+    statCard('var(--blue-wash)','var(--blue)','📦','Total Aktif',shipmentsList.filter(s=>s.status!=='delivered').length,'lagi dalam proses');
+}
+function renderShipmentsList(){
+  const el=document.getElementById('shipments-list');
+  if(!el)return;
+  if(!shipmentsList.length){el.innerHTML=`<div class="loading">Belum ada shipment. Tambah di atas.</div>`;return;}
+  el.innerHTML=shipmentsList.map(s=>{
+    const statusColor=s.status==='delivered'?'var(--green)':(s.is_overdue?'var(--red)':'var(--text2)');
+    return `<div style="padding:10px 0;border-top:1px solid var(--border2);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+        <div style="min-width:0;">
+          <div style="font-size:13.5px;font-weight:700;">${escHtml(s.customer)} ${s.shipment_ref?`<span style="font-size:11px;color:var(--text3);">#${escHtml(s.shipment_ref)}</span>`:''}</div>
+          <div style="font-size:12px;color:var(--text2);">${escHtml([s.carrier,(s.origin&&s.destination)?(s.origin+' → '+s.destination):null].filter(Boolean).join(' — '))}</div>
+          <div style="font-size:11px;color:${statusColor};font-weight:600;margin-top:2px;">
+            ${s.status==='delivered'?`Terkirim ${fmtGoalDeadline(s.actual_delivery_date)}`:(s.is_overdue?`Overdue — target ${fmtGoalDeadline(s.expected_delivery_date)}`:`Target ${fmtGoalDeadline(s.expected_delivery_date)}`)}
+          </div>
+          ${s.delay_reason?`<div style="font-size:11px;color:var(--text3);">Alasan telat: ${escHtml(s.delay_reason)}</div>`:''}
+        </div>
+        <div style="display:flex;gap:8px;flex-shrink:0;">
+          ${s.status!=='delivered'?`<span class="hp-link" onclick="markShipmentDelivered('${s.id}')">Tandai Terkirim</span>`:''}
+          <span class="hp-link" style="color:var(--red);" onclick="removeShipment('${s.id}')">Hapus</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+async function addShipment(){
+  const customer=document.getElementById('sh-customer-input').value.trim();
+  const expected=document.getElementById('sh-expected-input').value;
+  if(!customer||!expected)return;
+  const body={
+    customer, expected_delivery_date:expected,
+    carrier:document.getElementById('sh-carrier-input').value.trim()||null,
+    shipment_ref:document.getElementById('sh-ref-input').value.trim()||null,
+    origin:document.getElementById('sh-origin-input').value.trim()||null,
+    destination:document.getElementById('sh-dest-input').value.trim()||null
+  };
+  const r=await apiWrite('POST','/shipments',body);
+  if(!r)return;
+  ['sh-customer-input','sh-carrier-input','sh-ref-input','sh-origin-input','sh-dest-input'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('sh-expected-input').value='';
+  await loadShipments();
+}
+async function markShipmentDelivered(id){
+  const today=dsFmtDate(new Date());
+  const r=await apiWrite('PATCH','/shipments/'+id,{status:'delivered',actual_delivery_date:today});
+  if(!r)return;
+  await loadShipments();
+}
+async function removeShipment(id){
+  const r=await apiWrite('DELETE','/shipments/'+id);
+  if(!r)return;
+  shipmentsList=shipmentsList.filter(x=>x.id!==id);
+  renderShipmentsList();
+}
+
 // ── ENERGY QUICK-LOG (Health tab widget, independent of loadHealth()'s
 // fetchSheet-based pipeline so this doesn't touch that already-working code) ──
 let energyToday=null;
@@ -6358,7 +6553,7 @@ function buildDashActivity(){} // legacy, kept for compat
 // ── TAB SWITCHING ──
 const pageMeta={
   dashboard:'Dashboard',calendar:'Calendar',tracker:'Time Tracker',
-  health:'Health',finance:'Finance',english:'Language',investment:'Investment',content:'Content',learning:'Learning',goals:'Goals',business:'Bisnis',kerjaan:'Tracking Kerjaan',growth:'Growth',schedule:'Jadwal Harian',networking:'Networking'
+  health:'Health',finance:'Finance',english:'Language',investment:'Investment',content:'Content',learning:'Learning',goals:'Goals',business:'Bisnis',kerjaan:'Tracking Kerjaan',growth:'Growth',schedule:'Jadwal Harian',networking:'Networking',jobhunt:'Job Hunt',shipments:'Shipment OTD'
 };
 
 function switchTab(name,btn){
@@ -6386,7 +6581,7 @@ async function loadAll(){
   const themeBtn=document.getElementById('theme-toggle-btn');
   if(themeBtn)themeBtn.textContent=isDarkTheme()?'☀️':'🌙';
   renderAllPeriodToggles();
-  await Promise.all([loadTasks(),loadHealth(),loadFinance(),loadEnglish(),loadInvestment(),loadCalendar(),loadContent(),loadLearningDocuments(),loadGoals(),loadBusiness(),loadKerjaan(),loadGrowth(),loadDailySchedule(),loadNetworking(),loadEnergyWidget()]);
+  await Promise.all([loadTasks(),loadHealth(),loadFinance(),loadEnglish(),loadInvestment(),loadCalendar(),loadContent(),loadLearningDocuments(),loadGoals(),loadBusiness(),loadKerjaan(),loadGrowth(),loadDailySchedule(),loadNetworking(),loadEnergyWidget(),loadJobHunt(),loadShipments()]);
   buildDashboard();
   renderTracker();
 }
