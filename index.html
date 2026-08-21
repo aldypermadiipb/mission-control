@@ -921,7 +921,7 @@ tr:hover td{background:var(--bg3);}
       <div class="rw-hdr" style="margin-top:4px;">
         <div>
           <div style="font-size:16px;font-weight:700;color:var(--text);">🎯 Career Pivot &amp; Ops Focus</div>
-          <div style="font-size:13px;color:var(--text3);margin-top:2px;">Big Rocks, Skills, Job Hunt, Shipment OTD — sekilas</div>
+          <div style="font-size:13px;color:var(--text3);margin-top:2px;">Big Rocks, Skills, Job Hunt — sekilas</div>
         </div>
         <a class="card-link" style="font-size:13px;" onclick="switchTab('growth',document.querySelector('[onclick*=growth]'))">Buka Growth →</a>
       </div>
@@ -1582,10 +1582,11 @@ tr:hover td{background:var(--bg3);}
             </select>
           </div>
           <input type="text" class="form-input" id="learn-add-url" placeholder="Link (opsional)" style="margin-bottom:8px;">
-          <textarea class="form-input" id="learn-add-content" placeholder="Catatan / ringkasan / isi *" rows="2" style="margin-bottom:8px;resize:vertical;"></textarea>
+          <textarea class="form-input" id="learn-add-content" placeholder="Catatan / ringkasan / isi (wajib kalau gak attach file)" rows="2" style="margin-bottom:8px;resize:vertical;"></textarea>
+          <input type="file" id="learn-add-file" accept=".pdf,.docx,.doc,.txt,.md" style="margin-bottom:8px;font-size:12px;color:var(--text2);">
           <div style="display:flex;gap:8px;">
             <input type="text" class="form-input" id="learn-add-tags" placeholder="Tags, pisah koma (opsional)" style="flex:1;">
-            <button class="btn-save" onclick="addLearningDocument()">+ Tambah ke Knowledge Hub</button>
+            <button class="btn-save" id="learn-add-submit-btn" onclick="addLearningDocument()">+ Tambah ke Knowledge Hub</button>
           </div>
         </div>
         <div class="stat-grid sg7" id="learning-stats"></div>
@@ -3491,15 +3492,40 @@ async function addLearningDocument(){
   const sourceUrl=document.getElementById('learn-add-url').value.trim();
   const content=document.getElementById('learn-add-content').value.trim();
   const tagsRaw=document.getElementById('learn-add-tags').value.trim();
+  const fileInput=document.getElementById('learn-add-file');
+  const file=fileInput&&fileInput.files&&fileInput.files[0];
   if(!title){alert('Judul wajib diisi');return;}
-  if(!content){alert('Catatan/isi wajib diisi');return;}
-  const tags=tagsRaw?tagsRaw.split(',').map(t=>t.trim()).filter(Boolean):[];
-  const result=await apiWrite('POST','/learning/documents',{title,source_type:sourceType,source_url:sourceUrl||null,raw_content:content,tags});
+  if(!content&&!file){alert('Isi catatan atau attach file');return;}
+
+  const btn=document.getElementById('learn-add-submit-btn');
+  const btnOrigText=btn.textContent;
+  btn.disabled=true;btn.textContent='Menyimpan...';
+
+  let result;
+  if(file){
+    const fd=new FormData();
+    fd.append('title',title);
+    fd.append('source_type',sourceType);
+    if(content)fd.append('raw_content',content);
+    if(tagsRaw)fd.append('tags',tagsRaw);
+    fd.append('file',file);
+    try{
+      const r=await fetch(API_BASE+'/learning/documents/upload',{method:'POST',body:fd});
+      if(!r.ok){const e=await r.json().catch(()=>({}));alert('Error: '+(e.detail||r.status));result=null;}
+      else result=await r.json();
+    }catch(e){alert('Network error: '+e.message);result=null;}
+  }else{
+    const tags=tagsRaw?tagsRaw.split(',').map(t=>t.trim()).filter(Boolean):[];
+    result=await apiWrite('POST','/learning/documents',{title,source_type:sourceType,source_url:sourceUrl||null,raw_content:content,tags});
+  }
+
+  btn.disabled=false;btn.textContent=btnOrigText;
   if(result){
     document.getElementById('learn-add-title').value='';
     document.getElementById('learn-add-url').value='';
     document.getElementById('learn-add-content').value='';
     document.getElementById('learn-add-tags').value='';
+    if(fileInput)fileInput.value='';
     await loadLearningDocuments();
   }
 }
