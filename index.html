@@ -793,6 +793,7 @@ tr:hover td{background:var(--bg3);}
     <div class="nav-item" onclick="switchTab('kerjaan',this)"><span class="nav-icon">🗂️</span> Tracking Kerjaan</div>
     <div class="nav-item" onclick="switchTab('schedule',this)"><span class="nav-icon">⏰</span> Jadwal Harian</div>
     <div class="nav-item" onclick="switchTab('networking',this)"><span class="nav-icon">🤝</span> Networking</div>
+    <div class="nav-item" onclick="switchTab('events',this)"><span class="nav-icon">📅</span> Events</div>
     <div class="nav-item" onclick="switchTab('jobhunt',this)"><span class="nav-icon">🎯</span> Job Hunt</div>
     <div class="nav-item" onclick="switchTab('shipments',this)"><span class="nav-icon">📦</span> Shipment OTD</div>
   </div>
@@ -1919,6 +1920,15 @@ tr:hover td{background:var(--bg3);}
           <button class="btn-save" onclick="addContact()">+ Tambah Kontak</button>
         </div>
         <div id="networking-list"><div class="loading">Loading...</div></div>
+      </div>
+    </div>
+
+    <div id="tab-events" class="section">
+      <div class="panel">
+        <div class="sec-hdr">
+          <div><div class="sec-hdr-title">Events</div><div class="sec-hdr-sub">Event gratis yang relevan (AI, tech, food, logistik) — dicari otomatis tiap pagi, digest-nya masuk Telegram jam 09:10 WIB.</div></div>
+        </div>
+        <div id="events-list"><div class="loading">Loading...</div></div>
       </div>
     </div>
 
@@ -4367,6 +4377,44 @@ async function logContactInteraction(id){
   if(!r)return;
   await loadNetworking();
 }
+
+let externalEvents=[];
+const EV_CAT_EMOJI={ai:'🤖',tech:'💻',food:'🍜',logistics:'📦',general:'📅'};
+async function loadEvents(){
+  const r=await fetchApi('/events');
+  externalEvents=r?(r.items||[]):[];
+  renderEventsList();
+}
+function renderEventsList(){
+  const el=document.getElementById('events-list');
+  if(!el)return;
+  if(!externalEvents.length){
+    el.innerHTML=`<div class="loading">Belum ada event ditemukan. Dicek otomatis tiap jam 09:00 WIB.</div>`;
+    return;
+  }
+  const sorted=[...externalEvents].sort((a,b)=>(a.event_date||'').localeCompare(b.event_date||''));
+  el.innerHTML=sorted.map(e=>{
+    const emoji=EV_CAT_EMOJI[e.category]||EV_CAT_EMOJI.general;
+    const where=e.is_online?'Online':(e.location||'Lokasi belum jelas');
+    return `<div style="padding:10px 0;border-top:1px solid var(--border2);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+        <div style="min-width:0;">
+          <div style="font-size:13.5px;font-weight:700;">${emoji} ${escHtml(e.title)}</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:2px;">${fmtGoalDeadline(e.event_date)} — ${escHtml(where)}${e.is_free?' · Gratis':''}</div>
+          ${e.description?`<div style="font-size:12px;color:var(--text3);margin-top:2px;">${escHtml(e.description)}</div>`:''}
+          ${e.source_url?`<a href="${escHtml(e.source_url)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--indigo);">Sumber</a>`:''}
+        </div>
+        <span class="hp-link" style="color:var(--red);flex-shrink:0;" onclick="removeEvent('${e.id}')">Hapus</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+async function removeEvent(id){
+  const r=await apiWrite('DELETE','/events/'+id);
+  if(!r)return;
+  externalEvents=externalEvents.filter(x=>x.id!==id);
+  renderEventsList();
+}
 async function removeContact(id){
   const r=await apiWrite('DELETE','/contacts/'+id);
   if(!r)return;
@@ -6731,7 +6779,7 @@ function buildDashActivity(){} // legacy, kept for compat
 // ── TAB SWITCHING ──
 const pageMeta={
   dashboard:'Dashboard',calendar:'Calendar',tracker:'Time Tracker',
-  health:'Health',finance:'Finance',english:'Language',investment:'Investment',content:'Content',learning:'Learning',goals:'Goals',business:'Bisnis',kerjaan:'Tracking Kerjaan',growth:'Growth',schedule:'Jadwal Harian',networking:'Networking',jobhunt:'Job Hunt',shipments:'Shipment OTD'
+  health:'Health',finance:'Finance',english:'Language',investment:'Investment',content:'Content',learning:'Learning',goals:'Goals',business:'Bisnis',kerjaan:'Tracking Kerjaan',growth:'Growth',schedule:'Jadwal Harian',networking:'Networking',events:'Events',jobhunt:'Job Hunt',shipments:'Shipment OTD'
 };
 
 function switchTab(name,btn){
@@ -6759,7 +6807,7 @@ async function loadAll(){
   const themeBtn=document.getElementById('theme-toggle-btn');
   if(themeBtn)themeBtn.textContent=isDarkTheme()?'☀️':'🌙';
   renderAllPeriodToggles();
-  await Promise.all([loadTasks(),loadHealth(),loadFinance(),loadEnglish(),loadInvestment(),loadCalendar(),loadContent(),loadLearningDocuments(),loadGoals(),loadBusiness(),loadKerjaan(),loadGrowth(),loadDailySchedule(),loadNetworking(),loadEnergyWidget(),loadJobHunt(),loadShipments()]);
+  await Promise.all([loadTasks(),loadHealth(),loadFinance(),loadEnglish(),loadInvestment(),loadCalendar(),loadContent(),loadLearningDocuments(),loadGoals(),loadBusiness(),loadKerjaan(),loadGrowth(),loadDailySchedule(),loadNetworking(),loadEvents(),loadEnergyWidget(),loadJobHunt(),loadShipments()]);
   buildDashboard();
   renderTracker();
 }
