@@ -803,6 +803,7 @@ tr:hover td{background:var(--bg3);}
   </div>
   <div class="nav-group">
     <div class="nav-label">LIFE</div>
+    <div class="nav-item" onclick="switchTab('ibadah',this)"><span class="nav-icon">🕌</span> Ibadah</div>
     <div class="nav-item" onclick="switchTab('health',this)"><span class="nav-icon">💚</span> Health</div>
     <div class="nav-item" onclick="switchTab('finance',this)"><span class="nav-icon">📊</span> Finance</div>
     <div class="nav-item" onclick="switchTab('english',this)"><span class="nav-icon">📖</span> Language</div>
@@ -1374,6 +1375,35 @@ tr:hover td{background:var(--bg3);}
       <div class="panel">
         <div class="panel-header"><span class="panel-title">Recent Logs</span><span class="hp-link" onclick="hpShowAllLogs()" id="hp-view-all-btn">Lihat Semua</span></div>
         <div id="health-content"><div class="loading">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- ── IBADAH ── -->
+    <div id="tab-ibadah" class="section">
+      <div class="panel">
+        <div class="sec-hdr">
+          <div><div class="sec-hdr-title">Shalat 5 Waktu</div><div class="sec-hdr-sub">Klik buat toggle shalat hari ini.</div></div>
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:10px;" id="ibadah-prayer-times">Jadwal shalat hari ini (Cikarang): memuat...</div>
+        <div id="ibadah-shalat-today" style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px;"></div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px;">7 hari terakhir</div>
+        <div id="ibadah-shalat-week"></div>
+      </div>
+      <div class="panel">
+        <div class="sec-hdr">
+          <div><div class="sec-hdr-title">Quran</div><div class="sec-hdr-sub">Ngaji &amp; hafalan.</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 2fr auto;gap:8px;margin-bottom:10px;">
+          <select class="form-input" id="quran-type-input">
+            <option value="ngaji">Ngaji</option>
+            <option value="hafalan">Hafalan</option>
+          </select>
+          <input type="number" class="form-input" id="quran-value-input" placeholder="Jumlah (halaman/ayat)">
+          <input type="text" class="form-input" id="quran-notes-input" placeholder="Catatan (misal: Al-Baqarah 1-10)">
+          <button class="btn-save" onclick="addQuranLog()">+ Catat</button>
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:10px;" id="quran-totals">Loading...</div>
+        <div id="quran-log-list"><div class="loading">Loading...</div></div>
       </div>
     </div>
 
@@ -5321,6 +5351,107 @@ const EXPENSE_CAT_META={bahan_baku:{label:'Bahan Baku',color:'#f59e0b'},operasio
 async function fetchApi(path){
   try{const r=await fetch(API_BASE+path);if(!r.ok)return null;return await r.json();}catch{return null;}
 }
+
+// ── IBADAH (shalat 5 waktu + Quran) ──
+let ibadahShalatData=[];
+let quranLogData=[];
+let quranTotalsData={};
+const IBADAH_PRAYERS=[['subuh','Subuh'],['dzuhur','Dzuhur'],['ashar','Ashar'],['maghrib','Maghrib'],['isya','Isya']];
+
+async function loadIbadah(){
+  const [shalatR,quranR,timesR]=await Promise.all([
+    fetchApi('/ibadah/shalat?days=30'),
+    fetchApi('/ibadah/quran?days=30'),
+    fetchApi('/ibadah/prayer-times-today')
+  ]);
+  ibadahShalatData=shalatR?(shalatR.items||[]):[];
+  quranLogData=quranR?(quranR.items||[]):[];
+  quranTotalsData=quranR?(quranR.totals||{}):{};
+  renderIbadahPrayerTimes(timesR);
+  renderIbadahShalatToday();
+  renderIbadahShalatWeek();
+  renderQuranLog();
+}
+function renderIbadahPrayerTimes(t){
+  const el=document.getElementById('ibadah-prayer-times');
+  if(!el)return;
+  if(!t||!t.subuh){el.textContent='Jadwal shalat hari ini (Cikarang): belum tersedia.';return;}
+  el.textContent=`Jadwal shalat hari ini (Cikarang): Subuh ${(t.subuh||'-').slice(0,5)} · Dzuhur ${(t.dzuhur||'-').slice(0,5)} · Ashar ${(t.ashar||'-').slice(0,5)} · Maghrib ${(t.maghrib||'-').slice(0,5)} · Isya ${(t.isya||'-').slice(0,5)}`;
+}
+function todayIbadahRow(){
+  const today=new Date().toISOString().slice(0,10);
+  return ibadahShalatData.find(r=>r.date===today)||{date:today,subuh:false,dzuhur:false,ashar:false,maghrib:false,isya:false};
+}
+function renderIbadahShalatToday(){
+  const el=document.getElementById('ibadah-shalat-today');
+  if(!el)return;
+  const row=todayIbadahRow();
+  el.innerHTML=IBADAH_PRAYERS.map(([key,label])=>{
+    const done=!!row[key];
+    return `<div onclick="toggleShalat('${key}',${!done})" style="cursor:pointer;text-align:center;padding:10px 4px;border-radius:8px;border:1px solid var(--border2);background:${done?'var(--green-wash)':'transparent'};">
+      <div style="font-size:18px;">${done?'✅':'⬜'}</div>
+      <div style="font-size:11px;margin-top:4px;">${label}</div>
+    </div>`;
+  }).join('');
+}
+async function toggleShalat(key,value){
+  const r=await apiWrite('POST','/ibadah/shalat',{[key]:value});
+  if(!r)return;
+  const idx=ibadahShalatData.findIndex(x=>x.date===r.date);
+  if(idx>=0)ibadahShalatData[idx]=r;else ibadahShalatData.unshift(r);
+  renderIbadahShalatToday();
+  renderIbadahShalatWeek();
+}
+function renderIbadahShalatWeek(){
+  const el=document.getElementById('ibadah-shalat-week');
+  if(!el)return;
+  const days=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const iso=d.toISOString().slice(0,10);
+    const row=ibadahShalatData.find(r=>r.date===iso);
+    const count=row?IBADAH_PRAYERS.filter(([k])=>row[k]).length:0;
+    days.push({label:d.toLocaleDateString('id-ID',{weekday:'short'}),count});
+  }
+  el.innerHTML=`<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;">${days.map(d=>`
+    <div style="text-align:center;">
+      <div style="font-size:10px;color:var(--text3);">${d.label}</div>
+      <div style="font-size:13px;font-weight:700;margin-top:2px;">${d.count}/5</div>
+    </div>`).join('')}</div>`;
+}
+function renderQuranLog(){
+  const totalsEl=document.getElementById('quran-totals');
+  if(totalsEl){
+    totalsEl.textContent=`Total ngaji: ${quranTotalsData.ngaji||0} · Total hafalan: ${quranTotalsData.hafalan||0} ayat (all-time)`;
+  }
+  const el=document.getElementById('quran-log-list');
+  if(!el)return;
+  if(!quranLogData.length){el.innerHTML='<div class="loading">Belum ada catatan.</div>';return;}
+  el.innerHTML=quranLogData.map(q=>`
+    <div style="padding:9px 0;border-top:1px solid var(--border2);display:flex;justify-content:space-between;align-items:center;gap:10px;">
+      <div style="min-width:0;">
+        <div style="font-size:13px;font-weight:600;">${q.type==='ngaji'?'📖 Ngaji':'🧠 Hafalan'}${q.value?' — '+q.value:''}</div>
+        ${q.notes?`<div style="font-size:11.5px;color:var(--text2);">${escHtml(q.notes)}</div>`:''}
+        <div style="font-size:10.5px;color:var(--text3);">${fmtBizDate(q.date)}</div>
+      </div>
+      <span class="hp-link" style="color:var(--red);flex-shrink:0;" onclick="removeQuranLog('${q.id}')">Hapus</span>
+    </div>`).join('');
+}
+async function addQuranLog(){
+  const type=document.getElementById('quran-type-input').value;
+  const value=document.getElementById('quran-value-input').value;
+  const notes=document.getElementById('quran-notes-input').value.trim();
+  const r=await apiWrite('POST','/ibadah/quran',{type,value:value?parseFloat(value):null,notes:notes||null});
+  if(!r)return;
+  document.getElementById('quran-value-input').value='';
+  document.getElementById('quran-notes-input').value='';
+  await loadIbadah();
+}
+async function removeQuranLog(id){
+  const r=await apiWrite('DELETE','/ibadah/quran/'+id);
+  if(!r)return;
+  await loadIbadah();
+}
 function fmtBizDate(d){
   if(!d)return'-';
   try{return new Date(d).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});}catch{return d;}
@@ -6807,7 +6938,7 @@ async function loadAll(){
   const themeBtn=document.getElementById('theme-toggle-btn');
   if(themeBtn)themeBtn.textContent=isDarkTheme()?'☀️':'🌙';
   renderAllPeriodToggles();
-  await Promise.all([loadTasks(),loadHealth(),loadFinance(),loadEnglish(),loadInvestment(),loadCalendar(),loadContent(),loadLearningDocuments(),loadGoals(),loadBusiness(),loadKerjaan(),loadGrowth(),loadDailySchedule(),loadNetworking(),loadEvents(),loadEnergyWidget(),loadJobHunt(),loadShipments()]);
+  await Promise.all([loadTasks(),loadHealth(),loadFinance(),loadEnglish(),loadInvestment(),loadCalendar(),loadContent(),loadLearningDocuments(),loadGoals(),loadBusiness(),loadKerjaan(),loadGrowth(),loadDailySchedule(),loadNetworking(),loadEvents(),loadEnergyWidget(),loadJobHunt(),loadShipments(),loadIbadah()]);
   buildDashboard();
   renderTracker();
 }
